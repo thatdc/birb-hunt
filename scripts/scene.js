@@ -50,13 +50,16 @@ class Node {
 }
 
 class SceneObject extends Node {
-    /** @type {Mesh} */
-    mesh;
-
     /** Vertex Array Object
      * @type {WebGLVertexArrayObject}
      */
     vao;
+
+    /**
+     * WebGL program (Vertex shader + fragment shader).
+     * @type {WebGLProgram}
+     */
+    programInfo;
 
     /** WebGL diffuse texture
      * @type {WebGLTexture}
@@ -71,12 +74,6 @@ class SceneObject extends Node {
     normalMap;
 
     /**
-     * WebGL program (Vertex shader + fragment shader).
-     * @type {WebGLProgram}
-     */
-    programInfo;
-
-    /**
      * Length of the Elements buffer
      * @type {int}
      */
@@ -89,4 +86,92 @@ class SceneObject extends Node {
     static fromSceneConfig() {
         ;
     }
+}
+
+class Scene {
+    /**
+     * Dictionary containing all the Vertex Array Objects of this scene.
+     */
+    vaos = {};
+
+    /**
+     * Dictionary containing all the texture objects.
+     * @type {string: WebGLTexture}
+     */
+    textures = {};
+
+    /**
+     * The WebGL context object
+     * @type {WebGL2RenderingContext}
+     */
+    gl;
+
+    /**
+     * Dictionary containing the program objects.
+     */
+     programs = {};
+
+    /**
+     * Root node of a scene tree
+     * @type {Node}
+     */
+     rootNode;
+
+    createVAO(positionAttributeLocation, normalAttributeLocation, uvAttributeLocation, vertexPositionData, normalData, uvData, indexData){
+        var vao = gl.createVertexArray();
+
+        // Create buffers with data
+
+        gl.bindVertexArray(vao);
+        var positionBuffer = gl.createBuffer();
+        gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
+        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertexPositionData), gl.STATIC_DRAW);
+        gl.enableVertexAttribArray(positionAttributeLocation);
+        gl.vertexAttribPointer(positionAttributeLocation, 3, gl.FLOAT, false, 0, 0);
+
+        var normalBuffer = gl.createBuffer();
+        gl.bindBuffer(gl.ARRAY_BUFFER, normalBuffer);
+        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(normalData), gl.STATIC_DRAW);
+        gl.enableVertexAttribArray(normalAttributeLocation);
+        gl.vertexAttribPointer(normalAttributeLocation, 3, gl.FLOAT, false, 0, 0);
+
+        var uvBuffer = gl.createBuffer();
+        gl.bindBuffer(gl.ARRAY_BUFFER, uvBuffer);
+        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(uvData), gl.STATIC_DRAW);
+        gl.enableVertexAttribArray(uvAttributeLocation);
+        gl.vertexAttribPointer(uvAttributeLocation, 2, gl.FLOAT, false, 0, 0);
+
+        var indexBuffer = gl.createBuffer();
+        gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, indexBuffer);
+        gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(indexData), gl.STATIC_DRAW);
+
+        return vao;
+    }
+
+    createTexture(path){
+        // Create the texture
+        var texture = gl.createTexture();
+        // use texture unit 0
+        gl.activeTexture(gl.TEXTURE0);
+        gl.bindTexture(gl.TEXTURE_2D, texture);
+
+        // Asynchronously load the texture
+        var image = new Image();
+        image.src = path;
+        image.onload = function() {
+          //Make sure this is the active one
+          gl.activeTexture(gl.TEXTURE0);
+          gl.bindTexture(gl.TEXTURE_2D, texture);
+          gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
+          gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, image);
+                
+          gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+          gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+
+          gl.generateMipmap(gl.TEXTURE_2D);
+        };
+
+        return texture;
+    }
+
 }
