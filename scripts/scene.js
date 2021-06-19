@@ -80,6 +80,22 @@ class SceneObject extends Node {
     bufferLength;
 
     /**
+     * Scale factor of this model
+     * @type {int}
+     */
+    scale;
+
+    /**
+     * Position in XYZ coordinates of the object
+     */
+    position = [];
+
+    /**
+     * Rotation of the object in XYZ Euler coordinates
+     */
+    rotation = [];
+
+    /**
      * Create a new scene object from a JSON description
      * @return {SceneObject}
      */
