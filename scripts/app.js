@@ -21,6 +21,9 @@ function initializeWebGL() {
     }
     utils.resizeCanvasToDisplaySize(gl.canvas);
 
+    // Initialize the programs
+    scene.programs.lambert = new LambertProgram();
+
     return gl;
 }
 
@@ -33,10 +36,10 @@ function initializeWebGL() {
  */
 async function configureScene(scene) {
     // Download scene configuration (JSON)
-    sceneConfig = await (await fetch("config.json")).json();
+    let sceneConfig = await (await fetch("config.json")).json();
 
     // Download the models
-    models = await downloadModels(sceneConfig.models);
+    let models = await downloadModels(sceneConfig.models);
 
     // Insert additional data from the JSON
     for (const modelConfig of sceneConfig.models) {

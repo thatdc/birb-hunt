@@ -11,6 +11,26 @@ class Program {
     matrixLocation;
     normalMatrixLocation;
 
+    constructor(vs_url, fs_url) {
+        this.downloadShaders(vs_url, fs_url)
+            .then(([vs_src, fs_src]) => { // Succesfully downloaded
+            let vs = utils.createShader(gl, gl.VERTEX_SHADER, vs_src);
+            let fs = utils.createShader(gl, gl.FRAGMENT_SHADER, fs_src);
+
+            this.glProgram = utils.createProgram(gl, vs, fs);
+        }, (e) => { // Error
+            console.error(e);
+        })
+    }
+
+    async downloadShaders(vs_url, fs_url) {
+        // Download the shaders
+        let vs_src = await (await fetch(vs_url)).text();
+        let fs_src = await (await fetch(fs_url)).text();
+
+        return [vs_src, fs_src];
+    }
+
     /**
      * Initialize locations for: vertex attributes,
      * transformation matrices
@@ -38,14 +58,7 @@ class Program {
 
 class LambertProgram extends Program {
     constructor() {
-        // Download and compile the shaders
-        let vs_src = await(await fetch("shaders/vs.glsl"));
-        let fs_src = await(await fetch("shaders/lambert_fs.glsl"));
-
-        let vs = utils.createShader(gl, gl.VERTEX_SHADER, vs_src);
-        let fs = utils.createShader(gl, gl.FRAGMENT_SHADER, fs_src);
-
-        this.glProgram = utils.createProgram(gl, vs, fs);
+        super("shaders/vs.glsl", "shaders/fs_lambert.glsl");
     }
 
     /**
@@ -55,7 +68,7 @@ class LambertProgram extends Program {
         let p = this.glProgram;
 
         // Call on parent
-        Program.prototype.initLocations.call(this);
+        super.initLocations();
 
         // Flags
         this.useMapDiffuseLocation = gl.getUniformLocation(p, "b_useMapDiffuse");

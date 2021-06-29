@@ -4,7 +4,7 @@ precision mediump float;
 
 in vec2 fs_uv;
 in vec3 fs_normal;
-out vec4 gl_color;
+out vec4 out_color;
 
 // Flags
 uniform bool b_useMapDiffuse;
@@ -32,5 +32,5 @@ void main() {
   vec3 n_normal = normalize(b_useMapNormal ? vec3(texture(u_mapNormal, fs_uv)) : fs_normal);
   vec3 diffuseColor = b_useMapDiffuse ? vec3(texture(u_mapDiffuse, fs_uv)) : u_diffuse;
   vec3 lambertColor = diffuseColor * u_lightColor * dot(-u_lightDirection, n_normal);
-  gl_color = vec4(clamp(lambertColor, 0.00, 1.0), 1.0);
+  out_color = vec4(clamp(lambertColor, 0.00, 1.0), 1.0);
 }
