@@ -1,0 +1,34 @@
+{
+    "models": [
+        {
+            "name": "BigRock_01",
+            "obj": "assets/nature/BigRock_01.obj",
+            "mtl": "assets/nature/Nature_Mat_01.mtl",
+            "type": "rock"
+        },
+        {
+            "name": "BigRock_02",
+            "obj": "assets/nature/BigRock_02.obj",
+            "mtl": "assets/nature/Nature_Mat_01.mtl",
+            "type": "rock"
+        },
+        {
+            "name": "BigRock_03",
+            "obj": "assets/nature/BigRock_03.obj",
+            "mtl": "assets/nature/Nature_Mat_01.mtl",
+            "type": "rock"
+        },
+        {
+            "name": "Flower_04",
+            "obj": "assets/nature/BigRock_03.obj",
+            "mtl": "assets/nature/Nature_Mat_01.mtl",
+            "type": "flower"
+        },
+        {
+            "name": "bird_red",
+            "obj": "assets/angry_birds/red_ID240.016.obj",
+            "mtl": "assets/angry_birds/red_ID240.016.mtl",
+            "type": "bird"
+        }
+    ]
+}

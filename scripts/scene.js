@@ -57,9 +57,9 @@ class SceneObject extends Node {
 
     /**
      * WebGL program (Vertex shader + fragment shader).
-     * @type {WebGLProgram}
+     * @type {Program}
      */
-    programInfo;
+    program;
 
     /** WebGL diffuse texture
      * @type {WebGLTexture}
@@ -106,6 +106,11 @@ class SceneObject extends Node {
 
 class Scene {
     /**
+     * Dictionary containing all the models, as loaded by downloadModels
+     */
+    models = {};
+
+    /**
      * Dictionary containing all the Vertex Array Objects of this scene.
      */
     vaos = {};
@@ -125,15 +130,15 @@ class Scene {
     /**
      * Dictionary containing the program objects.
      */
-     programs = {};
+    programs = {};
 
     /**
      * Root node of a scene tree
      * @type {Node}
      */
-     rootNode;
+    rootNode;
 
-    createVAO(positionAttributeLocation, normalAttributeLocation, uvAttributeLocation, vertexPositionData, normalData, uvData, indexData){
+    createVAO(positionAttributeLocation, normalAttributeLocation, uvAttributeLocation, vertexPositionData, normalData, uvData, indexData) {
         var vao = gl.createVertexArray();
 
         // Create buffers with data
@@ -164,7 +169,7 @@ class Scene {
         return vao;
     }
 
-    createTexture(path){
+    createTexture(path) {
         // Create the texture
         var texture = gl.createTexture();
         // use texture unit 0
@@ -174,17 +179,17 @@ class Scene {
         // Asynchronously load the texture
         var image = new Image();
         image.src = path;
-        image.onload = function() {
-          //Make sure this is the active one
-          gl.activeTexture(gl.TEXTURE0);
-          gl.bindTexture(gl.TEXTURE_2D, texture);
-          gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
-          gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, image);
-                
-          gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
-          gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+        image.onload = function () {
+            //Make sure this is the active one
+            gl.activeTexture(gl.TEXTURE0);
+            gl.bindTexture(gl.TEXTURE_2D, texture);
+            gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
+            gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, image);
 
-          gl.generateMipmap(gl.TEXTURE_2D);
+            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+
+            gl.generateMipmap(gl.TEXTURE_2D);
         };
 
         return texture;
