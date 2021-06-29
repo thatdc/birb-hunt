@@ -1,9 +1,36 @@
+var gl;
 var scene = new Scene();
 
 async function main() {
+    gl = initializeWebGL();
     configureScene(scene);
 }
 
+
+/**
+ * Initialize the WebGL library and canvas
+ * @returns {WebGLRenderingContext} the WebGL context
+ */
+function initializeWebGL() {
+    var canvas = document.getElementById("c");
+    /** @type {WebGLRenderingContext} */
+    gl = canvas.getContext("webgl2");
+    if (!gl) {
+        document.write("GL context not opened");
+        return;
+    }
+    utils.resizeCanvasToDisplaySize(gl.canvas);
+
+    return gl;
+}
+
+/**
+ * Configure the scene according to the JSON.
+ * 
+ * Will download the models, materials and textures and insert them into the
+ * scene.
+ * @param {Scene} scene 
+ */
 async function configureScene(scene) {
     // Download scene configuration (JSON)
     sceneConfig = await (await fetch("config.json")).json();

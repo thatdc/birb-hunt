@@ -8,6 +8,22 @@ class Node {
     // Transform of the object w.r.t. the world origin
     worldMatrix = null;
 
+    /**
+     * Scale factor of this model
+     * @type {int}
+     */
+    scale;
+
+    /**
+     * Position in XYZ coordinates of the object
+     */
+    position = [];
+
+    /**
+     * Rotation of the object in XYZ Euler coordinates
+     */
+    rotation = [];
+
     // Pointer to the parent
     parent = null;
 
@@ -80,22 +96,6 @@ class SceneObject extends Node {
     bufferLength;
 
     /**
-     * Scale factor of this model
-     * @type {int}
-     */
-    scale;
-
-    /**
-     * Position in XYZ coordinates of the object
-     */
-    position = [];
-
-    /**
-     * Rotation of the object in XYZ Euler coordinates
-     */
-    rotation = [];
-
-    /**
      * Create a new scene object from a JSON description
      * @return {SceneObject}
      */
@@ -120,12 +120,6 @@ class Scene {
      * @type {string: WebGLTexture}
      */
     textures = {};
-
-    /**
-     * The WebGL context object
-     * @type {WebGL2RenderingContext}
-     */
-    gl;
 
     /**
      * Dictionary containing the program objects.
