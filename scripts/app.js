@@ -12,14 +12,20 @@ async function main() {
  * @returns {WebGLRenderingContext} the WebGL context
  */
 function initializeWebGL() {
+    // Get canvas and context
     var canvas = document.getElementById("c");
     /** @type {WebGLRenderingContext} */
     gl = canvas.getContext("webgl2");
     if (!gl) {
-        document.write("GL context not opened");
+        console.error("GL context not opened");
         return;
     }
+
+    // Resize canvas to fill page
     utils.resizeCanvasToDisplaySize(gl.canvas);
+
+    // Set global pixelstore options
+    gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
 
     // Initialize the programs
     scene.programs.set("lambert", new LambertProgram());
