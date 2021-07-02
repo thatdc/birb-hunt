@@ -1,4 +1,5 @@
 {
+    "defaultProgram": "lambert",
     "models": [
         {
             "name": "BigRock_01",

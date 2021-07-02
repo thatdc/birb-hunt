@@ -22,7 +22,7 @@ function initializeWebGL() {
     utils.resizeCanvasToDisplaySize(gl.canvas);
 
     // Initialize the programs
-    scene.programs.lambert = new LambertProgram();
+    scene.programs.set("lambert", new LambertProgram());
 
     return gl;
 }
@@ -41,15 +41,31 @@ async function configureScene(scene) {
     // Download the models
     let models = await downloadModels(sceneConfig.models);
 
-    // Insert additional data from the JSON
-    for (const modelConfig of sceneConfig.models) {
+    // Set up each model
+    for (let modelConfig of sceneConfig.models) {
+        // Get the model by name
         let name = modelConfig.name;
-        models[name].type = modelConfig.type
+        let model = models[name];
+
+        // Type of this model (tree, bird, ...)
+        model.type = modelConfig.type
         // TODO: Add data according to type (e.g. attach points for trees ...)
+
+        // Insert into the dictionary of scene models
+        if (!scene.models.has(name)) {
+            scene.models.set(name, model);
+        } else {
+            console.error(`Model \"${name}}\" already exists`);
+        }
+
+        // Select the rendering program
+        let program = scene.programs.get(modelConfig.program ?? sceneConfig.defaultProgram);
+        model.program = program;
+
+        // Create the VAO
+        model.vao = program.createVAO(model);
     }
 
-    // Attach models to the global Scene object
-    scene.models = models;
 }
 
 window.onload = main

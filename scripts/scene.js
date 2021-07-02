@@ -107,24 +107,22 @@ class SceneObject extends Node {
 class Scene {
     /**
      * Dictionary containing all the models, as loaded by downloadModels
+     * @type {Map<String, Mesh>}
      */
-    models = {};
+    models = new Map();
 
     /**
      * Dictionary containing all the Vertex Array Objects of this scene.
+     * @type {Map<String, WebGLVertexArrayObject>}
      */
-    vaos = {};
-
-    /**
-     * Dictionary containing all the texture objects.
-     * @type {string: WebGLTexture}
-     */
-    textures = {};
+    /* TODO: Do we still need this? */
+    vaos = new Map();
 
     /**
      * Dictionary containing the program objects.
+     * @type {Map<String, Program>}
      */
-    programs = {};
+    programs = new Map();
 
     /**
      * Root node of a scene tree
