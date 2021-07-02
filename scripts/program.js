@@ -18,6 +18,7 @@ class Program {
             let fs = utils.createShader(gl, gl.FRAGMENT_SHADER, fs_src);
 
             this.glProgram = utils.createProgram(gl, vs, fs);
+            this.initLocations()
         }, (e) => { // Error
             console.error(e);
         })
@@ -46,6 +47,63 @@ class Program {
         // Transformation matrices
         this.matrixLocation = gl.getUniformLocation(p, "u_matrix");
         this.normalMatrixLocation = gl.getUniformLocation(p, "u_normalMatrix");
+    }
+
+    /**
+     * Creates a Vertex Array Object for the given mesh.
+     * 
+     * Will create:
+     * <ul>
+     *  <li> vertexBuffer </li>
+     *  <li> normalBuffer </li>
+     *  <li> textureBuffer </li>
+     *  <li> indexBuffer </li>
+     * </ul>
+     * @param {Mesh} mesh 
+     * @returns {WebGLVertexArrayObject}
+     */
+    createVAO(mesh) {
+        // Create new empy VAO
+        let vao = gl.createVertexArray();
+        
+        // Create vertex attribute buffers
+        mesh.vertexBuffer = this._createVertexAttribBuffer(new Float32Array(mesh.vertices), this.positionAttribLocation, 3);
+        mesh.normalBuffer = this._createVertexAttribBuffer(new Float32Array(mesh.vertexNormals), this.normalAttribLocation, 3);
+        mesh.textureBuffer = this._createVertexAttribBuffer(new Float32Array(mesh.textures), this.uvAttribLocation, 2);
+
+        // Create the element array buffer (i.e. indices array)
+        mesh.indexBuffer = this._createElementArrayBuffer(new Uint16Array(mesh.indices));
+
+        return vao;
+    }
+    
+    /**
+     * Creates a VBO and binds it to the specific attribute.
+     * 
+     * @param {Array} data the data to be copied into the buffer
+     * @param {GLint} attribLocation the location of the attribute
+     * @param {GLint} size the number of components per vertex
+     * @param {GLenum} type type of each component (e.g. {@code gl.FLOAT})
+     * @returns {WebGLBuffer} buffer with the data
+     */
+    _createVertexAttribBuffer(data, attribLocation, size=3, type=gl.FLOAT) {
+        let buffer = gl.createBuffer();
+        gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
+        gl.bufferData(gl.ARRAY_BUFFER, data, gl.STATIC_DRAW);
+        gl.enableVertexAttribArray(attribLocation);
+        gl.vertexAttribPointer(attribLocation, size, type, false, 0, 0);
+        return buffer;
+    }
+
+    /**
+     * Creates an element array buffer with the given indices
+     * @param {Array} data array of vertex indices that compose the triangles
+     */
+    _createElementArrayBuffer(data) {
+        let buffer = gl.createBuffer();
+        gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, buffer);
+        gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, data, gl.STATIC_DRAW);
+        return buffer;
     }
 
     /**
