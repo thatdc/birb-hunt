@@ -14,14 +14,14 @@ class Program {
     constructor(vs_url, fs_url) {
         this.downloadShaders(vs_url, fs_url)
             .then(([vs_src, fs_src]) => { // Succesfully downloaded
-            let vs = utils.createShader(gl, gl.VERTEX_SHADER, vs_src);
-            let fs = utils.createShader(gl, gl.FRAGMENT_SHADER, fs_src);
+                let vs = utils.createShader(gl, gl.VERTEX_SHADER, vs_src);
+                let fs = utils.createShader(gl, gl.FRAGMENT_SHADER, fs_src);
 
-            this.glProgram = utils.createProgram(gl, vs, fs);
-            this.initLocations()
-        }, (e) => { // Error
-            console.error(e);
-        })
+                this.glProgram = utils.createProgram(gl, vs, fs);
+                this.initLocations()
+            }, (e) => { // Error
+                console.error(e);
+            })
     }
 
     async downloadShaders(vs_url, fs_url) {
@@ -52,31 +52,51 @@ class Program {
     /**
      * Creates a Vertex Array Object for the given mesh.
      * 
-     * Will create:
+     * Will create the following buffers for the attributes:
      * <ul>
      *  <li> vertexBuffer </li>
      *  <li> normalBuffer </li>
      *  <li> textureBuffer </li>
-     *  <li> indexBuffer </li>
      * </ul>
+     * NOTE: This does not insert the Element Array Buffer into the VAO.
+     * 
      * @param {Mesh} mesh 
      * @returns {WebGLVertexArrayObject}
      */
     createVAO(mesh) {
         // Create new empy VAO
         let vao = gl.createVertexArray();
-        
+        gl.bindVertexArray(vao);
+
         // Create vertex attribute buffers
         mesh.vertexBuffer = this._createVertexAttribBuffer(new Float32Array(mesh.vertices), this.positionAttribLocation, 3);
         mesh.normalBuffer = this._createVertexAttribBuffer(new Float32Array(mesh.vertexNormals), this.normalAttribLocation, 3);
         mesh.textureBuffer = this._createVertexAttribBuffer(new Float32Array(mesh.textures), this.uvAttribLocation, 2);
 
-        // Create the element array buffer (i.e. indices array)
-        mesh.indexBuffer = this._createElementArrayBuffer(new Uint16Array(mesh.indices));
+        // This avoids further buffers to be included in the VAO
+        gl.bindVertexArray(null);
 
         return vao;
     }
-    
+
+    /**
+     * Creates an element array buffer for each material of the mesh.
+     * 
+     * The index data is read from the array {@code mesh.indicesPerMaterial}.
+     * @param {Mesh} mesh 
+     * @returns {Array<WebGLBuffer>} array of element array buffers,
+     * indexed by material
+     */
+    createElementArrayBuffers(mesh) {
+        let indexBufferPerMaterial = new Array();
+        // Iterate over the array elements
+        for (let indices of mesh.indicesPerMaterial) {
+            let indexBuffer = this._createElementArrayBuffer(new Uint16Array(indices));
+            indexBufferPerMaterial.push(indexBuffer);
+        }
+        return indexBufferPerMaterial;
+    }
+
     /**
      * Creates a VBO and binds it to the specific attribute.
      * 
@@ -86,7 +106,7 @@ class Program {
      * @param {GLenum} type type of each component (e.g. {@code gl.FLOAT})
      * @returns {WebGLBuffer} buffer with the data
      */
-    _createVertexAttribBuffer(data, attribLocation, size=3, type=gl.FLOAT) {
+    _createVertexAttribBuffer(data, attribLocation, size = 3, type = gl.FLOAT) {
         let buffer = gl.createBuffer();
         gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
         gl.bufferData(gl.ARRAY_BUFFER, data, gl.STATIC_DRAW);
@@ -96,7 +116,8 @@ class Program {
     }
 
     /**
-     * Creates an element array buffer with the given indices
+     * Creates an element array buffer with the given indices.
+     * 
      * @param {Array} data array of vertex indices that compose the triangles
      */
     _createElementArrayBuffer(data) {

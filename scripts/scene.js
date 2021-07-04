@@ -24,10 +24,15 @@ class Node {
      */
     rotation = [];
 
-    // Pointer to the parent
+    /**
+     * Pointer to the parent
+     */
     parent = null;
 
-    // Set the parent
+    /**
+     * Set the parent
+     * @param {Node} parent 
+     */
     setParent(parent) {
         if (this.parent) {
             var ndx = this.parent.children.indexOf(this);
@@ -46,7 +51,7 @@ class Node {
 
     /**
      * Update world matrix of itself and recursively to the children
-     * @param {*} matrix 
+     * @param {number[][]} matrix 
      */
     updateWorldMatrix(matrix) {
         if (matrix) {
