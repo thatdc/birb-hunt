@@ -83,6 +83,8 @@ async function configureScene(scene) {
         model.vao = program.createVAO(model);
         // Create an element array buffer for each material
         model.indexBufferPerMaterial = program.createElementArrayBuffers(model);
+        // Create the textures
+        program.createTextures(model);
     }
 
 }

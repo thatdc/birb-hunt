@@ -128,6 +128,58 @@ class Program {
     }
 
     /**
+     * Create all the WebGL textures for the given mesh.
+     * 
+     * For each map of each material of the mesh that has {@code map.texture}
+     * set, it creates a WebGLTexture, which is saved at {@code map.glTexture}
+     * 
+     * @param {Mesh} mesh 
+     */
+    createTextures(mesh) {
+        for (let mtl of Object.values(mesh.materialsByIndex)) {
+            // Iterare over the relevant maps
+            for (let mapName of ["mapDiffuse", "mapNormal", "mapSpecular"]) {
+                let map = mtl[mapName];
+                if (map && map.texture) {
+                    // Create the texture
+                    map.glTexture = this._createTexture2D(map);
+                }
+            }
+        }
+    }
+
+    /**
+     * Creates a 2D texture from a given map.
+     * 
+     * @param {TextureMapData} map the texture map from the material
+     * @return {WebGLTexture} created texture
+     */
+    _createTexture2D(map) {
+        // Create texture
+        let tex = gl.createTexture();
+        gl.bindTexture(gl.TEXTURE_2D, tex);
+
+        // Load the image
+        gl.texImage2D(
+            gl.TEXTURE_2D,
+            0,                  // mip-map level
+            gl.RGBA,            // internal format
+            gl.RGBA,            // source format
+            gl.UNSIGNED_BYTE,   // source type
+            map.texture         // image
+        );
+
+        // Set magnification and minification filters
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+
+        // Generate mip maps
+        gl.generateMipmap(gl.TEXTURE_2D);
+
+        return tex;
+    }
+
+    /**
      * Draws the given object
      */
     drawObject(gl, viewProjectionMatrix, sceneObject) {
