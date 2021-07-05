@@ -69,7 +69,7 @@ class SceneNode {
         this.scale = scale;
         this.parent = null;
         this.children = [];
-        this.localMatrix = _makeLocal();
+        this.localMatrix = this._makeLocal();
         this.worldMatrix = this.localMatrix;
     }
 
@@ -80,17 +80,13 @@ class SceneNode {
      */
     _makeLocal() {
         // Translate
-        var m = utils.MakeTranslateMatrix(...position);
+        let m = utils.MakeTranslateMatrix(...this.position);
         // Rotate
         m = utils.multiplyMatrices(m,
-            utils.MakeRotateZMatrix(rotation[2]));
-        m = utils.multiplyMatrices(m,
-            utils.MakeRotateYMatrix(rotation[1]));
-        m = utils.multiplyMatrices(m,
-            utils.MakeRotateXMatrix(rotation[0]));
+            utils.MakeRotateXYZMatrix(...this.rotation));
         // Scale
         m = utils.multiplyMatrices(m,
-            utils.MakeScaleNuMatrix(...scale));
+            utils.MakeScaleNuMatrix(...this.scale));
 
         return m;
     }

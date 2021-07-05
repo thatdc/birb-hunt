@@ -31,5 +31,14 @@
             "mtl": "assets/angry_birds/red_ID240.016.mtl",
             "type": "bird"
         }
-    ]
+    ],
+    "sceneGraph": {
+        "name": "root",
+        "children": [
+            {
+                "name": "red",
+                "model": "bird_red"
+            }
+        ]
+    }
 }

@@ -87,6 +87,53 @@ async function configureScene(scene) {
         program.createTextures(model);
     }
 
+    // Build the scene graph from the root downwards
+    scene.rootNode = buildSceneGraph(scene.models, sceneConfig.sceneGraph);
+}
+
+/**
+ * Builds the scene graph given the models and the JSON configuration.
+ * 
+ * This function can be called recursively to generate a subtree of the graph.
+ * 
+ * @param {Map<String, Mesh} models dictionary of all available models
+ * @param {Object} nodeConfig JSON configuration of the scene graph
+ * @returns {Node} Root node of the scene graph
+ */
+function buildSceneGraph(models, nodeConfig) {
+    if (!nodeConfig) {
+        return undefined;
+    }
+
+    // Create the current node/object
+    let current;
+    if (nodeConfig.model) {
+        let model = models.get(nodeConfig.model);
+        current = new SceneObject(
+            nodeConfig.name,
+            model,
+            nodeConfig.position,
+            nodeConfig.rotation,
+            nodeConfig.scale
+        );
+    } else {
+        current = new SceneNode(
+            nodeConfig.name,
+            nodeConfig.position,
+            nodeConfig.rotation,
+            nodeConfig.scale
+        );
+    }
+
+    // Create the children
+    for (let childCfg of (nodeConfig.children ?? [])) {
+        // Build the child tree recursively
+        let child = buildSceneGraph(models, childCfg);
+        // Set the parent (will also add this node to the parent's children)
+        child.setParent(current);
+    }
+
+    return current;
 }
 
 window.onload = main
