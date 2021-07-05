@@ -1,4 +1,4 @@
-class Node {
+class SceneNode {
     /**
      * Unique of the object in the scene
      * @type {string}
@@ -7,7 +7,7 @@ class Node {
 
     /**
      * List of child nodes (will be transormed)
-     * @type {Node[]}
+     * @type {SceneNode[]}
      */
     children;
 
@@ -43,7 +43,7 @@ class Node {
 
     /**
      * Pointer to the parent
-     * @type {Node}
+     * @type {SceneNode}
      */
     parent = null;
 
@@ -97,7 +97,7 @@ class Node {
 
     /**
      * Set the parent
-     * @param {Node} parent 
+     * @param {SceneNode} parent 
      */
     setParent(parent) {
         if (this.parent) {
@@ -136,7 +136,7 @@ class Node {
     };
 }
 
-class SceneObject extends Node {
+class SceneObject extends SceneNode {
     /** Model associated to this object.
      * @type {Mesh}
      */
@@ -192,7 +192,7 @@ class Scene {
 
     /**
      * Root node of a scene tree
-     * @type {Node}
+     * @type {SceneNode}
      */
     rootNode;
 
