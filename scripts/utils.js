@@ -494,6 +494,20 @@ createProgram:function(gl, vertexShader, fragmentShader) {
 		}
 		return out;        
 	},
+	crossVector: function(u, v){
+		/* cross product of vectors [u] and  [v] */
+		
+		 var out = [u[1]*v[2]-u[2]*v[1], u[2]*v[0]-u[0]*v[2], u[0]*v[1]-u[1]*v[0]];  
+		 
+		 return out;        
+	 },
+	 normalizeVector3: function(v){
+		/* cross product of vectors [u] and  [v] */
+		 var len = Math.sqrt(v[0]*v[0]+v[1]*v[1]+v[2]*v[2]);
+		 var out = [v[0]/len, v[1]/len, v[2]/len];  
+		 
+		 return out;        
+	 },
 	
 	
 	
@@ -515,7 +529,6 @@ createProgram:function(gl, vertexShader, fragmentShader) {
 		out[11] = dz;
 		return out; 
 	},
-
 	
 	MakeRotateXMatrix: function(a) {
 	// Create a transform matrix for a rotation of {a} along the X axis.
@@ -566,7 +579,7 @@ createProgram:function(gl, vertexShader, fragmentShader) {
 		return out; 
 	},
     
-    MakeRotateXYZMatrix: function(rx, ry, rz, s){
+    MakeRotateXYZMatrix: function(rx, ry, rz){
 	//Creates a world matrix for an object.
 
 		var Rx = this.MakeRotateXMatrix(ry);                
@@ -586,6 +599,16 @@ createProgram:function(gl, vertexShader, fragmentShader) {
 
 		out[0] = out[5] = out[10] = s;
 
+		return out; 
+	},
+
+	MakeScaleNuMatrix: function(sx, sy, sz) {
+	// Create a scale matrix for a scale of ({sx}, {sy}, {sz}).
+
+		var out = this.identityMatrix();
+		out[0]  = sx;
+		out[5]  = sy;
+		out[10] = sz;
 		return out; 
 	},
 
@@ -725,6 +748,48 @@ createProgram:function(gl, vertexShader, fragmentShader) {
 		perspective[15] = 0.0;	
 
 		return perspective;
-	}
+	},
 
+	MakeParallel:function(w, a, n, f) {
+	// Creates the parallel projection matrix. The matrix is returned.
+	// {w} contains the horizontal half-width in world units. {a} is the aspect ratio.
+	// {n} is the distance of the near plane, and {f} is the far plane.
+
+		var parallel = this.identityMatrix();
+
+		parallel[0] = 1.0 / w;
+		parallel[5] = a / w;
+		parallel[10] = 2.0 / (n - f);
+		parallel[11] = (n + f) / (n - f);
+
+		return parallel;
+	},
+
+	MakeLookAt: function(c, a, u) {
+	// Creates in {out} a view matrix, using the look-at from vector c to vector a.
+		
+		Vz = this.normalizeVector3([c[0]-a[0], c[1]-a[1], c[2]-a[2]]);
+		Vx = this.normalizeVector3(this.crossVector(this.normalizeVector3(u), Vz));
+		Vy = this.crossVector(Vz, Vx);
+
+		CM =  [Vx[0], Vy[0], Vz[0], c[0],
+			   Vx[1], Vy[1], Vz[1], c[1], 
+			   Vx[2], Vy[2], Vz[2], c[2],
+			    0.0,   0.0,   0.0,  1.0]
+
+// calling the invert procedure
+//		out = this.invertMatrix(CM);
+
+// manual inversion
+		out = [Vx[0], Vx[1], Vx[2], 0.0,
+			   Vy[0], Vy[1], Vy[2], 0.0, 
+			   Vz[0], Vz[1], Vz[2], 0.0,
+			    0.0,   0.0,   0.0,  1.0 ];
+		nc = this.multiplyMatrixVector(out, [c[0], c[1], c[2], 0.0]);
+		out[3]  = -nc[0];
+		out[7]  = -nc[1];
+		out[11] = -nc[2];
+
+		return out;
+	},
 }
