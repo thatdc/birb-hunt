@@ -582,8 +582,8 @@ createProgram:function(gl, vertexShader, fragmentShader) {
     MakeRotateXYZMatrix: function(rx, ry, rz){
 	//Creates a world matrix for an object.
 
-		var Rx = this.MakeRotateXMatrix(ry);                
-		var Ry = this.MakeRotateYMatrix(rx);
+		var Rx = this.MakeRotateXMatrix(rx);                
+		var Ry = this.MakeRotateYMatrix(ry);
 		var Rz = this.MakeRotateZMatrix(rz);
 		
 		out = this.multiplyMatrices(Ry, Rz);
