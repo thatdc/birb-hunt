@@ -9,6 +9,7 @@ out vec4 out_color;
 // Flags
 uniform bool b_useMapDiffuse;
 uniform bool b_useMapNormal;
+uniform bool b_useMapSpecular;
 
 // Material colors
 uniform vec3 u_ambient;

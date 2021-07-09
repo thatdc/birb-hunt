@@ -192,30 +192,31 @@ class Scene {
      */
     rootNode;
 
-    createTexture(path) {
-        // Create the texture
-        var texture = gl.createTexture();
-        // use texture unit 0
-        gl.activeTexture(gl.TEXTURE0);
-        gl.bindTexture(gl.TEXTURE_2D, texture);
-
-        // Asynchronously load the texture
-        var image = new Image();
-        image.src = path;
-        image.onload = function () {
-            //Make sure this is the active one
-            gl.activeTexture(gl.TEXTURE0);
-            gl.bindTexture(gl.TEXTURE_2D, texture);
-            // gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
-            gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, image);
-
-            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
-            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
-
-            gl.generateMipmap(gl.TEXTURE_2D);
-        };
-
-        return texture;
+    /**
+     * Draws the scene
+     */
+    draw() {
+        // TODO: Complete this
+        this._drawTree(this.rootNode);
     }
 
+    /**
+     * Draws the given subtree
+     * @param {number[]} viewProjectionMatrix
+     * @param {SceneNode} root root of the subtree 
+     */
+    _drawTree(viewProjectionMatrix, root) {
+        if (root instanceof SceneObject) {
+            // Set the correct program
+            /** @type {Program} */
+            let program = root.model.program;
+            gl.useProgram(program.glProgram);
+            // Set the uniforms and perform one draw call per material
+            program.drawObject(this, viewProjectionMatrix, root);
+        }
+
+        for (let child of root.children) {
+            this._drawTree(viewProjectionMatrix, child);
+        }
+    }
 }

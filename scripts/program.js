@@ -8,6 +8,8 @@ class Program {
     positionAttribLocation;
     normalAttribLocation;
     uvAttribLocation;
+
+    /** Uniforms */
     matrixLocation;
     normalMatrixLocation;
 
@@ -180,10 +182,63 @@ class Program {
     }
 
     /**
-     * Draws the given object
+     * Sets up the light uniforms, given the scene's lights
+     * @param {Scene} scene 
      */
-    drawObject(gl, viewProjectionMatrix, sceneObject) {
+    setLightUniforms(scene) {
         ;
+    }
+
+    /**
+     * Set the material-related uniforms for the given object
+     * @param {Scene} scene 
+     */
+    setMaterialUniforms(object) {
+        ;
+    }
+
+    /**
+     * Draws the given object
+     * @param {number[]} viewProjectionMatrix
+     * @param {SceneObject} object
+     */
+    drawObject(scene, viewProjectionMatrix, object) {
+        let model = object.model;
+        // Transformation matrices
+        this.setMatrixUniforms(viewProjectionMatrix, object);
+        // Lights
+        this.setLightUniforms(scene);
+        // Bind VAO
+        gl.bindVertexArray(model.vao);
+
+        // Draw each material separately
+        for (let [i, mtl] of Object.entries(model.materialsByIndex)) {
+            // Material uniforms
+            this.setMaterialUniforms(mtl);
+            // Bind Element Array Buffer
+            gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, model.indexBufferPerMaterial[i]);
+
+            // Draw call
+            gl.drawElements(gl.TRIANGLES, model.indicesPerMaterial[i].length, gl.UNSIGNED_SHORT, 0);
+        }
+    }
+
+    /**
+     * Sets up the {@code u_matrix} and {@code u_normalMatrix} uniforms
+     * for the given object.
+     * @param {number[]} viewProjectionMatrix 
+     * @param {SceneObject} object 
+     */
+    setMatrixUniforms(viewProjectionMatrix, object) {
+        // ####################
+        // UNIFORMS
+        // ####################
+        // World-view-projection matrix
+        let matrix = utils.multiplyMatrices(viewProjectionMatrix, object.worldMatrix);
+        gl.uniformMatrix4fv(this.matrixLocation, true, matrix);
+        // Normal matrix
+        let normalMatrix = utils.invertMatrix(utils.transposeMatrix(object.worldMatrix));
+        gl.uniformMatrix4fv(this.normalMatrixLocation, true, normalMatrix);
     }
 }
 
@@ -204,6 +259,7 @@ class LambertProgram extends Program {
         // Flags
         this.useMapDiffuseLocation = gl.getUniformLocation(p, "b_useMapDiffuse");
         this.useMapNormalLocation = gl.getUniformLocation(p, "b_useMapNormal");
+        this.useMapSpecularLocation = gl.getUniformLocation(p, "b_useMapSpecular");
 
         // Material colors
         this.ambientLocation = gl.getUniformLocation(p, "u_ambient");
@@ -221,5 +277,64 @@ class LambertProgram extends Program {
         // Lights
         this.lightDirectionLocation = gl.getUniformLocation(p, "u_lightDirection");
         this.lightColorLocation = gl.getUniformLocation(p, "u_lightColor");
+    }
+
+    /**
+     * Sets up the light uniforms, given the scene's lights
+     * @param {Scene} scene 
+     */
+    setLightUniforms(scene) {
+        // TODO: Finish this function when we have defined lights
+        // ####################
+        // LIGHTS
+        // ####################
+        // Lights
+        let lightDirection = [-.5, -.5, -.5];
+        gl.uniform3fv(this.lightDirectionLocation, lightDirection);
+        let lightColor = [1, 1, 1];
+        gl.uniform3fv(this.lightColorLocation, lightColor);
+    }
+
+    /**
+     * Set the material-related uniforms for the given object
+     * @param {Material} mtl 
+     */
+    setMaterialUniforms(mtl) {
+        // Ambient color
+        gl.uniform3fv(this.ambientLocation, mtl.ambient);
+
+        // Diffuse color (map/scalar)
+        if (mtl.mapDiffuse) {
+            gl.uniform1i(this.useMapDiffuseLocation, 1);
+            gl.activeTexture(gl.TEXTURE0);
+            gl.bindTexture(gl.TEXTURE_2D, mtl.mapDiffuse.glTexture);
+            gl.uniform1i(this.mapDiffuseLocation, 0);
+        } else {
+            gl.uniform1i(this.useMapDiffuseLocation, 0);
+            gl.uniform3fv(this.diffuseLocation, mtl.diffuse);
+        }
+        // Normal map
+        if (mtl.mapNormal) {
+            gl.uniform1i(this.useMapNormalLocation, 1);
+            gl.activeTexture(gl.TEXTURE1);
+            gl.bindTexture(gl.TEXTURE_2D, mtl.mapNormal.glTexture);
+            gl.uniform1i(this.mapNormalLocation, 1);
+        } else {
+            gl.uniform1i(this.useMapNormalLocation, 0);
+            // The normal is derived from the vertex shader
+        }
+        // Specular color (map/scalar)
+        if (mtl.mapSpecular) {
+            gl.uniform1i(this.useMapSpecularLocation, 1);
+            gl.activeTexture(gl.TEXTURE2);
+            gl.bindTexture(gl.TEXTURE_2D, mtl.mapSpecular.glTexture);
+            gl.uniform1i(this.mapSpecularLocation, 2);
+        } else {
+            gl.uniform1i(this.useMapSpecularLocation, 0);
+            gl.uniform3fv(this.specularLocation, mtl.specular);
+        }
+
+        // Specular exponent
+        gl.uniform1f(this.specularExponentLocation, mtl.specularExponent);
     }
 }
