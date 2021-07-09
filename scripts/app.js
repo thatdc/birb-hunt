@@ -1,19 +1,28 @@
 var gl;
-var scene = new Scene();
+var keyPressed = {};
 
 async function main() {
-    gl = initializeWebGL();
-    configureScene(scene);
+    let canvas = document.getElementById("c");
+    gl = initializeWebGL(canvas);
+
+    // Create the scene
+    let scene = new Scene();
+    await configureScene(scene);
+    window.requestAnimationFrame(() => frame(scene));
+
+    // Configure event listeners
+    document.addEventListener("keydown", (e) => { keyPressed[e.key] = true });
+    document.addEventListener("keyup", (e) => { delete keyPressed[e.key] });
+    document.addEventListener("mousemove", (e) => mouseMovement(e, scene.camera));
 }
 
 
 /**
  * Initialize the WebGL library and canvas
+ * @param {HTMLElement} canvas
  * @returns {WebGLRenderingContext} the WebGL context
  */
-function initializeWebGL() {
-    // Get canvas and context
-    var canvas = document.getElementById("c");
+function initializeWebGL(canvas) {
     /** @type {WebGLRenderingContext} */
     gl = canvas.getContext("webgl2");
     if (!gl) {
@@ -24,13 +33,65 @@ function initializeWebGL() {
     // Resize canvas to fill page
     utils.resizeCanvasToDisplaySize(gl.canvas);
 
+    // Set global options
+    gl.enable(gl.DEPTH_TEST);
+
     // Set global pixelstore options
     gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
 
-    // Initialize the programs
-    scene.programs.set("lambert", new LambertProgram());
-
     return gl;
+}
+
+/**
+ * Moves the camera based on the currently pressed keys
+ * @param {Camera} camera 
+ */
+function keyboardMovement(camera) {
+    // TODO: Use elapsed time
+    let posStep = 0.05;
+    let rotStep = 1;
+
+    if (keyPressed["w"]) {
+        camera.move([0, 0, -posStep]);
+    }
+    if (keyPressed["s"]) {
+        camera.move([0, 0, +posStep]);
+    }
+    if (keyPressed["d"]) {
+        camera.move([+posStep, 0, 0]);
+    }
+    if (keyPressed["a"]) {
+        camera.move([-posStep, 0, 0]);
+    }
+    if (keyPressed["ArrowUp"]) {
+        camera.rotate([+rotStep, 0, 0]);
+    }
+    if (keyPressed["ArrowDown"]) {
+        camera.rotate([-rotStep, 0, 0]);
+    }
+    if (keyPressed["ArrowRight"]) {
+        camera.rotate([0, +rotStep, 0]);
+    }
+    if (keyPressed["ArrowLeft"]) {
+        camera.rotate([0, -rotStep, 0]);
+    }
+}
+
+/**
+ * Handles camera rotation on mouse movement
+ * @param {MouseEvent} e 
+ * @param {Camera} camera 
+ */
+function mouseMovement(e, camera) {
+    let step = 0.2;
+    let deltaX = step * e.movementX;
+    let deltaY = -step * e.movementY;
+
+    camera.rotate([
+        deltaY,
+        Math.abs(camera.rotation + deltaX) > 85 ? 0 : deltaX,
+        0
+    ]);
 }
 
 /**
@@ -41,6 +102,9 @@ function initializeWebGL() {
  * @param {Scene} scene 
  */
 async function configureScene(scene) {
+    // Initialize the programs
+    scene.programs.set("lambert", new LambertProgram());
+
     // Download scene configuration (JSON)
     let sceneConfig = await (await fetch("config.json")).json();
 
@@ -52,7 +116,7 @@ async function configureScene(scene) {
         // Get the model by name
         let name = modelConfig.name;
         let model = models[name];
-        
+
         // Insert into the dictionary of scene models
         if (!scene.models.has(name)) {
             scene.models.set(name, model);
@@ -89,6 +153,16 @@ async function configureScene(scene) {
 
     // Build the scene graph from the root downwards
     scene.rootNode = buildSceneGraph(scene.models, sceneConfig.sceneGraph);
+
+    // Put the camera in its initial position
+    scene.camera = new Camera(
+        sceneConfig.camera.position,
+        sceneConfig.camera.rotation,
+        sceneConfig.camera.fov_y,
+        gl.canvas.width / gl.canvas.height,
+        sceneConfig.camera.near_plane,
+        sceneConfig.camera.far_plane
+    );
 }
 
 /**
@@ -134,6 +208,30 @@ function buildSceneGraph(models, nodeConfig) {
     }
 
     return current;
+}
+
+/**
+ * Function called at every frame
+ * @param {Scene} scene 
+ */
+function frame(scene) {
+    // Update the camera
+    keyboardMovement(scene.camera);
+    scene.camera.aspect_ratio = gl.canvas.width / gl.canvas.height;
+
+    // Get the view-projection matrix
+    let viewProjectionMatrix = scene.camera.getViewProjectionMatrix();
+
+    // Clear and resize the viewport
+    gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
+    gl.clearColor(1, 1, 1, 1.0);
+    gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+
+    // Draw
+    scene._drawTree(viewProjectionMatrix, scene.rootNode);
+
+    // Reschedule at next frame
+    window.requestAnimationFrame(() => frame(scene));
 }
 
 window.onload = main

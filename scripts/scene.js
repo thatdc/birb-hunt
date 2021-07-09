@@ -193,6 +193,12 @@ class Scene {
     rootNode;
 
     /**
+     * Current camera
+     * @type {Camera}
+     */
+    camera;
+
+    /**
      * Draws the scene
      */
     draw() {
