@@ -102,33 +102,15 @@ class Camera {
      * @param {number[]} delta XYZ movement amount, in camera space
      */
     move(delta) {
-        let T;
+        // TODO: FixMe
+        // Transform the movement direction
+        let T = utils.MakeRotateXYZMatrix(...this.rotation);
+        delta = utils.multiplyMatrixVector(T, [...delta, 1]);
 
-        // Transform the canonical ref. sys. into the new one
-        T = utils.MakeTranslateMatrix(...this.position);    // translate origin
-        T = utils.multiplyMatrices(T,
-            utils.MakeRotateZMatrix(this.rotation[2]));             // rotate z
-        T = utils.multiplyMatrices(T,
-            utils.MakeRotateXMatrix(this.rotation[0]));             // rotate x
-        T = utils.multiplyMatrices(T,
-            utils.MakeRotateYMatrix(this.rotation[1]));             // rotate y
-
-        // Translate
-        T = utils.multiplyMatrices(T,
-            utils.MakeTranslateMatrix(...delta));
-
-        // Transform the new ref. system back into the canonical one
-        T = utils.multiplyMatrices(T,
-            utils.MakeRotateYMatrix(-this.rotation[1]));            // rotate y
-        T = utils.multiplyMatrices(T,
-            utils.MakeRotateXMatrix(-this.rotation[0]));            // rotate x
-        T = utils.multiplyMatrices(T,
-            utils.MakeRotateZMatrix(-this.rotation[2]));            // rotate z
-        T = utils.multiplyMatrices(T,
-            utils.MakeTranslateMatrix(...this.position.map((x) => -x)));
-
-        // Transform the camera position
-        this.position = utils.multiplyMatrixVector(T, [...this.position, 1]);
+        // Sum to the current position
+        for (let i in this.position) {
+            this.position[i] += delta[i];
+        }
     }
 
     /**
@@ -136,7 +118,7 @@ class Camera {
      * @param {number[]} delta XYZ rotation amount, in camera space
      */
     rotate(delta) {
-        for (let i in this.position) {
+        for (let i in this.rotation) {
             this.rotation[i] += delta[i];
             if (this.rotation[i] > 360) {
                 this.rotation[i] -= 360
