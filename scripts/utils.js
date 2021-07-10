@@ -586,8 +586,8 @@ createProgram:function(gl, vertexShader, fragmentShader) {
 		var Ry = this.MakeRotateYMatrix(ry);
 		var Rz = this.MakeRotateZMatrix(rz);
 		
-		out = this.multiplyMatrices(Ry, Rz);
-		out = this.multiplyMatrices(Rx, out);
+		out = this.multiplyMatrices(Rx, Rz);
+		out = this.multiplyMatrices(Ry, out);
 
 		return out;
 	},
