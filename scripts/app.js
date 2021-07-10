@@ -9,12 +9,16 @@ async function main() {
     // Create the scene
     scene = new Scene();
     await configureScene(scene);
-    window.requestAnimationFrame(() => frame(scene));
 
     // Configure event listeners
     document.addEventListener("keydown", (e) => { keyPressed[e.key] = true });
     document.addEventListener("keyup", (e) => { delete keyPressed[e.key] });
-    document.addEventListener("mousemove", (e) => mouseMovement(e, scene.camera));
+
+    // Configure Pointer Lock
+    initPointerLock(canvas);
+
+    // Start the rendering cycle
+    window.requestAnimationFrame(() => frame(scene));
 }
 
 
@@ -44,12 +48,29 @@ function initializeWebGL(canvas) {
 }
 
 /**
+ * Initialize the pointer lock logic
+ * @param {HTMLElement} canvas 
+ */
+function initPointerLock(canvas) {
+    canvas.onclick = () => {
+        canvas.requestPointerLock();
+    }
+    document.addEventListener("pointerlockchange", () => {
+        if (document.pointerLockElement === canvas) {
+            document.addEventListener("mousemove", mouseMovement);
+        } else {
+            document.removeEventListener("mousemove", mouseMovement);
+        }
+    })
+}
+
+/**
  * Moves the camera based on the currently pressed keys
  * @param {Camera} camera 
  */
 function keyboardMovement(camera) {
     // TODO: Use elapsed time
-    let posStep = 0.1;
+    let posStep = keyPressed["Shift"] ? 1 : 0.2;
     let rotStep = 1;
 
     if (keyPressed["w"]) {
@@ -83,7 +104,8 @@ function keyboardMovement(camera) {
  * @param {MouseEvent} e 
  * @param {Camera} camera 
  */
-function mouseMovement(e, camera) {
+function mouseMovement(e) {
+    let camera = scene.camera;
     let step = 0.2;
     let deltaX = step * e.movementX;
     let deltaY = -step * e.movementY;
