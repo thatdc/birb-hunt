@@ -2,6 +2,11 @@
     "defaultProgram": "lambert",
     "models": [
         {
+            "name": "Ground",
+            "obj": "assets/ground/Ground.obj",
+            "mtl": "assets/ground/Ground.mtl"
+        },
+        {
             "name": "BigRock_01",
             "obj": "assets/nature/BigRock_01.obj",
             "mtl": "assets/nature/Nature_Mat_01.mtl",
@@ -21,7 +26,7 @@
         },
         {
             "name": "Flower_04",
-            "obj": "assets/nature/BigRock_03.obj",
+            "obj": "assets/nature/Flower_04.obj",
             "mtl": "assets/nature/Nature_Mat_01.mtl",
             "type": "flower"
         },
@@ -32,17 +37,8 @@
             "type": "bird"
         }
     ],
-    "sceneGraph": {
-        "name": "root",
-        "children": [
-            {
-                "name": "red",
-                "model": "bird_red"
-            }
-        ]
-    },
     "camera": {
-        "position": [0,0,0],
+        "position": [0,1.75,0],
         "rotation": [0,0,0]
     }
 }

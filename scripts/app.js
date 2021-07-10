@@ -1,4 +1,5 @@
 var gl;
+var scene;
 var keyPressed = {};
 
 async function main() {
@@ -6,7 +7,7 @@ async function main() {
     gl = initializeWebGL(canvas);
 
     // Create the scene
-    let scene = new Scene();
+    scene = new Scene();
     await configureScene(scene);
     window.requestAnimationFrame(() => frame(scene));
 
@@ -48,7 +49,7 @@ function initializeWebGL(canvas) {
  */
 function keyboardMovement(camera) {
     // TODO: Use elapsed time
-    let posStep = 0.05;
+    let posStep = 0.1;
     let rotStep = 1;
 
     if (keyPressed["w"]) {
@@ -151,8 +152,10 @@ async function configureScene(scene) {
         program.createTextures(model);
     }
 
+    let sceneGraphConfig = await (await fetch("scene-graph.json")).json();
+
     // Build the scene graph from the root downwards
-    scene.rootNode = buildSceneGraph(scene.models, sceneConfig.sceneGraph);
+    scene.rootNode = buildSceneGraph(scene.models, sceneGraphConfig);
 
     // Put the camera in its initial position
     scene.camera = new Camera(
