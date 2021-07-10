@@ -25,10 +25,40 @@
             "type": "rock"
         },
         {
+            "name": "SmallRock_01",
+            "obj": "assets/nature/SmallRock_01.obj",
+            "mtl": "assets/nature/Nature_Mat_01.mtl",
+            "type": "rock"
+        },
+        {
             "name": "Flower_04",
             "obj": "assets/nature/Flower_04.obj",
             "mtl": "assets/nature/Nature_Mat_01.mtl",
             "type": "flower"
+        },
+        {
+            "name": "Tree_01",
+            "obj": "assets/nature/Tree01.obj",
+            "mtl": "assets/nature/Nature_Mat_01.mtl",
+            "type": "tree"
+        },
+        {
+            "name": "Tree_03",
+            "obj": "assets/nature/Tree_03.obj",
+            "mtl": "assets/nature/Nature_Mat_01.mtl",
+            "type": "tree"
+        },
+        {
+            "name": "Tree_05",
+            "obj": "assets/nature/Tree_05.obj",
+            "mtl": "assets/nature/Nature_Mat_01.mtl",
+            "type": "tree"
+        },
+        {
+            "name": "Tree_06",
+            "obj": "assets/nature/Tree_06.obj",
+            "mtl": "assets/nature/Nature_Mat_01.mtl",
+            "type": "tree"
         },
         {
             "name": "bird_red",
