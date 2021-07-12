@@ -41,9 +41,6 @@ function initializeWebGL(canvas) {
     // Set global options
     gl.enable(gl.DEPTH_TEST);
 
-    // Set global pixelstore options
-    gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
-
     return gl;
 }
 
@@ -126,7 +123,7 @@ function mouseMovement(e) {
  */
 async function configureScene(scene) {
     // Initialize the programs
-    scene.programs.set("lambert", new LambertProgram());
+    scene.programs.set("lambert", new LambertProgram().init());
 
     // Download scene configuration (JSON)
     let sceneConfig = await (await fetch("config.json")).json();

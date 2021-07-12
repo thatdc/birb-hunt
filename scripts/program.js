@@ -13,17 +13,28 @@ class Program {
     matrixLocation;
     normalMatrixLocation;
 
-    constructor(vs_url, fs_url) {
-        this.downloadShaders(vs_url, fs_url)
+    /**
+     * Initialize the program before use:
+     * - Downloads and compiles the shaders
+     * - Saves the locations of attributes and uniforms
+     * @param {string} vs_url url of the vertex shader
+     * @param {string} fs_url url of the fragment shader
+     * @returns {Program} a reference to the object
+     */
+    async init(vs_url, fs_url) {
+        await this.downloadShaders(vs_url, fs_url)
             .then(([vs_src, fs_src]) => { // Succesfully downloaded
                 let vs = utils.createShader(gl, gl.VERTEX_SHADER, vs_src);
                 let fs = utils.createShader(gl, gl.FRAGMENT_SHADER, fs_src);
 
                 this.glProgram = utils.createProgram(gl, vs, fs);
                 this.initLocations()
-            }, (e) => { // Error
-                console.error(e);
             })
+            .catch((e) => { // Error
+                console.error(e);
+            });
+
+        return this;
     }
 
     async downloadShaders(vs_url, fs_url) {
@@ -157,6 +168,9 @@ class Program {
      * @return {WebGLTexture} created texture
      */
     _createTexture2D(map) {
+        // Flip the Y direction of the uv coordinates
+        gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
+
         // Create texture
         let tex = gl.createTexture();
         gl.bindTexture(gl.TEXTURE_2D, tex);
@@ -221,6 +235,8 @@ class Program {
             // Draw call
             gl.drawElements(gl.TRIANGLES, model.indicesPerMaterial[i].length, gl.UNSIGNED_SHORT, 0);
         }
+        // Prevent leakage
+        gl.bindVertexArray(null);
     }
 
     /**
@@ -243,8 +259,16 @@ class Program {
 }
 
 class LambertProgram extends Program {
-    constructor() {
-        super("shaders/vs.glsl", "shaders/fs_lambert.glsl");
+
+    /**
+     * Initialize the program before use:
+     * - Downloads and compiles the shaders
+     * - Saves the locations of attributes and uniforms
+     * @returns {LambertProgram} a reference to the object
+     */
+    init() {
+        super.init("shaders/vs.glsl", "shaders/fs_lambert.glsl");
+        return this;
     }
 
     /**
