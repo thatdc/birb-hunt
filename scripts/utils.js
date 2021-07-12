@@ -54,10 +54,8 @@ createProgram:function(gl, vertexShader, fragmentShader) {
 
  resizeCanvasToDisplaySize:function(canvas) {
     const expandFullScreen = () => {
-      canvas.width = window.innerWidth;
-      canvas.height = window.innerHeight;
-      console.log(canvas.width+" "+window.innerWidth);
-        
+      canvas.width = canvas.clientWidth;
+      canvas.height = canvas.clientHeight;
     };
     expandFullScreen();
     // Resize screen when the browser has triggered the resize event
