@@ -39,7 +39,9 @@ function initializeWebGL(canvas) {
     utils.resizeCanvasToDisplaySize(gl.canvas);
 
     // Set global options
+    gl.enable(gl.CULL_FACE);
     gl.enable(gl.DEPTH_TEST);
+    gl.depthFunc(gl.LEQUAL); // so the skybox passes the test at 1.0
 
     return gl;
 }
@@ -185,6 +187,9 @@ async function configureScene(scene) {
         sceneConfig.camera.near_plane,
         sceneConfig.camera.far_plane
     );
+
+    // Create the skybox
+    scene.skybox = await new Skybox().init(sceneConfig.skybox);
 }
 
 /**
@@ -241,16 +246,13 @@ function frame(scene) {
     keyboardMovement(scene.camera);
     scene.camera.aspect_ratio = gl.canvas.width / gl.canvas.height;
 
-    // Get the view-projection matrix
-    let viewProjectionMatrix = scene.camera.getViewProjectionMatrix();
-
     // Clear and resize the viewport
     gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
     gl.clearColor(1, 1, 1, 1.0);
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
     // Draw
-    scene._drawTree(viewProjectionMatrix, scene.rootNode);
+    scene.draw();
 
     // Reschedule at next frame
     window.requestAnimationFrame(() => frame(scene));

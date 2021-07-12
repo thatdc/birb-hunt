@@ -199,11 +199,23 @@ class Scene {
     camera;
 
     /**
+     * Current skybox
+     * @type {Skybox}
+     */
+    skybox;
+
+    /**
      * Draws the scene
      */
     draw() {
-        // TODO: Complete this
-        this._drawTree(this.rootNode);
+        let viewProjectionMatrix = this.camera.getViewProjectionMatrix();
+        // Draw the objects
+        this._drawTree(viewProjectionMatrix, this.rootNode);
+
+        // Draw the skybox
+        let cameraMatrix = utils.MakeRotateXYZMatrix(
+            ...this.camera.rotation.map(x => -x));
+        this.skybox.draw(cameraMatrix);
     }
 
     /**

@@ -313,9 +313,9 @@ class LambertProgram extends Program {
         // LIGHTS
         // ####################
         // Lights
-        let lightDirection = [-.5, -.5, -.5];
+        let lightDirection = [.5, -.65, .5];
         gl.uniform3fv(this.lightDirectionLocation, lightDirection);
-        let lightColor = [1, 1, 1];
+        let lightColor = [1, 1, .7];
         gl.uniform3fv(this.lightColorLocation, lightColor);
     }
 
