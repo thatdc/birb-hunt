@@ -38,7 +38,7 @@
         },
         {
             "name": "Tree_01",
-            "obj": "assets/nature/Tree01.obj",
+            "obj": "assets/nature/Tree_01.obj",
             "mtl": "assets/nature/Nature_Mat_01.mtl",
             "type": "tree"
         },
