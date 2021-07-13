@@ -260,6 +260,8 @@ class Program {
 
 class LambertProgram extends Program {
 
+    N_DIRECTIONAL_LIGHTS = 1;
+
     /**
      * Initialize the program before use:
      * - Downloads and compiles the shaders
@@ -297,10 +299,16 @@ class LambertProgram extends Program {
         this.mapDiffuseLocation = gl.getUniformLocation(p, "u_mapDiffuse");
         this.mapNormalLocation = gl.getUniformLocation(p, "u_mapNormal");
         this.mapSpecularLocation = gl.getUniformLocation(p, "u_mapSpecular");
+        this.mapEnvLocation = gl.getUniformLocation(p, "u_mapEnv");
 
-        // Lights
-        this.lightDirectionLocation = gl.getUniformLocation(p, "u_lightDirection");
-        this.lightColorLocation = gl.getUniformLocation(p, "u_lightColor");
+        // Directional lights
+        this.directionalLightLocations = new Array();
+        for (let i = 0; i < this.N_DIRECTIONAL_LIGHTS; i++) {
+            this.directionalLightLocations[i] = {
+                "color": gl.getUniformLocation(p, `u_directionalLights[${i}].color`),
+                "direction": gl.getUniformLocation(p, `u_directionalLights[${i}].direction`)
+            };
+        }
     }
 
     /**
@@ -309,14 +317,17 @@ class LambertProgram extends Program {
      */
     setLightUniforms(scene) {
         // TODO: Finish this function when we have defined lights
-        // ####################
-        // LIGHTS
-        // ####################
-        // Lights
-        let lightDirection = [.5, -.65, .5];
-        gl.uniform3fv(this.lightDirectionLocation, lightDirection);
-        let lightColor = [1, 1, .7];
-        gl.uniform3fv(this.lightColorLocation, lightColor);
+        // Environment map (for ambient lighting and spec. reflexions)
+        gl.activeTexture(gl.TEXTURE3);
+        gl.bindTexture(gl.TEXTURE_CUBE_MAP, scene.skybox.getCurrentMap());
+        gl.uniform1i(this.mapEnvLocation, 3);
+
+        // Directional lights
+        for (let i in scene.directionalLights) {
+            let l = scene.directionalLights[i];
+            let lLoc = this.directionalLightLocations[i];
+            l.setUniforms(lLoc);
+        }
     }
 
     /**

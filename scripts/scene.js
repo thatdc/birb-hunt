@@ -205,6 +205,12 @@ class Scene {
     skybox;
 
     /**
+     * Directional lights
+     * @type {DirectionalLight[]}
+     */
+    directionalLights;
+
+    /**
      * Draws the scene
      */
     draw() {

@@ -201,6 +201,13 @@ async function configureScene(scene) {
         sceneConfig.camera.far_plane
     );
 
+    // Set up directional lights
+    scene.directionalLights = new Array();
+    for (let lConfig of sceneConfig.directionalLights) {
+        let l = new DirectionalLight(lConfig.name, lConfig.color, lConfig.direction);
+        scene.directionalLights.push(l);
+    }
+
     // Create the skybox
     scene.skybox = await new Skybox().init(sceneConfig.skybox);
 }

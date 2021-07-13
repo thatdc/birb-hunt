@@ -224,6 +224,14 @@ class Skybox {
                 console.error(`Could not download ${url}`);
             });
     }
+    
+    /**
+     * Get the map currently in uses
+     * @returns {WebGLTexture}
+     */
+    getCurrentMap() {
+        return this.cubeMaps.get(this.name);
+    }
 
     /**
      * Draws the skybox
