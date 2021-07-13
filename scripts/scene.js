@@ -181,6 +181,13 @@ class Scene {
     models = new Map();
 
     /**
+     * Dictionary containing all the objects, must be manually synced with
+     * the scene graph
+     * @type {Map<String, SceneObject>}
+     */
+    objects = new Map();
+
+    /**
      * Dictionary containing the program objects.
      * @type {Map<String, Program>}
      */

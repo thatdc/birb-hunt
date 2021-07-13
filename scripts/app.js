@@ -189,14 +189,14 @@ async function configureScene(scene) {
     let sceneGraphConfig = await (await fetch("scene-graph.json")).json();
 
     // Build the scene graph from the root downwards
-    scene.rootNode = buildSceneGraph(scene.models, sceneGraphConfig);
+    scene.rootNode = buildSceneGraph(scene, sceneGraphConfig);
 
     // Put the camera in its initial position
     scene.camera = new Camera(
         sceneConfig.camera.position,
         sceneConfig.camera.rotation,
         sceneConfig.camera.fov_y,
-        gl.canvas.width / gl.canvas.height,
+        gl.canvas.clientWidth / gl.canvas.clientHeight,
         sceneConfig.camera.near_plane,
         sceneConfig.camera.far_plane
     );
@@ -213,18 +213,20 @@ async function configureScene(scene) {
 }
 
 /**
- * Builds the scene graph given the models and the JSON configuration.
+ * Builds the scene graph given the scene and the JSON configuration.
+ * The objects are also inserted into scene.objects dictionary.
  * 
  * This function can be called recursively to generate a subtree of the graph.
  * 
- * @param {Map<String, Mesh} models dictionary of all available models
+ * @param {Scene} scene the scene to build the scene graph for
  * @param {Object} nodeConfig JSON configuration of the scene graph
  * @returns {Node} Root node of the scene graph
  */
-function buildSceneGraph(models, nodeConfig) {
+function buildSceneGraph(scene, nodeConfig) {
     if (!nodeConfig) {
         return undefined;
     }
+    let models = scene.models;
 
     // Create the current node/object
     let current;
@@ -237,6 +239,7 @@ function buildSceneGraph(models, nodeConfig) {
             nodeConfig.rotation,
             nodeConfig.scale
         );
+        scene.objects.set(current.name, current);
     } else {
         current = new SceneNode(
             nodeConfig.name,
@@ -249,7 +252,7 @@ function buildSceneGraph(models, nodeConfig) {
     // Create the children
     for (let childCfg of (nodeConfig.children ?? [])) {
         // Build the child tree recursively
-        let child = buildSceneGraph(models, childCfg);
+        let child = buildSceneGraph(scene, childCfg);
         // Set the parent (will also add this node to the parent's children)
         child.setParent(current);
     }
@@ -271,7 +274,7 @@ function frame(time) {
 
     // Update the camera
     keyboardMovement(scene.camera, timeDelta);
-    scene.camera.aspect_ratio = gl.canvas.width / gl.canvas.height;
+    scene.camera.aspect_ratio = gl.canvas.clientWidth / gl.canvas.clientHeight;
 
     // Clear and resize the viewport
     gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
