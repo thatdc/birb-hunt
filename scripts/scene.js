@@ -234,7 +234,6 @@ class Scene {
             // Set the correct program
             /** @type {Program} */
             let program = root.model.program;
-            gl.useProgram(program.glProgram);
             // Set the uniforms and perform one draw call per material
             program.drawObject(this, viewProjectionMatrix, root);
         }

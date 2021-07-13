@@ -218,10 +218,19 @@ class Program {
      */
     drawObject(scene, viewProjectionMatrix, object) {
         let model = object.model;
+
+        // Check if this program is not already active
+        if (gl.getParameter(gl.CURRENT_PROGRAM) != this.glProgram) {
+            // Choose to use this program
+            gl.useProgram(this.glProgram);
+
+            // Set object-independent uniforms:
+            // Lights
+            this.setLightUniforms(scene);
+        }
+        
         // Transformation matrices
         this.setMatrixUniforms(viewProjectionMatrix, object);
-        // Lights
-        this.setLightUniforms(scene);
         // Bind VAO
         gl.bindVertexArray(model.vao);
 
@@ -316,6 +325,7 @@ class LambertProgram extends Program {
      * @param {Scene} scene 
      */
     setLightUniforms(scene) {
+        gl.program
         // TODO: Finish this function when we have defined lights
         // Environment map (for ambient lighting and spec. reflexions)
         gl.activeTexture(gl.TEXTURE3);
