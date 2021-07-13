@@ -19,6 +19,9 @@ uniform vec3 u_ambient;
 uniform vec3 u_diffuse;
 uniform vec3 u_specular;
 
+// Color to highlight selected objects (alpha component indicates blending factor)
+uniform vec4 u_highlightColor;
+
 // Specular info
 // uniform float u_refractionIndex;
 uniform float u_specularExponent;
@@ -30,7 +33,7 @@ uniform sampler2D u_mapSpecular;
 uniform samplerCube u_mapEnv;
 
 // Ambient light
-// In this shadera ambient lighting is based on the env-map
+// In this shader ambient lighting is based on the env-map
 
 // Directional lights
 struct directionalLight {
@@ -55,6 +58,9 @@ void main() {
     directionalLight l = u_directionalLights[i];
     color += diffuseColor * l.color * dot(-l.direction, n_normal);
   }
+
+  // Highlight color (highlights selected objects)
+  color += u_highlightColor.a * u_highlightColor.rgb;
 
   // Clamp the color and add the alpha component
   out_color = vec4(clamp(color, 0., 1.), 1.);

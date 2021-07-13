@@ -139,6 +139,12 @@ class SceneObject extends SceneNode {
     model;
 
     /**
+     * Indicates if the object is currently selected
+     * @type {boolean}
+     */
+    isSelected;
+
+    /**
      * Creates an object with no parent and no children.
      * 
      * It is assumed that the given model has been already initialized with
@@ -162,14 +168,23 @@ class SceneObject extends SceneNode {
     ) {
         super(name, position, rotation, scale);
         this.model = model;
+        this.isSelected = false;
     }
 
     /**
-     * Create a new scene object from a JSON description
-     * @return {SceneObject}
+     * Selects this object
      */
-    static fromSceneConfig() {
-        ;
+    select() {
+        console.debug(`${this.name}: Selected`);
+        this.isSelected = true;
+    }
+    
+    /**
+     * Deselects this object
+     */
+    deselect() {
+        console.debug(`${this.name}: Deselected`);
+        this.isSelected = false;
     }
 }
 

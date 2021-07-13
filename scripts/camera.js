@@ -98,11 +98,19 @@ class Camera {
     }
 
     /**
+     * Returns the normalized direction vector of the camera
+     * @returns {number[]}
+     */
+    getDirection() {
+        let T = utils.MakeRotateXYZMatrix(...this.rotation);
+        return utils.multiplyMatrixVector(T, [0, 0, -1, 1]);
+    }
+
+    /**
      * Move the camera according to its current direction
      * @param {number[]} delta XYZ movement amount, in camera space
      */
     move(delta) {
-        // TODO: FixMe
         // Transform the movement direction
         let T = utils.MakeRotateXYZMatrix(...this.rotation);
         delta = utils.multiplyMatrixVector(T, [...delta, 1]);

@@ -184,6 +184,9 @@ async function configureScene(scene) {
         model.indexBufferPerMaterial = program.createElementArrayBuffers(model);
         // Create the textures
         program.createTextures(model);
+
+        // TODO: Finish collision mesh creation
+        model.collisionMesh = BoundingBox.forMesh(model);
     }
 
     let sceneGraphConfig = await (await fetch("scene-graph.json")).json();
@@ -276,6 +279,9 @@ function frame(time) {
     keyboardMovement(scene.camera, timeDelta);
     scene.camera.aspect_ratio = gl.canvas.clientWidth / gl.canvas.clientHeight;
 
+    // Perform raycasting
+    rayCasting(scene);
+
     // Clear and resize the viewport
     gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
     gl.clearColor(1, 1, 1, 1.0);
@@ -289,6 +295,43 @@ function frame(time) {
 
     // Reschedule at next frame
     window.requestAnimationFrame(frame);
+}
+
+/**
+ * Perform raycasting
+ * @param {Scene} scene 
+ */
+function rayCasting(scene) {
+    if (document.pointerLockElement !== gl.canvas) {
+        return;
+    }
+    let camera = scene.camera;
+    let ray_origin = camera.position;
+    let ray_dir = camera.getDirection();
+
+    let selectedObject = null;
+    let minDistance = 10e18;
+    for (let [_, object] of scene.objects) {
+        // Reset selection state
+        object.deselect();
+
+        // Intersect the camera ray with the collision mesh
+        /** @type {CollisionMesh} */
+        let collisionMesh = object.model.collisionMesh;
+        let d = collisionMesh.rayIntersect(ray_origin, ray_dir, object.worldMatrix);
+
+        // Choose object with the minimum distance
+        if (d !== false && d < minDistance) { // nearest intersection so far
+            selectedObject = object;
+            minDistance = d;
+        }
+
+    }
+
+    // Update selection state of selecte object
+    if (selectedObject) {
+        selectedObject.select();
+    }
 }
 
 window.onload = main

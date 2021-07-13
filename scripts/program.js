@@ -205,9 +205,17 @@ class Program {
 
     /**
      * Set the material-related uniforms for the given object
-     * @param {Scene} scene 
+     * @param {Material} mtl 
      */
-    setMaterialUniforms(object) {
+    setMaterialUniforms(mtl) {
+        ;
+    }
+
+    /**
+     * Set additional uniforms for the given object
+     * @param {SceneObject} object 
+     */
+    setAdditionalUniforms(object) {
         ;
     }
 
@@ -228,9 +236,13 @@ class Program {
             // Lights
             this.setLightUniforms(scene);
         }
-        
+
         // Transformation matrices
         this.setMatrixUniforms(viewProjectionMatrix, object);
+
+        // Set additional uniforms
+        this.setAdditionalUniforms(object);
+
         // Bind VAO
         gl.bindVertexArray(model.vao);
 
@@ -318,6 +330,9 @@ class LambertProgram extends Program {
                 "direction": gl.getUniformLocation(p, `u_directionalLights[${i}].direction`)
             };
         }
+
+        // Highlight color (used to highlight selected objects)
+        this.highlightColorLocation = gl.getUniformLocation(p, "u_highlightColor");
     }
 
     /**
@@ -381,5 +396,22 @@ class LambertProgram extends Program {
 
         // Specular exponent
         gl.uniform1f(this.specularExponentLocation, mtl.specularExponent);
+    }
+
+    /**
+     * Sets additional uniforms for this object
+     * 
+     * For this shader, they are:
+     * - u_highlightColor
+     * @param {SceneObject} object 
+     */
+    setAdditionalUniforms(object) {
+        // TODO: Use a different color based on the object type
+        let alpha = object.isSelected ? 0.25 : 0;
+        let highlightColor = [1, 0, 0, alpha];
+        if (object.isSelected) {
+            console.log("Rendering selected " + object.name);
+        }
+        gl.uniform4fv(this.highlightColorLocation, highlightColor);
     }
 }
