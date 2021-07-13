@@ -1,6 +1,9 @@
+/** @type {WebGL2RenderingContext} */
 var gl;
 var scene;
 var keyPressed = {};
+var startTime;
+var lastFrame;
 
 async function main() {
     let canvas = document.getElementById("c");
@@ -11,8 +14,16 @@ async function main() {
     await configureScene(scene);
 
     // Configure event listeners
-    document.addEventListener("keydown", (e) => { keyPressed[e.key] = true });
-    document.addEventListener("keyup", (e) => { delete keyPressed[e.key] });
+    document.addEventListener("keydown", (e) => {
+        // If a single letter is pressed, save it as lowercase
+        // otherwise it causes problems when shift is also pressed to run 
+        let key = e.key.length == 1 ? e.key.toLowerCase() : e.key;
+        keyPressed[key] = true;
+    });
+    document.addEventListener("keyup", (e) => {
+        let key = e.key.length == 1 ? e.key.toLowerCase() : e.key;
+        delete keyPressed[key]
+    });
 
     // Configure Pointer Lock
     initPointerLock(canvas);
@@ -28,8 +39,8 @@ async function main() {
  * @returns {WebGLRenderingContext} the WebGL context
  */
 function initializeWebGL(canvas) {
-    /** @type {WebGLRenderingContext} */
-    gl = canvas.getContext("webgl2");
+    /** @type {WebGL2RenderingContext} */
+    let gl = canvas.getContext("webgl2");
     if (!gl) {
         console.error("GL context not opened");
         return;
@@ -65,12 +76,14 @@ function initPointerLock(canvas) {
 
 /**
  * Moves the camera based on the currently pressed keys
- * @param {Camera} camera 
+ * @param {Camera} camera
+ * @param {DOMHighResTimeStamp} timeDelta
  */
-function keyboardMovement(camera) {
-    // TODO: Use elapsed time
-    let posStep = keyPressed["Shift"] ? 1 : 0.2;
-    let rotStep = 1;
+function keyboardMovement(camera, timeDelta) {
+    timeDelta *= .001; // convert to seconds
+    // Run if shift is pressed
+    let posStep = (keyPressed["Shift"] ? 20 : 5) * timeDelta;
+    let rotStep = 1 * timeDelta;
 
     if (keyPressed["w"]) {
         camera.move([0, 0, -posStep]);
@@ -239,11 +252,18 @@ function buildSceneGraph(models, nodeConfig) {
 
 /**
  * Function called at every frame
- * @param {Scene} scene 
+ * @param {DOMHighResTimeStamp} time 
  */
-function frame(scene) {
+function frame(time) {
+    // Time interval
+    if (startTime === undefined) {
+        startTime = time;
+        lastFrame = time;
+    }
+    let timeDelta = time - lastFrame;
+
     // Update the camera
-    keyboardMovement(scene.camera);
+    keyboardMovement(scene.camera, timeDelta);
     scene.camera.aspect_ratio = gl.canvas.width / gl.canvas.height;
 
     // Clear and resize the viewport
@@ -254,8 +274,11 @@ function frame(scene) {
     // Draw
     scene.draw();
 
+    // Save timestamp for next call
+    lastFrame = time;
+
     // Reschedule at next frame
-    window.requestAnimationFrame(() => frame(scene));
+    window.requestAnimationFrame(frame);
 }
 
 window.onload = main
