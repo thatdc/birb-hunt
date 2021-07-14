@@ -9,6 +9,9 @@ in vec2 fs_uv;
 in vec3 fs_normal;
 out vec4 out_color;
 
+// Transformation matrices
+uniform mat3 u_normalMatrix;
+
 // Flags
 uniform bool b_useMapDiffuse;
 uniform bool b_useMapNormal;
@@ -43,15 +46,22 @@ struct directionalLight {
 uniform directionalLight u_directionalLights[N_DIRECTIONAL_LIGHTS];
 
 void main() {
-  // Get the normal (from map or varying)
-  vec3 n_normal = normalize(b_useMapNormal ? vec3(texture(u_mapNormal, fs_uv)) : fs_normal);
+  // Compute the normalized normal (from map or varying)
+  vec3 n_normal;
+  if (b_useMapNormal) {
+    // From map: transform from [0,1] -> [-1,1]
+    n_normal = texture(u_mapNormal, fs_uv).rgb * 2. - 1.;
+  } else {
+    n_normal = fs_normal;
+  }
+  n_normal = normalize(u_normalMatrix * n_normal);
   // Get the diffuse color (from map or material)
-  vec3 diffuseColor = b_useMapDiffuse ? vec3(texture(u_mapDiffuse, fs_uv)) : u_diffuse;
+  vec3 diffuseColor = b_useMapDiffuse ? texture(u_mapDiffuse, fs_uv).rgb : u_diffuse;
 
   // Calculate the final color
   vec3 color = vec3(0, 0, 0);
   // Ambient light
-  color += u_ambient * vec3(textureLod(u_mapEnv, n_normal, 8.)) * AMBIENT_LIGHT_STRENGTH;
+  color += u_ambient * textureLod(u_mapEnv, n_normal, 7.).rgb * AMBIENT_LIGHT_STRENGTH;
 
   // Directional lights
   for(int i = 0; i < N_DIRECTIONAL_LIGHTS; i++) {

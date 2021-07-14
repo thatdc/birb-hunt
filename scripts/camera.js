@@ -130,7 +130,7 @@ class Camera {
             this.rotation[i] += delta[i];
             if (this.rotation[i] > 360) {
                 this.rotation[i] -= 360
-            } else if (this.rotation[i] < 360) {
+            } else if (this.rotation[i] < -360) {
                 this.rotation[i] += 360;
             }
         }

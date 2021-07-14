@@ -130,8 +130,8 @@ function mouseMovement(e) {
     let deltaY = -step * e.movementY;
 
     camera.rotate([
-        deltaY,
-        Math.abs(camera.rotation + deltaX) > 85 ? 0 : deltaX,
+        Math.abs(camera.rotation[0] + deltaY) > 85 ? 0 : deltaY,
+        deltaX,
         0
     ]);
 }
@@ -199,6 +199,8 @@ async function configureScene(scene) {
                 }
             }
         }
+
+        
 
         // Select the rendering program
         let program = scene.programs.get(modelConfig.program ?? sceneConfig.defaultProgram);

@@ -356,7 +356,7 @@ class TexturedProgram extends Program {
     createTextures(mesh) {
         for (let mtl of Object.values(mesh.materialsByIndex)) {
             // Iterare over the relevant maps
-            for (let mapName of ["mapDiffuse", "mapNormal", "mapSpecular"]) {
+            for (let mapName of ["mapDiffuse", "mapBump", "mapSpecular"]) {
                 let map = mtl[mapName];
                 if (map && map.texture) {
                     // Create the texture
@@ -410,8 +410,8 @@ class TexturedProgram extends Program {
         // World-view-projection matrix
         super.setMatrixUniforms(viewProjectionMatrix, object);
         // Normal matrix
-        let normalMatrix = utils.invertMatrix(utils.transposeMatrix(object.worldMatrix));
-        gl.uniformMatrix4fv(this.normalMatrixLocation, true, normalMatrix);
+        let normalMatrix = utils.sub3x3from4x4(utils.invertMatrix(utils.transposeMatrix(object.worldMatrix)));
+        gl.uniformMatrix3fv(this.normalMatrixLocation, true, normalMatrix);
     }
 }
 
@@ -509,10 +509,10 @@ class LambertProgram extends TexturedProgram {
             gl.uniform3fv(this.diffuseLocation, mtl.diffuse);
         }
         // Normal map
-        if (mtl.mapNormal) {
+        if (mtl.mapBump) {
             gl.uniform1i(this.useMapNormalLocation, 1);
             gl.activeTexture(gl.TEXTURE1);
-            gl.bindTexture(gl.TEXTURE_2D, mtl.mapNormal.glTexture);
+            gl.bindTexture(gl.TEXTURE_2D, mtl.mapBump.glTexture);
             gl.uniform1i(this.mapNormalLocation, 1);
         } else {
             gl.uniform1i(this.useMapNormalLocation, 0);
