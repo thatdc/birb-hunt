@@ -71,9 +71,9 @@ class CollisionMesh extends Mesh {
      * @param {Mesh} mesh 
      * @return {CollisionMesh}
      */
-     static forMesh(mesh) {
+    static forMesh(mesh) {
         return BoundingBox.forMesh(mesh);
-     }
+    }
 
     /**
      * Checks the intersection of a ray with the collision mesh
@@ -231,13 +231,15 @@ class BoundingBox extends CollisionMesh {
         // Iterate over the UVW slabs
         for (let i of [0, 1, 2]) {
             // Get normalized direction of the axis
-            let a = utils.normalize(m.slice(4 * i, 4 * i + 3));
+            let a = m.slice(4 * i, 4 * i + 3);
+            let a_scale = Math.sqrt(a[0] * a[0] + a[1] * a[1] + a[2] * a[2]);
+            a = a.map(x => x / a_scale);
             // Project position vector on axis
             let e = utils.dot(a, p);
             // Project ray on axis
             let f = utils.dot(a, ray_dir);
-            // Half-length on this axis
-            let h = this.halfLengths[i];
+            // Half-length on this axis, adjusted by the scaling factor
+            let h = this.halfLengths[i] * a_scale;
 
             if (Math.abs(f) > 10e-18) { // ray not parallel to slab => at least one intersection
                 // Compute the distance of the two intersections with the slab
