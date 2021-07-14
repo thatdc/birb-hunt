@@ -1,4 +1,80 @@
-class CollisionMesh {
+// Create a default material to render these meshes
+var __defaultMaterial__ = new Material();
+__defaultMaterial__.ambient = [1, 1, 1];
+__defaultMaterial__.diffuse = [.8, .8, .8];
+__defaultMaterial__.diffuse = [.5, .5, .5];
+
+class CollisionMesh extends Mesh {
+    /**
+     * Local transformation matrix (encodes center and rotation) w.r.t to the 3D mesh
+     * @type {number[]}
+     */
+    localMatrix;
+
+    /**
+     * Creates a new Bounding Box
+     * 
+     * We refer to the local coordinates as UVW
+     * 
+     * @param {number[]} center center in UVW local coordinates
+     * @param {number[]} rotation rotation in UVW local coordinates
+     */
+    constructor(center = [0, 0, 0], rotation = [0, 0, 0]) {
+        // Initialize empty object
+        super("");
+        // Translate
+        let m = utils.MakeTranslateMatrix(...center);
+        // Rotate
+        m = utils.multiplyMatrices(m,
+            utils.MakeRotateXYZMatrix(...rotation));
+        this.localMatrix = m;
+    }
+
+    /**
+     * Creates the geometry (vertex positions and normals) of this mesh
+     */
+    _createGeometry() {
+        this.vertices = [];
+        this.vertexNormals = [];
+        this.indices = [];
+    }
+
+    /**
+     * After the geometry has been initialized,
+     * it automatically creates a material and its properties on the mesh:
+     * - mesh.materialIndices
+     * - mesh.materialNames
+     * - mesh.materialsByIndex
+     * - mesh.vertexMaterialIndices
+     * - mesh.indicesPerMaterial
+     * - mesh.textures
+     */
+    _createMaterial() {
+        // Create material properties on mesh
+        let name = "material";
+        this.materialIndices = { n: 0 };
+        this.materialNames = [name];
+        this.materialsByIndex = { 0: __defaultMaterial__ };
+        this.indicesPerMaterial = [this.indices];
+
+        this.vertexMaterialIndices = [];
+        this.textures = [];
+        let n_vertices = this.vertices.length / 3;
+        for (let i = 0; i < n_vertices; i++) {
+            this.vertexMaterialIndices.push(0);
+            this.textures.push(0, 0);
+        }
+    }
+
+    /**
+     * Creates a bounding box around the given mesh
+     * @param {Mesh} mesh 
+     * @return {CollisionMesh}
+     */
+     static forMesh(mesh) {
+        return BoundingBox.forMesh(mesh);
+     }
+
     /**
      * Checks the intersection of a ray with the collision mesh
      * @param {number[]} ray_origin XYZ origin of the ray, in world coord
@@ -12,12 +88,6 @@ class CollisionMesh {
 }
 
 class BoundingBox extends CollisionMesh {
-    /**
-     * Local transformation matrix (encodes center and rotation) w.r.t to the 3D mesh
-     * @type {number[]}
-     */
-    localMatrix;
-
     /**
      * Half-lengths in the XYZ directions
      * @type {number[]}
@@ -34,14 +104,75 @@ class BoundingBox extends CollisionMesh {
      * @param {number[]} halfLengths half-lengths in the UVW directions
      */
     constructor(center = [0, 0, 0], rotation = [0, 0, 0], halfLengths = [1, 1, 1]) {
-        super();
-        // Translate
-        let m = utils.MakeTranslateMatrix(...center);
-        // Rotate
-        m = utils.multiplyMatrices(m,
-            utils.MakeRotateXYZMatrix(...rotation));
-        this.localMatrix = m;
+        super(center, rotation);
         this.halfLengths = halfLengths;
+
+        // Create geometry and material
+        this._createGeometry();
+        this._createMaterial();
+    }
+
+    /**
+     * Creates the geometry for this collision mesh.
+     * 
+     * It is an origin-centered, axis-aligned box with the given half-lengths.
+     * @returns 
+     */
+    _createGeometry() {
+        let h = this.halfLengths;
+        let vertices = [];
+        let indices = [];
+        let normals = [];
+
+        // Bottom points
+        let p_bnw = [-h[0], -h[1], -h[2]];
+        let p_bne = [+h[0], -h[1], -h[2]];
+        let p_bse = [+h[0], -h[1], +h[2]];
+        let p_bsw = [-h[0], -h[1], +h[2]];
+        // Top points
+        let p_tnw = [-h[0], +h[1], -h[2]];
+        let p_tne = [+h[0], +h[1], -h[2]];
+        let p_tse = [+h[0], +h[1], +h[2]];
+        let p_tsw = [-h[0], +h[1], +h[2]];
+        // Normals
+        let n_b = [0, -1, 0];
+        let n_t = [0, +1, 0];
+        let n_n = [0, 0, -1];
+        let n_s = [0, 0, +1];
+        let n_w = [-1, 0, 0];
+        let n_e = [+1, 0, 0];
+
+        // Vertices
+        vertices.push(
+            ...p_bnw, ...p_bne, ...p_bse, ...p_bsw, // Bottom
+            ...p_tnw, ...p_tsw, ...p_tse, ...p_tne, // Top
+            ...p_bnw, ...p_tnw, ...p_tne, ...p_bne, // North
+            ...p_bsw, ...p_bse, ...p_tse, ...p_tsw, // South
+            ...p_bnw, ...p_bsw, ...p_tsw, ...p_tnw, // West
+            ...p_bse, ...p_bne, ...p_tne, ...p_tse, // East
+        );
+        // Normals
+        normals.push(
+            ...n_b, ...n_b, ...n_b, ...n_b, // Bottom
+            ...n_t, ...n_t, ...n_t, ...n_t, // Top
+            ...n_n, ...n_n, ...n_n, ...n_n, // North
+            ...n_s, ...n_s, ...n_s, ...n_s, // South
+            ...n_w, ...n_w, ...n_w, ...n_w, // West
+            ...n_e, ...n_e, ...n_e, ...n_e, // East
+        );
+        // Triangles
+        for (let i = 0; i < 6; i++) {
+            let off = 4 * i;
+            indices.push(
+                0 + off, 1 + off, 3 + off,
+                1 + off, 2 + off, 3 + off,
+            );
+        }
+
+        // Assign to local attributes
+        this.vertices = vertices;
+        this.vertexNormals = this.vertexNormals;
+        this.indices = indices;
     }
 
     /**
@@ -65,7 +196,7 @@ class BoundingBox extends CollisionMesh {
 
             // Compute center and length along this axis
             center[i] = (min + max) / 2;
-            halfLengths[i] = (max - min) / 2
+            halfLengths[i] = (max - min) / 2;
         }
 
         return new BoundingBox(center, [0, 0, 0], halfLengths);

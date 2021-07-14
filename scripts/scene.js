@@ -234,11 +234,12 @@ class Scene {
 
     /**
      * Draws the scene
+     * @param {boolean} collisionMeshes draw a wireframe version of the collision meshes
      */
-    draw() {
+    draw(collisionMeshes=false) {
         let viewProjectionMatrix = this.camera.getViewProjectionMatrix();
         // Draw the objects
-        this._drawTree(viewProjectionMatrix, this.rootNode);
+        this._drawTree(viewProjectionMatrix, this.rootNode, collisionMeshes);
 
         // Draw the skybox
         let cameraMatrix = utils.MakeRotateXYZMatrix(
@@ -249,19 +250,24 @@ class Scene {
     /**
      * Draws the given subtree
      * @param {number[]} viewProjectionMatrix
-     * @param {SceneNode} root root of the subtree 
+     * @param {SceneNode} root root of the subtree
+     * @param {boolean} collisionMeshes draw a wireframe version of the collision meshes
      */
-    _drawTree(viewProjectionMatrix, root) {
+    _drawTree(viewProjectionMatrix, root, collisionMeshes=false) {
         if (root instanceof SceneObject) {
-            // Set the correct program
             /** @type {Program} */
             let program = root.model.program;
             // Set the uniforms and perform one draw call per material
             program.drawObject(this, viewProjectionMatrix, root);
+
+            if (collisionMeshes && root.model.collisionMesh) {
+                let cm = root.model.collisionMesh;
+                cm.program.drawCollisionMesh(this, viewProjectionMatrix, root);
+            }
         }
 
         for (let child of root.children) {
-            this._drawTree(viewProjectionMatrix, child);
+            this._drawTree(viewProjectionMatrix, child, collisionMeshes);
         }
     }
 }

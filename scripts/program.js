@@ -25,7 +25,7 @@ class Program {
                 let fs = utils.createShader(gl, gl.FRAGMENT_SHADER, fs_src);
 
                 this.glProgram = utils.createProgram(gl, vs, fs);
-                this.initLocations()
+                this.initLocations();
             })
             .catch((e) => { // Error
                 console.error(e);
@@ -156,6 +156,7 @@ class Program {
 
     /**
      * Draws the given object
+     * @param {Scene} scene
      * @param {number[]} viewProjectionMatrix
      * @param {SceneObject} object
      * @param {GLenum} mode 
@@ -206,6 +207,85 @@ class Program {
         // World-view-projection matrix
         let matrix = utils.multiplyMatrices(viewProjectionMatrix, object.worldMatrix);
         gl.uniformMatrix4fv(this.matrixLocation, true, matrix);
+    }
+}
+
+class SolidColorProgram extends Program {
+    /**
+     * Initialize the program before use:
+     * - Downloads and compiles the shaders
+     * - Saves the locations of attributes and uniforms
+     * @returns {LambertProgram} a reference to the object
+     */
+    init() {
+        super.init("shaders/solid_vs.glsl", "shaders/solid_fs.glsl");
+        return this;
+    }
+
+    /**
+     * Initialize all locations of attributes and uniforms.
+     */
+    initLocations() {
+        let p = this.glProgram;
+
+        // Call on parent
+        super.initLocations();
+
+        // Material colors
+        this.diffuseLocation = gl.getUniformLocation(p, "u_diffuse");
+    }
+
+    /**
+    * Set the material-related uniforms for the given object
+    * @param {Material} mtl 
+    */
+    setMaterialUniforms(mtl) {
+        // Diffuse color
+        gl.uniform3fv(this.diffuseLocation, mtl.diffuse);
+    }
+
+    /**
+     * Draws the collision mesh of the given object, if any
+     * @param {Scene} scene
+     * @param {number[]} viewProjectionMatrix
+     * @param {SceneObject} object
+     * @param {GLenum} mode 
+     */
+    drawCollisionMesh(scene, viewProjectionMatrix, object, mode = gl.LINE_STRIP) {
+        // If no collision mesh is defined, draw nothing
+        /** @type {CollisionMesh} */
+        let cm = object.model.collisionMesh;
+        if (!cm) {
+            return;
+        }
+
+        // Check if this program is not already active
+        if (gl.getParameter(gl.CURRENT_PROGRAM) != this.glProgram) {
+            // Choose to use this program
+            gl.useProgram(this.glProgram);
+        }
+
+        // Transformation matrices
+        let matrix = cm.localMatrix;
+        matrix = utils.multiplyMatrices(object.worldMatrix, matrix);
+        matrix = utils.multiplyMatrices(viewProjectionMatrix, matrix);
+        gl.uniformMatrix4fv(this.matrixLocation, true, matrix);
+
+        // Bind VAO
+        gl.bindVertexArray(cm.vao);
+
+        // Draw each material separately
+        for (let [i, mtl] of Object.entries(cm.materialsByIndex)) {
+            // Material uniforms
+            this.setMaterialUniforms(mtl);
+            // Bind Element Array Buffer
+            gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, cm.indexBufferPerMaterial[i]);
+
+            // Draw call
+            gl.drawElements(mode, cm.indicesPerMaterial[i].length, gl.UNSIGNED_SHORT, 0);
+        }
+        // Prevent leakage
+        gl.bindVertexArray(null);
     }
 }
 
@@ -318,7 +398,7 @@ class TexturedProgram extends Program {
         gl.generateMipmap(gl.TEXTURE_2D);
 
         return tex;
-    }    
+    }
 
     /**
      * Sets up the {@code u_matrix} and {@code u_normalMatrix} uniforms
@@ -326,7 +406,7 @@ class TexturedProgram extends Program {
      * @param {number[]} viewProjectionMatrix 
      * @param {SceneObject} object 
      */
-     setMatrixUniforms(viewProjectionMatrix, object) {
+    setMatrixUniforms(viewProjectionMatrix, object) {
         // World-view-projection matrix
         super.setMatrixUniforms(viewProjectionMatrix, object);
         // Normal matrix
@@ -396,7 +476,6 @@ class LambertProgram extends TexturedProgram {
      * @param {Scene} scene 
      */
     setLightUniforms(scene) {
-        gl.program
         // TODO: Finish this function when we have defined lights
         // Environment map (for ambient lighting and spec. reflexions)
         gl.activeTexture(gl.TEXTURE3);

@@ -138,6 +138,7 @@ function mouseMovement(e) {
  */
 async function configureScene(scene) {
     // Initialize the programs
+    scene.programs.set("solid", new SolidColorProgram().init());
     scene.programs.set("lambert", new LambertProgram().init());
 
     // Download scene configuration (JSON)
@@ -186,7 +187,26 @@ async function configureScene(scene) {
         program.createTextures(model);
 
         // TODO: Finish collision mesh creation
-        model.collisionMesh = BoundingBox.forMesh(model);
+        // Select the type of collision mesh
+        let cmClass;
+        switch (modelConfig.collisionMesh) {
+            case false: {
+                cmClass = null;
+            }
+            default: {
+                cmClass = CollisionMesh;
+            }
+        }
+        // Create the collision mesh
+        if (cmClass) {
+            /** @type {CollisionMesh} */
+            let cm = cmClass.forMesh(model);
+            cm.program = scene.programs.get("solid");
+            cm.vao = cm.program.createVAO(cm);
+            cm.indexBufferPerMaterial = cm.program.createElementArrayBuffers(cm);
+            model.collisionMesh = cm;
+
+        }
     }
 
     let sceneGraphConfig = await (await fetch("scene-graph.json")).json();
@@ -288,7 +308,7 @@ function frame(time) {
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
     // Draw
-    scene.draw();
+    scene.draw(true);
 
     // Save timestamp for next call
     lastFrame = time;
@@ -312,6 +332,9 @@ function rayCasting(scene) {
     let selectedObject = null;
     let minDistance = 10e18;
     for (let [_, object] of scene.objects) {
+        if (object.model.type !== "tree") {
+            continue;
+        } 
         // Reset selection state
         object.deselect();
 
@@ -325,7 +348,6 @@ function rayCasting(scene) {
             selectedObject = object;
             minDistance = d;
         }
-
     }
 
     // Update selection state of selecte object
