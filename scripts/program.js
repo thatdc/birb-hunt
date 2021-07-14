@@ -6,12 +6,9 @@ class Program {
 
     /** Vertex attributes */
     positionAttribLocation;
-    normalAttribLocation;
-    uvAttribLocation;
 
     /** Uniforms */
     matrixLocation;
-    normalMatrixLocation;
 
     /**
      * Initialize the program before use:
@@ -54,12 +51,9 @@ class Program {
 
         // Vertex attributes
         this.positionAttribLocation = gl.getAttribLocation(p, "a_position");
-        this.normalAttribLocation = gl.getAttribLocation(p, "a_normal");
-        this.uvAttribLocation = gl.getAttribLocation(p, "a_uv");
 
         // Transformation matrices
         this.matrixLocation = gl.getUniformLocation(p, "u_matrix");
-        this.normalMatrixLocation = gl.getUniformLocation(p, "u_normalMatrix");
     }
 
     /**
@@ -68,8 +62,6 @@ class Program {
      * Will create the following buffers for the attributes:
      * <ul>
      *  <li> vertexBuffer </li>
-     *  <li> normalBuffer </li>
-     *  <li> textureBuffer </li>
      * </ul>
      * NOTE: This does not insert the Element Array Buffer into the VAO.
      * 
@@ -83,8 +75,6 @@ class Program {
 
         // Create vertex attribute buffers
         mesh.vertexBuffer = this._createVertexAttribBuffer(new Float32Array(mesh.vertices), this.positionAttribLocation, 3);
-        mesh.normalBuffer = this._createVertexAttribBuffer(new Float32Array(mesh.vertexNormals), this.normalAttribLocation, 3);
-        mesh.textureBuffer = this._createVertexAttribBuffer(new Float32Array(mesh.textures), this.uvAttribLocation, 2);
 
         // This avoids further buffers to be included in the VAO
         gl.bindVertexArray(null);
@@ -141,6 +131,141 @@ class Program {
     }
 
     /**
+     * Sets up the light uniforms, given the scene's lights
+     * @param {Scene} scene 
+     */
+    setLightUniforms(scene) {
+        ;
+    }
+
+    /**
+     * Set the material-related uniforms for the given object
+     * @param {Material} mtl 
+     */
+    setMaterialUniforms(mtl) {
+        ;
+    }
+
+    /**
+     * Set additional uniforms for the given object
+     * @param {SceneObject} object 
+     */
+    setAdditionalUniforms(object) {
+        ;
+    }
+
+    /**
+     * Draws the given object
+     * @param {number[]} viewProjectionMatrix
+     * @param {SceneObject} object
+     * @param {GLenum} mode 
+     */
+    drawObject(scene, viewProjectionMatrix, object, mode = gl.TRIANGLES) {
+        let model = object.model;
+
+        // Check if this program is not already active
+        if (gl.getParameter(gl.CURRENT_PROGRAM) != this.glProgram) {
+            // Choose to use this program
+            gl.useProgram(this.glProgram);
+
+            // Set object-independent uniforms:
+            // Lights
+            this.setLightUniforms(scene);
+        }
+
+        // Transformation matrices
+        this.setMatrixUniforms(viewProjectionMatrix, object);
+
+        // Set additional uniforms
+        this.setAdditionalUniforms(object);
+
+        // Bind VAO
+        gl.bindVertexArray(model.vao);
+
+        // Draw each material separately
+        for (let [i, mtl] of Object.entries(model.materialsByIndex)) {
+            // Material uniforms
+            this.setMaterialUniforms(mtl);
+            // Bind Element Array Buffer
+            gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, model.indexBufferPerMaterial[i]);
+
+            // Draw call
+            gl.drawElements(mode, model.indicesPerMaterial[i].length, gl.UNSIGNED_SHORT, 0);
+        }
+        // Prevent leakage
+        gl.bindVertexArray(null);
+    }
+
+    /**
+     * Sets up the {@code u_matrix} uniform
+     * for the given object.
+     * @param {number[]} viewProjectionMatrix 
+     * @param {SceneObject} object 
+     */
+    setMatrixUniforms(viewProjectionMatrix, object) {
+        // World-view-projection matrix
+        let matrix = utils.multiplyMatrices(viewProjectionMatrix, object.worldMatrix);
+        gl.uniformMatrix4fv(this.matrixLocation, true, matrix);
+    }
+}
+
+class TexturedProgram extends Program {
+    /** Vertex attributes */
+    normalAttribLocation;
+    uvAttribLocation;
+
+    /** Uniforms */
+    normalMatrixLocation;
+
+    /**
+     * Initialize locations for: vertex attributes,
+     * transformation matrices
+     */
+    initLocations() {
+        // Initialize position and matrix
+        super.initLocations();
+        let p = this.glProgram;
+
+        // Vertex attributes
+        this.normalAttribLocation = gl.getAttribLocation(p, "a_normal");
+        this.uvAttribLocation = gl.getAttribLocation(p, "a_uv");
+
+        // Transformation matrices
+        this.normalMatrixLocation = gl.getUniformLocation(p, "u_normalMatrix");
+    }
+
+    /**
+     * Creates a Vertex Array Object for the given mesh.
+     * 
+     * Will create the following buffers for the attributes:
+     * <ul>
+     *  <li> vertexBuffer </li>
+     *  <li> normalBuffer </li>
+     *  <li> textureBuffer </li>
+     * </ul>
+     * NOTE: This does not insert the Element Array Buffer into the VAO.
+     * 
+     * @param {Mesh} mesh 
+     * @returns {WebGLVertexArrayObject}
+     */
+    createVAO(mesh) {
+        // Create VAO with vertex buffer
+        let vao = super.createVAO(mesh);
+        gl.bindVertexArray(vao);
+
+        // Create vertex attribute buffers
+        mesh.normalBuffer = this._createVertexAttribBuffer(new Float32Array(mesh.vertexNormals), this.normalAttribLocation, 3);
+        mesh.textureBuffer = this._createVertexAttribBuffer(new Float32Array(mesh.textures), this.uvAttribLocation, 2);
+
+        // This avoids further buffers to be included in the VAO
+        gl.bindVertexArray(null);
+
+        return vao;
+    }
+
+
+
+    /**
      * Create all the WebGL textures for the given mesh.
      * 
      * For each map of each material of the mesh that has {@code map.texture}
@@ -193,72 +318,7 @@ class Program {
         gl.generateMipmap(gl.TEXTURE_2D);
 
         return tex;
-    }
-
-    /**
-     * Sets up the light uniforms, given the scene's lights
-     * @param {Scene} scene 
-     */
-    setLightUniforms(scene) {
-        ;
-    }
-
-    /**
-     * Set the material-related uniforms for the given object
-     * @param {Material} mtl 
-     */
-    setMaterialUniforms(mtl) {
-        ;
-    }
-
-    /**
-     * Set additional uniforms for the given object
-     * @param {SceneObject} object 
-     */
-    setAdditionalUniforms(object) {
-        ;
-    }
-
-    /**
-     * Draws the given object
-     * @param {number[]} viewProjectionMatrix
-     * @param {SceneObject} object
-     */
-    drawObject(scene, viewProjectionMatrix, object) {
-        let model = object.model;
-
-        // Check if this program is not already active
-        if (gl.getParameter(gl.CURRENT_PROGRAM) != this.glProgram) {
-            // Choose to use this program
-            gl.useProgram(this.glProgram);
-
-            // Set object-independent uniforms:
-            // Lights
-            this.setLightUniforms(scene);
-        }
-
-        // Transformation matrices
-        this.setMatrixUniforms(viewProjectionMatrix, object);
-
-        // Set additional uniforms
-        this.setAdditionalUniforms(object);
-
-        // Bind VAO
-        gl.bindVertexArray(model.vao);
-
-        // Draw each material separately
-        for (let [i, mtl] of Object.entries(model.materialsByIndex)) {
-            // Material uniforms
-            this.setMaterialUniforms(mtl);
-            // Bind Element Array Buffer
-            gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, model.indexBufferPerMaterial[i]);
-
-            // Draw call
-            gl.drawElements(gl.TRIANGLES, model.indicesPerMaterial[i].length, gl.UNSIGNED_SHORT, 0);
-        }
-        // Prevent leakage
-        gl.bindVertexArray(null);
-    }
+    }    
 
     /**
      * Sets up the {@code u_matrix} and {@code u_normalMatrix} uniforms
@@ -266,20 +326,16 @@ class Program {
      * @param {number[]} viewProjectionMatrix 
      * @param {SceneObject} object 
      */
-    setMatrixUniforms(viewProjectionMatrix, object) {
-        // ####################
-        // UNIFORMS
-        // ####################
+     setMatrixUniforms(viewProjectionMatrix, object) {
         // World-view-projection matrix
-        let matrix = utils.multiplyMatrices(viewProjectionMatrix, object.worldMatrix);
-        gl.uniformMatrix4fv(this.matrixLocation, true, matrix);
+        super.setMatrixUniforms(viewProjectionMatrix, object);
         // Normal matrix
         let normalMatrix = utils.invertMatrix(utils.transposeMatrix(object.worldMatrix));
         gl.uniformMatrix4fv(this.normalMatrixLocation, true, normalMatrix);
     }
 }
 
-class LambertProgram extends Program {
+class LambertProgram extends TexturedProgram {
 
     N_DIRECTIONAL_LIGHTS = 1;
 
@@ -409,9 +465,6 @@ class LambertProgram extends Program {
         // TODO: Use a different color based on the object type
         let alpha = object.isSelected ? 0.25 : 0;
         let highlightColor = [1, 0, 0, alpha];
-        if (object.isSelected) {
-            console.log("Rendering selected " + object.name);
-        }
         gl.uniform4fv(this.highlightColorLocation, highlightColor);
     }
 }
