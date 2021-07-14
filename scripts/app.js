@@ -163,6 +163,7 @@ async function configureScene(scene) {
         // Add type of this model (tree, bird, ...)
         model.type = modelConfig.type
         // TODO: Add data according to type (e.g. attach points for trees ...)
+        model.isSelectable = model.type != "ground"; // TODO: For debug only
 
         // Remove non-assigned maps from the materials
         for (let mtl of Object.values(model.materialsByIndex)) {
@@ -186,7 +187,6 @@ async function configureScene(scene) {
         // Create the textures
         program.createTextures(model);
 
-        // TODO: Finish collision mesh creation
         // Select the type of collision mesh
         let cmClass;
         switch (modelConfig.collisionMesh) {
@@ -260,7 +260,9 @@ function buildSceneGraph(scene, nodeConfig) {
             model,
             nodeConfig.position,
             nodeConfig.rotation,
-            nodeConfig.scale
+            nodeConfig.scale,
+            nodeConfig.isVisible ?? true,
+            nodeConfig.isSelectable ?? model.isSelectable
         );
         scene.objects.set(current.name, current);
     } else {
@@ -268,7 +270,8 @@ function buildSceneGraph(scene, nodeConfig) {
             nodeConfig.name,
             nodeConfig.position,
             nodeConfig.rotation,
-            nodeConfig.scale
+            nodeConfig.scale,
+            nodeConfig.isVisible ?? true,
         );
     }
 
@@ -320,8 +323,9 @@ function frame(time) {
 /**
  * Perform raycasting
  * @param {Scene} scene 
+ * @param {Scene} maxDistance maximum distance between the camera and the center of the object 
  */
-function rayCasting(scene) {
+function rayCasting(scene, maxDistance=20) {
     if (document.pointerLockElement !== gl.canvas) {
         return;
     }
@@ -330,13 +334,18 @@ function rayCasting(scene) {
     let ray_dir = camera.getDirection();
 
     let selectedObject = null;
-    let minDistance = 10e18;
+    let minDistance = maxDistance;
     for (let [_, object] of scene.objects) {
-        if (object.model.type !== "tree") {
+        if (!object.isSelectable || !object.isVisible) {
             continue;
         } 
         // Reset selection state
         object.deselect();
+
+        // Early reject if the object center is very far away
+        if(utils.distance(camera.position, object.position) > maxDistance) {
+            continue;
+        }
 
         // Intersect the camera ray with the collision mesh
         /** @type {CollisionMesh} */

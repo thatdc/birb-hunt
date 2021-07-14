@@ -502,6 +502,13 @@ createProgram:function(gl, vertexShader, fragmentShader) {
 	 dot: function(u, v){
 		 return u[0] * v[0] + u[1] * v[1] + u[2] * v[2];
 	 },
+	 distance: function(u, v){
+		 let acc = 0;
+		 for (let i = 0; i < 3; i++) {
+			acc += Math.pow(u[i] - v[i], 2);
+		 }
+		 return Math.sqrt(acc);
+	 },
 	 normalizeVector3: function(v){
 		/* cross product of vectors [u] and  [v] */
 		 var len = Math.sqrt(v[0]*v[0]+v[1]*v[1]+v[2]*v[2]);

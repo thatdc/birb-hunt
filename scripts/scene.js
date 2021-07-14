@@ -48,6 +48,12 @@ class SceneNode {
     parent = null;
 
     /**
+     * Indicates whether this node, and its children, are visible.
+     * @type {boolean}
+     */
+    isVisible;
+
+    /**
      * Creates an empty node with no parent and no children.
      * 
      * All transformations refer to the parent node.
@@ -61,12 +67,14 @@ class SceneNode {
         name,
         position = [0, 0, 0],
         rotation = [0, 0, 0],
-        scale = [1, 1, 1]
+        scale = [1, 1, 1],
+        isVisible = true
     ) {
         this.name = name;
         this.position = position;
         this.rotation = rotation;
         this.scale = scale;
+        this.isVisible = isVisible;
         this.parent = null;
         this.children = [];
         this.localMatrix = this._makeLocal();
@@ -139,6 +147,12 @@ class SceneObject extends SceneNode {
     model;
 
     /**
+     * Indicates if the object can be selected
+     * @type {boolean}
+     */
+    isSelectable;
+
+    /**
      * Indicates if the object is currently selected
      * @type {boolean}
      */
@@ -164,10 +178,14 @@ class SceneObject extends SceneNode {
         model,
         position = [0, 0, 0],
         rotation = [0, 0, 0],
-        scale = [1, 1, 1]
+        scale = [1, 1, 1],
+        isVisible = true,
+        isSelectable = false
     ) {
         super(name, position, rotation, scale);
         this.model = model;
+        this.isVisible = isVisible;
+        this.isSelectable = isSelectable;
         this.isSelected = false;
     }
 
@@ -175,7 +193,6 @@ class SceneObject extends SceneNode {
      * Selects this object
      */
     select() {
-        console.debug(`${this.name}: Selected`);
         this.isSelected = true;
     }
     
@@ -183,7 +200,6 @@ class SceneObject extends SceneNode {
      * Deselects this object
      */
     deselect() {
-        console.debug(`${this.name}: Deselected`);
         this.isSelected = false;
     }
 }
@@ -254,6 +270,9 @@ class Scene {
      * @param {boolean} collisionMeshes draw a wireframe version of the collision meshes
      */
     _drawTree(viewProjectionMatrix, root, collisionMeshes=false) {
+        if (!root.isVisible) { // this node and its children will be hidden
+            return;
+        }
         if (root instanceof SceneObject) {
             /** @type {Program} */
             let program = root.model.program;
