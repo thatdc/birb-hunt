@@ -1,6 +1,7 @@
 /** @type {WebGL2RenderingContext} */
 var gl;
 var scene;
+var app;
 var keyPressed = {};
 var startTime;
 var lastFrame;
@@ -9,9 +10,13 @@ async function main() {
     let canvas = document.getElementById("c");
     gl = initializeWebGL(canvas);
 
+    // Create the app
+    app = {};
+
     // Create the scene
     scene = new Scene();
     await configureScene(scene);
+    initializeUI();
 
     // Configure event listeners
     document.addEventListener("keydown", (e) => {
@@ -22,7 +27,7 @@ async function main() {
     });
     document.addEventListener("keyup", (e) => {
         let key = e.key.length == 1 ? e.key.toLowerCase() : e.key;
-        delete keyPressed[key]
+        delete keyPressed[key];
     });
 
     // Configure Pointer Lock
@@ -64,14 +69,16 @@ function initializeWebGL(canvas) {
 function initPointerLock(canvas) {
     canvas.onclick = () => {
         canvas.requestPointerLock();
-    }
+    };
     document.addEventListener("pointerlockchange", () => {
         if (document.pointerLockElement === canvas) {
+            toggleCenterPanel(false);
             document.addEventListener("mousemove", mouseMovement);
         } else {
             document.removeEventListener("mousemove", mouseMovement);
+            toggleCenterPanel(true);
         }
-    })
+    });
 }
 
 /**
@@ -130,6 +137,20 @@ function mouseMovement(e) {
 }
 
 /**
+ * Initializes the app options with the values provided by the config.
+ * Non-specified options will get default values.
+ * @param {Object} customOptions
+ */
+function configureApp(app, customOptions) {
+    // Default options
+    app.options = {
+        showFrameRate: false,
+        showCollisionMeshes: false,
+    };
+    Object.assign(app.options, customOptions);
+}
+
+/**
  * Configure the scene according to the JSON.
  * 
  * Will download the models, materials and textures and insert them into the
@@ -143,6 +164,9 @@ async function configureScene(scene) {
 
     // Download scene configuration (JSON)
     let sceneConfig = await (await fetch("config.json")).json();
+
+    // Configure the application options
+    configureApp(app, sceneConfig.appOptions ?? {});
 
     // Download the models
     let models = await downloadModels(sceneConfig.models);
@@ -161,7 +185,7 @@ async function configureScene(scene) {
         }
 
         // Add type of this model (tree, bird, ...)
-        model.type = modelConfig.type
+        model.type = modelConfig.type;
         // TODO: Add data according to type (e.g. attach points for trees ...)
         model.isSelectable = model.type != "ground"; // TODO: For debug only
 
@@ -298,6 +322,9 @@ function frame(time) {
     }
     let timeDelta = time - lastFrame;
 
+    // Update FPS
+    updateFrameRate(1 / (timeDelta * .001));
+
     // Update the camera
     keyboardMovement(scene.camera, timeDelta);
     scene.camera.aspect_ratio = gl.canvas.clientWidth / gl.canvas.clientHeight;
@@ -311,7 +338,7 @@ function frame(time) {
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
     // Draw
-    scene.draw(true);
+    scene.draw(app.options.showCollisionMeshes);
 
     // Save timestamp for next call
     lastFrame = time;
@@ -325,7 +352,7 @@ function frame(time) {
  * @param {Scene} scene 
  * @param {Scene} maxDistance maximum distance between the camera and the center of the object 
  */
-function rayCasting(scene, maxDistance=20) {
+function rayCasting(scene, maxDistance = 20) {
     if (document.pointerLockElement !== gl.canvas) {
         return;
     }
@@ -338,12 +365,12 @@ function rayCasting(scene, maxDistance=20) {
     for (let [_, object] of scene.objects) {
         if (!object.isSelectable || !object.isVisible) {
             continue;
-        } 
+        }
         // Reset selection state
         object.deselect();
 
         // Early reject if the object center is very far away
-        if(utils.distance(camera.position, object.position) > maxDistance) {
+        if (utils.distance(camera.position, object.position) > maxDistance) {
             continue;
         }
 
@@ -365,4 +392,4 @@ function rayCasting(scene, maxDistance=20) {
     }
 }
 
-window.onload = main
+window.onload = main;

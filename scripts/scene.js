@@ -267,9 +267,9 @@ class Scene {
      * Draws the given subtree
      * @param {number[]} viewProjectionMatrix
      * @param {SceneNode} root root of the subtree
-     * @param {boolean} collisionMeshes draw a wireframe version of the collision meshes
+     * @param {boolean} showCollisionMeshes draw a wireframe version of the collision meshes
      */
-    _drawTree(viewProjectionMatrix, root, collisionMeshes=false) {
+    _drawTree(viewProjectionMatrix, root, showCollisionMeshes=false) {
         if (!root.isVisible) { // this node and its children will be hidden
             return;
         }
@@ -279,14 +279,14 @@ class Scene {
             // Set the uniforms and perform one draw call per material
             program.drawObject(this, viewProjectionMatrix, root);
 
-            if (collisionMeshes && root.model.collisionMesh) {
+            if (showCollisionMeshes && root.model.collisionMesh) {
                 let cm = root.model.collisionMesh;
                 cm.program.drawCollisionMesh(this, viewProjectionMatrix, root);
             }
         }
 
         for (let child of root.children) {
-            this._drawTree(viewProjectionMatrix, child, collisionMeshes);
+            this._drawTree(viewProjectionMatrix, child, showCollisionMeshes);
         }
     }
 }

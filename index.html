@@ -5,23 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Birb Hunt</title>
-    <style type="text/css">
-      html, body {
-        height: 100%;
-        margin: 0;
-        background-color: gray;
-      }
-      canvas {
-        width: 100%;
-        height: 100%;
-        display: block;
-        background-color: white;
-      }
-    </style>
-</head>
-
-<body>
-    <canvas id="c"></canvas>
+    <link rel="stylesheet" href="style/app.css">
     <script type="text/javascript" src="scripts/webgl-obj-loader.min.js"></script>
     <script type="text/javascript" src="scripts/utils.js"></script>
     <script type="text/javascript" src="scripts/camera.js"></script>
@@ -30,5 +14,30 @@
     <script type="text/javascript" src="scripts/collsion.js"></script>
     <script type="text/javascript" src="scripts/scene.js"></script>
     <script type="text/javascript" src="scripts/program.js"></script>
+    <script type="text/javascript" src="scripts/ui.js"></script>
     <script type="text/javascript" src="scripts/app.js"></script>
+</head>
+
+<body>
+    <canvas id="c"></canvas>
+
+    <!-- Framerate -->
+    <div id="framerate" class="overlay" hidden></div>
+
+    <!-- Options panel -->
+    <div id="options-panel" class="overlay panel">
+        <h1>Pause</h1>
+        <span class="tooltip">Click on canvas to resume</span>
+        <div>
+            <h3>Options</h3>
+            <div>
+                <input type="checkbox" id="opt-showCollisionMeshes">
+                <label for="opt-showCollisionMeshes">Show collision meshes</label>
+            </div>
+            <div>
+                <input type="checkbox" id="opt-showFrameRate">
+                <label for="opt-showFrameRate">Show framerate</label>
+            </div>
+        </div>
+    </div>
 </body>
