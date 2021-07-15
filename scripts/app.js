@@ -206,8 +206,6 @@ async function configureScene(scene) {
             }
         }
 
-        
-
         // Select the rendering program
         let program = scene.programs.get(modelConfig.program ?? sceneConfig.defaultProgram);
         model.program = program;
@@ -261,6 +259,13 @@ async function configureScene(scene) {
     for (let lConfig of sceneConfig.directionalLights) {
         let l = new DirectionalLight(lConfig.name, lConfig.color, lConfig.rotation, lConfig.isActive);
         scene.directionalLights.push(l);
+    }
+
+    // Set up point lights
+    scene.pointLights = new Array();
+    for (let lConfig of sceneConfig.pointLights) {
+        let l = new PointLight(lConfig.name, lConfig.color, lConfig.position, lConfig.target, lConfig.decay, lConfig.isActive);
+        scene.pointLights.push(l);
     }
 
     // Create the skybox

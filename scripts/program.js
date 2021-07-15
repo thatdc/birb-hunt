@@ -420,6 +420,7 @@ class TexturedProgram extends Program {
 class LambertProgram extends TexturedProgram {
 
     N_DIRECTIONAL_LIGHTS = 2;
+    N_POINT_LIGHTS = 2;
 
     /**
      * Initialize the program before use:
@@ -470,6 +471,18 @@ class LambertProgram extends TexturedProgram {
             };
         }
 
+        // Point lights
+        this.pointLightLocations = new Array();
+        for (let i = 0; i < this.N_POINT_LIGHTS; i++) {
+            this.pointLightLocations[i] = {
+                "isActive": gl.getUniformLocation(p, `u_pointLights[${i}].isActive`),
+                "color": gl.getUniformLocation(p, `u_pointLights[${i}].color`),
+                "position": gl.getUniformLocation(p, `u_pointLights[${i}].position`),
+                "target": gl.getUniformLocation(p, `u_pointLights[${i}].target`),
+                "decay": gl.getUniformLocation(p, `u_pointLights[${i}].decay`)
+            };
+        }
+
         // Highlight color (used to highlight selected objects)
         this.highlightColorLocation = gl.getUniformLocation(p, "u_highlightColor");
     }
@@ -489,6 +502,13 @@ class LambertProgram extends TexturedProgram {
         for (let i in scene.directionalLights) {
             let l = scene.directionalLights[i];
             let lLoc = this.directionalLightLocations[i];
+            l.setUniforms(lLoc);
+        }
+
+        // Point lights
+        for (let i in scene.pointLights) {
+            let l = scene.pointLights[i];
+            let lLoc = this.pointLightLocations[i];
             l.setUniforms(lLoc);
         }
     }

@@ -85,5 +85,25 @@
             "isActive": false,
             "rotation": [35, 105]
         }
-    ]
+    ],
+    "pointLights": [
+        {
+            "name": "point0",
+            "color": [1, 1, 1],
+            "position": [0, 3, 0],
+            "target": 1,
+            "decay": 1
+        },
+        {
+            "name": "point1",
+            "isActive": false,
+            "color": [1, 1, 1],
+            "position": [0, 3, 0],
+            "target": 1,
+            "decay": 1
+        }
+    ],
+    "appOptions": {
+        "freeCamera": true
+    }
 }

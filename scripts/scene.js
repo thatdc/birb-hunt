@@ -249,6 +249,12 @@ class Scene {
     directionalLights;
 
     /**
+     * Point lights
+     * @type {PointLight[]}
+     */
+    pointLights;
+
+    /**
      * Draws the scene
      * @param {boolean} collisionMeshes draw a wireframe version of the collision meshes
      */
