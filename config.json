@@ -103,6 +103,25 @@
             "decay": 1
         }
     ],
+    "spotLights": [
+        {
+            "name": "torch",
+            "color": [1, 1, 1],
+            "position": [0.25, 1.6, -0.25],
+            "rotation": [60, 0],
+            "innerCone": 0.9,
+            "outerCone": 0.8
+        },
+        {
+            "name": "spot2",
+            "isActive": false,
+            "color": [1, 1, 1],
+            "position": [0, 0, 0],
+            "rotation": [90, 0],
+            "innerCone": 0.75,
+            "outerCone": 0.55
+        }
+    ],
     "appOptions": {
         "freeCamera": true
     }

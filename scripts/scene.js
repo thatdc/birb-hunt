@@ -255,6 +255,12 @@ class Scene {
     pointLights;
 
     /**
+     * Spot lights
+     * @type {SpotLight[]}
+     */
+    spotLights;
+
+    /**
      * Draws the scene
      * @param {boolean} collisionMeshes draw a wireframe version of the collision meshes
      */

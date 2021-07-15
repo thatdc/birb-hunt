@@ -268,6 +268,14 @@ async function configureScene(scene) {
         scene.pointLights.push(l);
     }
 
+    // Set up spot lights
+    scene.spotLights = new Array();
+    for (let lConfig of sceneConfig.spotLights) {
+        let l = new SpotLight(lConfig.name, lConfig.color, lConfig.position, lConfig.rotation,
+            lConfig.innerCone, lConfig.outerCone, lConfig.target, lConfig.decay, lConfig.isActive);
+        scene.spotLights.push(l);
+    }
+
     // Create the skybox
     scene.skybox = await new Skybox().init(sceneConfig.skybox);
 }

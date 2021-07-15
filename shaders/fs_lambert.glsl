@@ -3,6 +3,7 @@
 #define AMBIENT_LIGHT_STRENGTH .1
 #define N_DIRECTIONAL_LIGHTS 2
 #define N_POINT_LIGHTS 2
+#define N_SPOT_LIGHTS 2
 
 precision mediump float;
 
@@ -61,6 +62,20 @@ struct pointLight {
 uniform pointLight u_pointLights[N_POINT_LIGHTS];
 vec3 calcPointLight(pointLight l, vec3 pos);
 
+// Spot lights
+struct spotLight {
+  bool isActive;
+  vec3 color;
+  vec3 position;
+  vec3 direction;
+  float innerCone;
+  float outerCone;
+  float target;
+  float decay;
+};
+uniform spotLight u_spotLights[N_SPOT_LIGHTS];
+vec3 calcSpotLight(spotLight l, vec3 pos);
+
 void main() {
   // Compute the fragment position in world space
   vec3 pos = (u_worldMatrix * vec4(fs_position, 1)).xyz;
@@ -98,6 +113,14 @@ void main() {
     }
   }
 
+  // Spot lights
+  for(int i = 0; i < N_SPOT_LIGHTS; i++) {
+    spotLight l = u_spotLights[i];
+    if (l.isActive) {
+      color += diffuseColor * calcSpotLight(l, pos);
+    }
+  }
+
   // Highlight color (highlights selected objects)
   color += u_highlightColor.a * u_highlightColor.rgb;
 
@@ -121,4 +144,25 @@ vec3 calcDirectionalLight(directionalLight l, vec3 n_normal) {
   */
 vec3 calcPointLight(pointLight l, vec3 pos) {
   return l.color * pow(l.target / distance(l.position, pos), l.decay);
+}
+
+
+/**
+  * Calculates the contribution of a spot light
+  * @param[in] l the spot light
+  * @param[in] pos the position of the point being rendered
+  */
+vec3 calcSpotLight(spotLight l, vec3 pos) {
+  // Incident direction (from light to point)
+  vec3 dir_incident = normalize(pos - l.position);
+
+  // Cosine of the angle between the light's own direction and the incident direction
+  float cos_a = dot(dir_incident, l.direction);
+
+  // Compute the dimming effect (the cones are already encoded as cosines)
+  float dimming = (cos_a - l.outerCone) / (l.innerCone - l.outerCone);
+  dimming = clamp(dimming, 0., 1.);
+
+  // Apply the target distance and decay
+  return l.color * dimming * pow(l.target / distance(l.position, pos), l.decay);
 }

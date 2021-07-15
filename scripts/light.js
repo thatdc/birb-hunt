@@ -114,7 +114,7 @@ class PointLight extends Light {
      * @param {number} decay decay factor 
      * @param {boolean} isActive whether the light is active 
      */
-    constructor(name, color, position, target=1, decay=0, isActive = true) {
+    constructor(name, color, position, target = 1, decay = 0, isActive = true) {
         super(name, color, isActive);
         this.position = position;
         this.target = target;
@@ -125,17 +125,94 @@ class PointLight extends Light {
      * Initializes the uniforms for this light.
      * @param {Object} locations 
      */
-    setUniforms({ 
-        "isActive": isActiveLocation, 
-        "color": colorLocation, 
+    setUniforms({
+        "isActive": isActiveLocation,
+        "color": colorLocation,
         "position": positionLocation,
         "target": targetLocation,
-        "decay": decayLocation,
+        "decay": decayLocation
     }) {
         gl.uniform1i(isActiveLocation, this.isActive);
         gl.uniform3fv(colorLocation, this.color);
         gl.uniform3fv(positionLocation, this.position);
         gl.uniform1f(targetLocation, this.target);
         gl.uniform1f(decayLocation, this.decay);
+    }
+}
+
+class SpotLight extends PointLight {
+    /**
+     * Rotation XY of the light.
+     * @type {number[]}
+     */
+    rotation;
+
+    /**
+     * Cosine of the inner cone of the light.
+     * @type {number}
+     */
+    innerCone;
+
+    /**
+     * Cosine of the outer cone of the light.
+     * @type {number}
+     */
+    outerCone;
+
+    /**
+     * Creates a new spot light
+     * @param {string} name friendly name, must be unique
+     * @param {number[]} color rgb color
+     * @param {number[]} position XYZ position 
+     * @param {number[]} rotation XY rotation 
+     * @param {number} innerCone cosine of the half/angle of the inner cone
+     * @param {number} outerCone cosine of the half/angle of the outer cone
+     * @param {number} target target distance
+     * @param {number} decay decay factor 
+     * @param {boolean} isActive whether the light is active 
+     */
+    constructor(name, color, position, rotation, innerCone, outerCone, target = 1, decay = 1, isActive = true) {
+        super(name, color, position, target, decay, isActive);
+        this.rotation = rotation;
+        this.innerCone = innerCone;
+        this.outerCone = outerCone;
+    }
+
+    /**
+     * Initializes the uniforms for this light.
+     * @param {Object} locations 
+     */
+    setUniforms({
+        "isActive": isActiveLocation,
+        "color": colorLocation,
+        "position": positionLocation,
+        "direction": directionLocation,
+        "innerCone": innerConeLocation,
+        "outerCone": outerConeLocation,
+        "target": targetLocation,
+        "decay": decayLocation
+    }) {
+        gl.uniform1i(isActiveLocation, this.isActive);
+        gl.uniform3fv(colorLocation, this.color);
+        gl.uniform3fv(positionLocation, this.position);
+        gl.uniform3fv(directionLocation, this.getDirection());
+        gl.uniform1f(innerConeLocation, this.innerCone);
+        gl.uniform1f(outerConeLocation, this.outerCone);
+        gl.uniform1f(targetLocation, this.target);
+        gl.uniform1f(decayLocation, this.decay);
+    }
+
+    /**
+    * Returns the XYZ normalized direction of this light.
+    * @returns {number[]}
+    */
+    getDirection() {
+        let [pitch, yaw] = this.rotation.map(a => a * Math.PI / 180);
+
+        let x = Math.sin(pitch) * Math.sin(yaw);
+        let y = Math.cos(pitch);
+        let z = Math.sin(pitch) * Math.cos(yaw);
+
+        return [-x, -y, -z];
     }
 }

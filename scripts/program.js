@@ -421,6 +421,7 @@ class LambertProgram extends TexturedProgram {
 
     N_DIRECTIONAL_LIGHTS = 2;
     N_POINT_LIGHTS = 2;
+    N_SPOT_LIGHTS = 2;
 
     /**
      * Initialize the program before use:
@@ -483,6 +484,21 @@ class LambertProgram extends TexturedProgram {
             };
         }
 
+        // Spot lights
+        this.spotLightLocations = new Array();
+        for (let i = 0; i < this.N_SPOT_LIGHTS; i++) {
+            this.spotLightLocations[i] = {
+                "isActive": gl.getUniformLocation(p, `u_spotLights[${i}].isActive`),
+                "color": gl.getUniformLocation(p, `u_spotLights[${i}].color`),
+                "position": gl.getUniformLocation(p, `u_spotLights[${i}].position`),
+                "direction": gl.getUniformLocation(p, `u_spotLights[${i}].direction`),
+                "innerCone": gl.getUniformLocation(p, `u_spotLights[${i}].innerCone`),
+                "outerCone": gl.getUniformLocation(p, `u_spotLights[${i}].outerCone`),
+                "target": gl.getUniformLocation(p, `u_spotLights[${i}].target`),
+                "decay": gl.getUniformLocation(p, `u_spotLights[${i}].decay`)
+            };
+        }
+
         // Highlight color (used to highlight selected objects)
         this.highlightColorLocation = gl.getUniformLocation(p, "u_highlightColor");
     }
@@ -492,7 +508,6 @@ class LambertProgram extends TexturedProgram {
      * @param {Scene} scene 
      */
     setLightUniforms(scene) {
-        // TODO: Finish this function when we have defined lights
         // Environment map (for ambient lighting and spec. reflexions)
         gl.activeTexture(gl.TEXTURE3);
         gl.bindTexture(gl.TEXTURE_CUBE_MAP, scene.skybox.getCurrentMap());
@@ -509,6 +524,13 @@ class LambertProgram extends TexturedProgram {
         for (let i in scene.pointLights) {
             let l = scene.pointLights[i];
             let lLoc = this.pointLightLocations[i];
+            l.setUniforms(lLoc);
+        }
+
+        // Spot lights
+        for (let i in scene.spotLights) {
+            let l = scene.spotLights[i];
+            let lLoc = this.spotLightLocations[i];
             l.setUniforms(lLoc);
         }
     }
