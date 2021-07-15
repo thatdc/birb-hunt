@@ -1,5 +1,6 @@
 /** @type {WebGL2RenderingContext} */
 var gl;
+/** @type {Scene} */
 var scene;
 var app;
 var keyPressed = {};
@@ -187,7 +188,7 @@ async function configureScene(scene) {
         // Add type of this model (tree, bird, ...)
         model.type = modelConfig.type;
         // TODO: Add data according to type (e.g. attach points for trees ...)
-        model.isSelectable = model.type != "ground"; // TODO: For debug only
+        model.isSelectable = model.type == "bird"; // TODO: For debug only
 
         // Remove non-assigned maps from the materials
         for (let mtl of Object.values(model.materialsByIndex)) {
@@ -253,7 +254,7 @@ async function configureScene(scene) {
     // Set up directional lights
     scene.directionalLights = new Array();
     for (let lConfig of sceneConfig.directionalLights) {
-        let l = new DirectionalLight(lConfig.name, lConfig.color, lConfig.direction);
+        let l = new DirectionalLight(lConfig.name, lConfig.color, lConfig.rotation);
         scene.directionalLights.push(l);
     }
 
