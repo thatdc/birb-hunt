@@ -7,6 +7,7 @@ in vec3 a_position;
 in vec3 a_normal;
 in vec2 a_uv;
 
+out vec3 fs_position;
 out vec2 fs_uv;
 out vec3 fs_normal;
 
@@ -14,6 +15,7 @@ out vec3 fs_normal;
 uniform mat4 u_matrix;
 
 void main() {
+  fs_position = a_position;
   fs_uv = a_uv;
   fs_normal = a_normal; 
   gl_Position = u_matrix * vec4(a_position, 1.0);

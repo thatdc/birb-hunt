@@ -295,6 +295,7 @@ class TexturedProgram extends Program {
     uvAttribLocation;
 
     /** Uniforms */
+    worldMatrixLocation;
     normalMatrixLocation;
 
     /**
@@ -311,6 +312,7 @@ class TexturedProgram extends Program {
         this.uvAttribLocation = gl.getAttribLocation(p, "a_uv");
 
         // Transformation matrices
+        this.worldMatrixLocation = gl.getUniformLocation(p, "u_worldMatrix");
         this.normalMatrixLocation = gl.getUniformLocation(p, "u_normalMatrix");
     }
 
@@ -407,6 +409,8 @@ class TexturedProgram extends Program {
     setMatrixUniforms(viewProjectionMatrix, object) {
         // World-view-projection matrix
         super.setMatrixUniforms(viewProjectionMatrix, object);
+        // World matrix
+        gl.uniformMatrix4fv(this.worldMatrixLocation, true, object.worldMatrix);
         // Normal matrix
         let normalMatrix = utils.sub3x3from4x4(utils.invertMatrix(utils.transposeMatrix(object.worldMatrix)));
         gl.uniformMatrix3fv(this.normalMatrixLocation, true, normalMatrix);
