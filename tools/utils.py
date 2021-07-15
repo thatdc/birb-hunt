@@ -13,23 +13,23 @@ def gen_scale(model_name):
 def add_ground(root: SceneNode):
     root.append_child(SceneNode(name='ground', model='Ground'))
 
-def gen_rand_node_info(models, coords, span=200):
+def gen_rand_node_info(models, other_coords, position=None, span=200):
     # Name
     model_name = random.choice(models)
     # Position
-    while True:
+    while position is None:
         tx = random.uniform(-span//2, span//2)
         ty = 0
         tz = random.uniform(-span//2, span//2)
-        position = [tx, ty, tz]
-
+        
         # Verify collisions
         collide = False
-        for c in coords:
+        for c in other_coords:
             if distance([tx, tz], c) <= 5:
                 collide = True
                 break
         if not collide:
+            position = [tx, ty, tz] 
             break
     # Scale
     s = gen_scale(model_name)

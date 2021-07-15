@@ -28,6 +28,13 @@ canvas {
     color: white;
 }
 
+#position {
+    position: absolute;
+    top: 30px;
+    padding: .25em;
+    color:white;
+}
+
 #options-panel {
     position: absolute;
     top: 50%;

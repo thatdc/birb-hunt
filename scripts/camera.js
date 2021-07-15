@@ -109,11 +109,16 @@ class Camera {
     /**
      * Move the camera according to its current direction
      * @param {number[]} delta XYZ movement amount, in camera space
+     * @param {boolean} lockY
      */
-    move(delta) {
+    move(delta, lockY=false) {
         // Transform the movement direction
         let T = utils.MakeRotateXYZMatrix(...this.rotation);
         delta = utils.multiplyMatrixVector(T, [...delta, 1]);
+        
+        if (lockY) {
+            delta[1] = 0;
+        }
 
         // Sum to the current position
         for (let i in this.position) {
@@ -129,7 +134,7 @@ class Camera {
         for (let i in this.rotation) {
             this.rotation[i] += delta[i];
             if (this.rotation[i] > 360) {
-                this.rotation[i] -= 360
+                this.rotation[i] -= 360;
             } else if (this.rotation[i] < -360) {
                 this.rotation[i] += 360;
             }

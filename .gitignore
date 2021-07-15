@@ -10,3 +10,6 @@ scene-graph.json
 
 # Libraries just for code linting
 scripts/ignore
+
+# VSCode
+.vscode

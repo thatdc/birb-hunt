@@ -97,16 +97,16 @@ function keyboardMovement(camera, timeDelta) {
     let rotStep = 1 * timeDelta;
 
     if (keyPressed["w"]) {
-        camera.move([0, 0, -posStep]);
+        camera.move([0, 0, -posStep], !app.options.freeCamera);
     }
     if (keyPressed["s"]) {
-        camera.move([0, 0, +posStep]);
+        camera.move([0, 0, +posStep], !app.options.freeCamera);
     }
     if (keyPressed["d"]) {
-        camera.move([+posStep, 0, 0]);
+        camera.move([+posStep, 0, 0], !app.options.freeCamera);
     }
     if (keyPressed["a"]) {
-        camera.move([-posStep, 0, 0]);
+        camera.move([-posStep, 0, 0], !app.options.freeCamera);
     }
     if (keyPressed["ArrowUp"]) {
         camera.rotate([+rotStep, 0, 0]);
@@ -150,6 +150,8 @@ function configureApp(app, customOptions) {
     app.options = {
         showFrameRate: false,
         showCollisionMeshes: false,
+        freeCamera: false,
+        showPosition: false,
     };
     Object.assign(app.options, customOptions);
 }
@@ -328,8 +330,9 @@ function frame(time) {
     }
     let timeDelta = time - lastFrame;
 
-    // Update FPS
+    // Update UI
     app.ui.updateFrameRate(1 / (timeDelta * .001));
+    app.ui.updatePosition(scene.camera.position);
 
     // Update the camera
     keyboardMovement(scene.camera, timeDelta);

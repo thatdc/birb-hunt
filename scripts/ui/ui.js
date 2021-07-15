@@ -35,6 +35,10 @@ class UserInterface {
         this.frameRateDisplay = document.getElementById("framerate");
         this.frameRateDisplay.hidden = options["showFrameRate"] ?? true;
 
+        // Set visibility of position
+        this.positionDisplay = document.getElementById("position");
+        this.positionDisplay.hidden = !app.options["showPosition"] ?? true;
+
         // Side panel
         this.sidePanel = document.getElementById("side-panel");
 
@@ -59,7 +63,7 @@ class UserInterface {
             c.addEventListener("change", UserInterface._onAppOptionsCheckBoxChange);
         }
 
-        return optPanel;       
+        return optPanel;
     }
 
     /**
@@ -72,11 +76,14 @@ class UserInterface {
         if (option === "showFrameRate") {
             document.getElementById("framerate").hidden = e.target.checked === false;
         }
+        if (option === "showPosition") {
+            document.getElementById("position").hidden = e.target.checked === false;
+        }
     }
 
     /**
      * Toggles the overlays
-     * @param visible
+     * @param {boolean} visible
      */
     toggleOverlay(visible) {
         this.optionsPanel.hidden = !visible;
@@ -90,6 +97,19 @@ class UserInterface {
     updateFrameRate(value) {
         if (app.options.showFrameRate) {
             this.frameRateDisplay.textContent = `FPS: ${value.toFixed(1)}`;
+        }
+    }
+
+    /**
+     * Updates the current position in the box
+     * @param {number[]} position 
+     */
+    updatePosition(position) {
+        position = position.map(function (x) {
+            return Number(x.toFixed(2));
+        });
+        if (app.options.showPosition) {
+            this.positionDisplay.textContent = `Current position: ${position}`;
         }
     }
 }
