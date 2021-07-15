@@ -40,6 +40,7 @@ uniform samplerCube u_mapEnv;
 
 // Directional lights
 struct directionalLight {
+  bool isActive;
   vec3 direction;
   vec3 color;
 };
@@ -66,7 +67,9 @@ void main() {
   // Directional lights
   for(int i = 0; i < N_DIRECTIONAL_LIGHTS; i++) {
     directionalLight l = u_directionalLights[i];
-    color += diffuseColor * l.color * dot(-l.direction, n_normal);
+    if (l.isActive) {
+      color += diffuseColor * l.color * dot(-l.direction, n_normal);
+    }
   }
 
   // Highlight color (highlights selected objects)

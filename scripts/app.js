@@ -259,7 +259,7 @@ async function configureScene(scene) {
     // Set up directional lights
     scene.directionalLights = new Array();
     for (let lConfig of sceneConfig.directionalLights) {
-        let l = new DirectionalLight(lConfig.name, lConfig.color, lConfig.rotation);
+        let l = new DirectionalLight(lConfig.name, lConfig.color, lConfig.rotation, lConfig.isActive);
         scene.directionalLights.push(l);
     }
 

@@ -460,6 +460,7 @@ class LambertProgram extends TexturedProgram {
         this.directionalLightLocations = new Array();
         for (let i = 0; i < this.N_DIRECTIONAL_LIGHTS; i++) {
             this.directionalLightLocations[i] = {
+                "isActive": gl.getUniformLocation(p, `u_directionalLights[${i}].isActive`),
                 "color": gl.getUniformLocation(p, `u_directionalLights[${i}].color`),
                 "direction": gl.getUniformLocation(p, `u_directionalLights[${i}].direction`)
             };

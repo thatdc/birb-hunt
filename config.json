@@ -66,12 +66,6 @@
             "obj": "assets/angry_birds/red_ID240.016.obj",
             "mtl": "assets/angry_birds/red_ID240.016.mtl",
             "type": "bird"
-        },
-        {
-            "name": "Bulbasaur",
-            "obj": "assets/pokemon_xy/Bulbasaur/Bulbasaur.obj",
-            "mtl": "assets/pokemon_xy/Bulbasaur/Bulbasaur.mtl",
-            "type": "bird"
         }
     ],
     "camera": {
@@ -87,8 +81,9 @@
         },
         {
             "name": "other",
-            "color": [0, 0, 0],
-            "rotation": [0, 90]
+            "color": [0.2, 0.25, 0.25],
+            "isActive": false,
+            "rotation": [35, 105]
         }
     ]
 }
