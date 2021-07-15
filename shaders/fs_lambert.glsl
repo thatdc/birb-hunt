@@ -1,7 +1,7 @@
 #version 300 es
 
 #define AMBIENT_LIGHT_STRENGTH .1
-#define N_DIRECTIONAL_LIGHTS 1
+#define N_DIRECTIONAL_LIGHTS 2
 
 precision mediump float;
 

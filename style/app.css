@@ -40,7 +40,35 @@ canvas {
     text-align: center;
 }
 
-#options-panel > .tooltip {
+#options-panel > * .tooltip {
     size: .8em;
     color: gray;
+}
+
+#side-panel {
+    position: absolute;
+    top: 50%;
+    right: 0%;
+    transform: translate(0%, -50%);
+    color: white;
+}
+
+#side-panel > * input[type="number"] {
+    background-color: rgb(48, 48, 48);
+    color: white;
+}
+
+#side-panel > * label {
+    margin: 1ex;
+}
+
+#side-panel > * select {
+    width: 100%;
+}
+
+#side-panel > * .display-angle {
+    text-align: center;
+    display: inline-block;
+    margin-right: 0;
+    min-width: 6ex;
 }

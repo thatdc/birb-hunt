@@ -17,7 +17,10 @@ async function main() {
     // Create the scene
     scene = new Scene();
     await configureScene(scene);
-    initializeUI();
+
+    // Create the user interface
+    app.ui = new UserInterface();
+    app.ui.init(app.options);
 
     // Configure event listeners
     document.addEventListener("keydown", (e) => {
@@ -73,11 +76,11 @@ function initPointerLock(canvas) {
     };
     document.addEventListener("pointerlockchange", () => {
         if (document.pointerLockElement === canvas) {
-            toggleCenterPanel(false);
+            app.ui.toggleOverlay(false);
             document.addEventListener("mousemove", mouseMovement);
         } else {
             document.removeEventListener("mousemove", mouseMovement);
-            toggleCenterPanel(true);
+            app.ui.toggleOverlay(true);
         }
     });
 }
@@ -326,7 +329,7 @@ function frame(time) {
     let timeDelta = time - lastFrame;
 
     // Update FPS
-    updateFrameRate(1 / (timeDelta * .001));
+    app.ui.updateFrameRate(1 / (timeDelta * .001));
 
     // Update the camera
     keyboardMovement(scene.camera, timeDelta);

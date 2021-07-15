@@ -84,6 +84,11 @@
             "name": "sun",
             "color": [0.9, 1, 1],
             "rotation": [35, 105]
+        },
+        {
+            "name": "other",
+            "color": [0, 0, 0],
+            "rotation": [0, 90]
         }
     ]
 }

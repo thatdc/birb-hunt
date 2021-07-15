@@ -14,7 +14,8 @@
     <script type="text/javascript" src="scripts/collsion.js"></script>
     <script type="text/javascript" src="scripts/scene.js"></script>
     <script type="text/javascript" src="scripts/program.js"></script>
-    <script type="text/javascript" src="scripts/ui.js"></script>
+    <script type="text/javascript" src="scripts/ui/light-controls.js"></script>
+    <script type="text/javascript" src="scripts/ui/ui.js"></script>
     <script type="text/javascript" src="scripts/app.js"></script>
 </head>
 
@@ -37,6 +38,30 @@
             <div>
                 <input type="checkbox" id="opt-showFrameRate">
                 <label for="opt-showFrameRate">Show framerate</label>
+            </div>
+        </div>
+    </div>
+
+    <!-- Side panel -->
+    <div id="side-panel" class="overlay panel">
+        <div>
+            <h3>Lights</h3>
+            <div id="light-controls">
+                <div id="light-controls-selector">
+                    <!-- Will be filled programmatically -->
+                </div>
+                <p>Position</p>
+                <div id="light-controls-position">
+                    <!-- Will be filled programmatically -->
+                </div>
+                <p>Direction</p>
+                <div id="light-controls-direction">
+                    <!-- Will be filled programmatically -->
+                </div>
+                <p>Color</p>
+                <div id="light-controls-color">
+                    <!-- Will be filled programmatically -->
+                </div>
             </div>
         </div>
     </div>

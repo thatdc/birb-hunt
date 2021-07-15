@@ -343,8 +343,6 @@ class TexturedProgram extends Program {
         return vao;
     }
 
-
-
     /**
      * Create all the WebGL textures for the given mesh.
      * 
@@ -417,7 +415,7 @@ class TexturedProgram extends Program {
 
 class LambertProgram extends TexturedProgram {
 
-    N_DIRECTIONAL_LIGHTS = 1;
+    N_DIRECTIONAL_LIGHTS = 2;
 
     /**
      * Initialize the program before use:
