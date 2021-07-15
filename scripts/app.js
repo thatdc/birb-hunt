@@ -146,6 +146,8 @@ function configureApp(app, customOptions) {
     app.options = {
         showFrameRate: false,
         showCollisionMeshes: false,
+        freeCamera: false,
+        showPosition: false,
     };
     Object.assign(app.options, customOptions);
 }

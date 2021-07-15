@@ -12,6 +12,8 @@ function initializeUI() {
 
     // Set visibility of framerate
     document.getElementById("framerate").hidden = !app.options["showFrameRate"] ?? true;
+    // Set visibility of position
+    document.getElementById("position").hidden = !app.options["showPosition"] ?? true;
 }
 
 /**
@@ -23,6 +25,9 @@ function onAppOptionsCheckBoxChange(e) {
     app.options[option] = e.target.checked;
     if (option === "showFrameRate") {
         document.getElementById("framerate").hidden = e.target.checked === false;
+    }
+    if (option === "showPosition") {
+        document.getElementById("position").hidden = e.target.checked === false;
     }
 }
 
@@ -41,5 +46,18 @@ function toggleCenterPanel(visible) {
 function updateFrameRate(frameRate) {
     if (app.options.showFrameRate) {
         document.getElementById("framerate").textContent = `FPS: ${frameRate.toFixed(1)}`;
+    }
+}
+
+/**
+ * Updates the current position in the box
+ * @param {Array} position 
+ */
+function updatePosition(position) {
+    position = position.map(function(x){
+        return Number(x.toFixed(2));
+    });
+    if (app.options.showPosition) {
+        document.getElementById("position").textContent = `Current position: ${position}`;
     }
 }

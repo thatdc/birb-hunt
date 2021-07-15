@@ -114,11 +114,16 @@ class Camera {
         // Transform the movement direction
         let T = utils.MakeRotateXYZMatrix(...this.rotation);
         delta = utils.multiplyMatrixVector(T, [...delta, 1]);
+        
+        if (app.options['freeCamera'] == false)
+            delta[1] = 0;
 
         // Sum to the current position
         for (let i in this.position) {
             this.position[i] += delta[i];
         }
+
+        updatePosition(this.position)
     }
 
     /**
