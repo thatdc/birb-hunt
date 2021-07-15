@@ -69,6 +69,30 @@ class LightControls {
     decayDisplay;
 
     /**
+     * Input for inner cone
+     * @type {Element}
+     */
+    innerConeInput;
+
+    /**
+     * Display for inner cone
+     * @type {Element}
+     */
+    innerConeDisplay;
+
+    /**
+     * Input for outer cone
+     * @type {Element}
+     */
+    outerConeInput;
+
+    /**
+     * Display for outer cone
+     * @type {Element}
+     */
+    outerConeDisplay;
+
+    /**
      * Creates a new LightControls object
      */
     constructor() {
@@ -193,6 +217,56 @@ class LightControls {
             this.decayInput = input;
             this.decayDisplay = display;
         }
+        // Inner cone controls
+        parent = lightControlsElement.querySelector("#light-controls-innerCone");
+        {
+            // Create the input and insert it into the DOM
+            let input = document.createElement("input");
+            input.id = `light-controls-innerCone-value`;
+            input.type = "range";
+            input.min = 0;
+            input.max = 1;
+            input.step = 0.01;
+            input.addEventListener("input", (e) => LightControls.onInnerConeInput(e, this));
+            let label = document.createElement("label");
+            label.htmlFor = input.id;
+            label.textContent = "i";
+            let display = document.createElement("label");
+            display.classList.add("display-coord");
+            display.textContent = input.value;
+            let wrapper = document.createElement("div");
+            wrapper.appendChild(label);
+            wrapper.appendChild(input);
+            wrapper.appendChild(display);
+            parent.appendChild(wrapper);
+            this.innerConeInput = input;
+            this.innerConeDisplay = display;
+        }
+        // Outer cone controls
+        parent = lightControlsElement.querySelector("#light-controls-outerCone");
+        {
+            // Create the input and insert it into the DOM
+            let input = document.createElement("input");
+            input.id = `light-controls-outerCone-value`;
+            input.type = "range";
+            input.min = 0;
+            input.max = 1;
+            input.step = 0.01;
+            input.addEventListener("input", (e) => LightControls.onOuterConeInput(e, this));
+            let label = document.createElement("label");
+            label.htmlFor = input.id;
+            label.textContent = "o";
+            let display = document.createElement("label");
+            display.classList.add("display-coord");
+            display.textContent = input.value;
+            let wrapper = document.createElement("div");
+            wrapper.appendChild(label);
+            wrapper.appendChild(input);
+            wrapper.appendChild(display);
+            parent.appendChild(wrapper);
+            this.outerConeInput = input;
+            this.outerConeDisplay = display;
+        }
         // Light selector and isActive checkbox
         parent = lightControlsElement.querySelector("#light-controls-selector");
         {
@@ -217,9 +291,7 @@ class LightControls {
      * @param {Scene} scene 
      */
     refreshLightNames(scene) {
-        let names;
-        // TODO: Finish this with all lights
-        for (let [pName, name] of [["directionalLights", "Directional"], ["pointLights", "Point"]]) {
+        for (let [pName, name] of [["directionalLights", "Directional"], ["pointLights", "Point"], ["spotLights", "Spot"]]) {
             // Create options group
             let group = document.createElement("optgroup");
             group.label = name;
@@ -286,6 +358,22 @@ class LightControls {
             if (!input.disabled) {
                 input.value = light.decay;
                 lc.decayDisplay.textContent = light.decay.toFixed(1);
+            }
+        }
+        {
+            let input = lc.innerConeInput;
+            input.disabled = !light || light.innerCone === undefined;
+            if (!input.disabled) {
+                input.value = light.innerCone;
+                lc.innerConeDisplay.textContent = light.innerCone.toFixed(2);
+            }
+        }
+        {
+            let input = lc.outerConeInput;
+            input.disabled = !light || light.outerCone === undefined;
+            if (!input.disabled) {
+                input.value = light.outerCone;
+                lc.outerConeDisplay.textContent = light.outerCone.toFixed(2);
             }
         }
         {
@@ -367,6 +455,32 @@ class LightControls {
         lc._selectedLight.decay = a;
         // Update display
         lc.decayDisplay.textContent = a.toFixed(1);
+    }
+
+    /**
+     * Called when the inner cone is changed from the input
+     * @param {InputEvent} e
+     * @param {LightControls} lc 
+     */
+     static onInnerConeInput(e, lc) {
+        // Update light
+        let a = Number(e.target.value);
+        lc._selectedLight.innerCone = a;
+        // Update display
+        lc.innerConeDisplay.textContent = a.toFixed(2);
+    }
+
+    /**
+     * Called when the outer cone is changed from the input
+     * @param {InputEvent} e
+     * @param {LightControls} lc 
+     */
+     static onOuterConeInput(e, lc) {
+        // Update light
+        let a = Number(e.target.value);
+        lc._selectedLight.outerCone = a;
+        // Update display
+        lc.outerConeDisplay.textContent = a.toFixed(2);
     }
 
     /**
