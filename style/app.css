@@ -60,22 +60,27 @@ canvas {
     color: white;
 }
 
-#side-panel > * input[type="number"] {
+#side-panel input[type="number"] {
     background-color: rgb(48, 48, 48);
     color: white;
 }
 
-#side-panel > * label {
+#side-panel label {
     margin: 1ex;
 }
 
-#side-panel > * select {
-    width: 100%;
+#side-panel select {
+    margin-left: 1ex;
+    width: 80%;
 }
 
-#side-panel > * .display-angle {
+#side-panel .display-angle, .display-coord {
     text-align: center;
     display: inline-block;
     margin-right: 0;
     min-width: 6ex;
+}
+
+#light-controls-selector > * {
+    display: inline-block;
 }

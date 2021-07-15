@@ -33,11 +33,11 @@ class UserInterface {
 
         // Set visibility of framerate
         this.frameRateDisplay = document.getElementById("framerate");
-        this.frameRateDisplay.hidden = options["showFrameRate"] ?? true;
+        this.frameRateDisplay.hidden = !options["showFrameRate"] ?? true;
 
         // Set visibility of position
         this.positionDisplay = document.getElementById("position");
-        this.positionDisplay.hidden = !app.options["showPosition"] ?? true;
+        this.positionDisplay.hidden = !options["showPosition"] ?? true;
 
         // Side panel
         this.sidePanel = document.getElementById("side-panel");

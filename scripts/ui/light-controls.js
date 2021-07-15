@@ -10,9 +10,15 @@ class LightControls {
 
     /**
      * Currently selected light
-     * @type {DirectionalLight}
+     * @type {Light}
      */
     _selectedLight;
+
+    /**
+     * Inputs for light status
+     * @type {Element}
+     */
+    isActiveInput;
 
     /**
      * Inputs for light position on the XYZ axis
@@ -37,6 +43,30 @@ class LightControls {
      * @type {Element}
      */
     colorInput;
+
+    /**
+     * Input for target distance (g)
+     * @type {Element}
+     */
+    targetInput;
+
+    /**
+     * Display for target distance (g)
+     * @type {Element}
+     */
+    targetDisplay;
+
+    /**
+     * Input for decay (beta)
+     * @type {Element}
+     */
+    decayInput;
+
+    /**
+     * Display for decay (beta)
+     * @type {Element}
+     */
+    decayDisplay;
 
     /**
      * Creates a new LightControls object
@@ -113,9 +143,66 @@ class LightControls {
             parent.appendChild(wrapper);
             this.colorInput = input;
         }
-        // Light selector
+        // Target distance controls
+        parent = lightControlsElement.querySelector("#light-controls-target");
+        {
+            // Create the input and insert it into the DOM
+            let input = document.createElement("input");
+            input.id = `light-controls-target-distance`;
+            input.type = "range";
+            input.min = 0;
+            input.max = 100;
+            input.step = 0.01;
+            input.addEventListener("input", (e) => LightControls.onTargetInput(e, this));
+            let label = document.createElement("label");
+            label.htmlFor = input.id;
+            label.textContent = "g";
+            let display = document.createElement("label");
+            display.classList.add("display-coord");
+            display.textContent = input.value;
+            let wrapper = document.createElement("div");
+            wrapper.appendChild(label);
+            wrapper.appendChild(input);
+            wrapper.appendChild(display);
+            parent.appendChild(wrapper);
+            this.targetInput = input;
+            this.targetDisplay = display;
+        }
+        // Decay controls
+        parent = lightControlsElement.querySelector("#light-controls-decay");
+        {
+            // Create the input and insert it into the DOM
+            let input = document.createElement("input");
+            input.id = `light-controls-decay-value`;
+            input.type = "range";
+            input.min = 0;
+            input.max = 2;
+            input.step = 1;
+            input.addEventListener("input", (e) => LightControls.onDecayInput(e, this));
+            let label = document.createElement("label");
+            label.htmlFor = input.id;
+            label.textContent = "\u03B2";
+            let display = document.createElement("label");
+            display.classList.add("display-coord");
+            display.textContent = input.value;
+            let wrapper = document.createElement("div");
+            wrapper.appendChild(label);
+            wrapper.appendChild(input);
+            wrapper.appendChild(display);
+            parent.appendChild(wrapper);
+            this.decayInput = input;
+            this.decayDisplay = display;
+        }
+        // Light selector and isActive checkbox
         parent = lightControlsElement.querySelector("#light-controls-selector");
         {
+            let check = document.createElement("input");
+            this.isActiveInput = check;
+            check.id = "light-controls-isActive";
+            check.type = "checkbox";
+            check.addEventListener("change", (e) => LightControls.onIsActiveChange(e, this));
+            parent.appendChild(check);
+
             let selector = document.createElement("select");
             this.selector = selector;
             this.refreshLightNames(scene);
@@ -132,7 +219,7 @@ class LightControls {
     refreshLightNames(scene) {
         let names;
         // TODO: Finish this with all lights
-        for (let [pName, name] of [["directionalLights", "Directional"]]) {
+        for (let [pName, name] of [["directionalLights", "Directional"], ["pointLights", "Point"]]) {
             // Create options group
             let group = document.createElement("optgroup");
             group.label = name;
@@ -173,9 +260,9 @@ class LightControls {
         for (let [i, input] of lc.directionInputs.entries()) {
             input.disabled = !light || !light.rotation;
             if (!input.disabled) {
-                let a = light.rotation[i].toFixed(1)
+                let a = light.rotation[i];
                 input.value = a;
-                lc.directionDisplays[i].textContent = a;
+                lc.directionDisplays[i].textContent = a.toFixed(1);
             }
         }
         {
@@ -185,6 +272,39 @@ class LightControls {
                 input.value = LightControls._rgbToHex(light.color);
             }
         }
+        {
+            let input = lc.targetInput;
+            input.disabled = !light || light.target === undefined;
+            if (!input.disabled) {
+                input.value = light.target;
+                lc.targetDisplay.textContent = light.target.toFixed(1);
+            }
+        }
+        {
+            let input = lc.decayInput;
+            input.disabled = !light || light.decay === undefined;
+            if (!input.disabled) {
+                input.value = light.decay;
+                lc.decayDisplay.textContent = light.decay.toFixed(1);
+            }
+        }
+        {
+            let input = lc.isActiveInput;
+            input.disabled = !light;
+            if (!input.disabled) {
+                input.checked = light.isActive;
+            }
+        }
+    }
+
+    /**
+     * Called when the light status is changed from the input
+     * @param {InputEvent} e
+     * @param {LightControls} lc 
+     */
+    static onIsActiveChange(e, lc) {
+        // Update light
+        lc._selectedLight.isActive = e.target.checked;
     }
 
     /**
@@ -221,6 +341,32 @@ class LightControls {
         let color = LightControls._hexToRgb(e.target.value);
         // Update light
         lc._selectedLight.color = color;
+    }
+
+    /**
+     * Called when the light target direction is changed from the input
+     * @param {InputEvent} e
+     * @param {LightControls} lc 
+     */
+     static onTargetInput(e, lc) {
+        // Update light
+        let a = Number(e.target.value);
+        lc._selectedLight.target = a;
+        // Update display
+        lc.targetDisplay.textContent = a.toFixed(1);
+    }
+
+    /**
+     * Called when the light decay is changed from the input
+     * @param {InputEvent} e
+     * @param {LightControls} lc 
+     */
+     static onDecayInput(e, lc) {
+        // Update light
+        let a = Number(e.target.value);
+        lc._selectedLight.decay = a;
+        // Update display
+        lc.decayDisplay.textContent = a.toFixed(1);
     }
 
     /**
