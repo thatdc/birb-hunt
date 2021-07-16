@@ -224,7 +224,7 @@ class LightControls {
             let input = document.createElement("input");
             input.id = `light-controls-innerCone-value`;
             input.type = "range";
-            input.min = 0;
+            input.min = -1;
             input.max = 1;
             input.step = 0.01;
             input.addEventListener("input", (e) => LightControls.onInnerConeInput(e, this));
@@ -249,7 +249,7 @@ class LightControls {
             let input = document.createElement("input");
             input.id = `light-controls-outerCone-value`;
             input.type = "range";
-            input.min = 0;
+            input.min = -1;
             input.max = 1;
             input.step = 0.01;
             input.addEventListener("input", (e) => LightControls.onOuterConeInput(e, this));
@@ -364,7 +364,7 @@ class LightControls {
             let input = lc.innerConeInput;
             input.disabled = !light || light.innerCone === undefined;
             if (!input.disabled) {
-                input.value = light.innerCone;
+                input.value = -light.innerCone;
                 lc.innerConeDisplay.textContent = light.innerCone.toFixed(2);
             }
         }
@@ -372,7 +372,7 @@ class LightControls {
             let input = lc.outerConeInput;
             input.disabled = !light || light.outerCone === undefined;
             if (!input.disabled) {
-                input.value = light.outerCone;
+                input.value = -light.outerCone;
                 lc.outerConeDisplay.textContent = light.outerCone.toFixed(2);
             }
         }
@@ -465,7 +465,7 @@ class LightControls {
      static onInnerConeInput(e, lc) {
         // Update light
         let a = Number(e.target.value);
-        lc._selectedLight.innerCone = a;
+        lc._selectedLight.innerCone = -a;
         // Update display
         lc.innerConeDisplay.textContent = a.toFixed(2);
     }
@@ -478,7 +478,7 @@ class LightControls {
      static onOuterConeInput(e, lc) {
         // Update light
         let a = Number(e.target.value);
-        lc._selectedLight.outerCone = a;
+        lc._selectedLight.outerCone = -a;
         // Update display
         lc.outerConeDisplay.textContent = a.toFixed(2);
     }
