@@ -49,7 +49,7 @@ struct directionalLight {
   vec3 color;
 };
 uniform directionalLight u_directionalLights[N_DIRECTIONAL_LIGHTS];
-vec3 calcDirectionalLight(directionalLight l, vec3 n_normal);
+vec3 calcDirectionalLight(directionalLight l);
 
 // Point lights
 struct pointLight {
@@ -76,6 +76,9 @@ struct spotLight {
 uniform spotLight u_spotLights[N_SPOT_LIGHTS];
 vec3 calcSpotLight(spotLight l, vec3 pos);
 
+// Lambert diffuse component
+float calcLambertDiffuse(vec3 light_dir, vec3 n_normal);
+
 void main() {
   // Compute the fragment position in world space
   vec3 pos = (u_worldMatrix * vec4(fs_position, 1)).xyz;
@@ -89,11 +92,13 @@ void main() {
     n_normal = fs_normal;
   }
   n_normal = normalize(u_normalMatrix * n_normal);
+
   // Get the diffuse color (from map or material)
-  vec3 diffuseColor = b_useMapDiffuse ? texture(u_mapDiffuse, fs_uv).rgb : u_diffuse;
+  vec3 mtl_diffuse = b_useMapDiffuse ? texture(u_mapDiffuse, fs_uv).rgb : u_diffuse;
 
   // Calculate the final color
   vec3 color = vec3(0, 0, 0);
+
   // Ambient light
   color += u_ambient * textureLod(u_mapEnv, n_normal, 7.).rgb * AMBIENT_LIGHT_STRENGTH;
 
@@ -101,23 +106,35 @@ void main() {
   for(int i = 0; i < N_DIRECTIONAL_LIGHTS; i++) {
     directionalLight l = u_directionalLights[i];
     if (l.isActive) {
-      color += diffuseColor * calcDirectionalLight(l, n_normal);
+      // Diffuse component from the BRDF
+      vec3 diffuse = mtl_diffuse * calcLambertDiffuse(-l.direction, n_normal);
+      // Light contribution according to light model
+      color += diffuse * calcDirectionalLight(l);
     }
   }
 
-  // Directional lights
+  // Point lights
   for(int i = 0; i < N_POINT_LIGHTS; i++) {
     pointLight l = u_pointLights[i];
     if (l.isActive) {
-      color += diffuseColor * calcPointLight(l, pos);
+      // Direction from point to light
+      vec3 light_dir = normalize(l.position - pos);
+      // Diffuse component from the BRDF
+      vec3 diffuse = mtl_diffuse * calcLambertDiffuse(light_dir, n_normal);
+      // Light contribution according to light model
+      color += diffuse * calcPointLight(l, pos);
     }
   }
 
   // Spot lights
   for(int i = 0; i < N_SPOT_LIGHTS; i++) {
     spotLight l = u_spotLights[i];
-    if (l.isActive) {
-      color += diffuseColor * calcSpotLight(l, pos);
+    if (l.isActive) {// Direction from point to light
+      vec3 light_dir = normalize(l.position - pos);
+      // Diffuse component from the BRDF
+      vec3 diffuse = mtl_diffuse * calcLambertDiffuse(light_dir, n_normal);
+      // Light contribution according to light model
+      color += diffuse * calcSpotLight(l, pos);
     }
   }
 
@@ -129,12 +146,21 @@ void main() {
 }
 
 /**
+  * Calculates the diffuse BRDF according to Lambert rule.
+  * The diffuse color of the material is not taken inot account
+  * @param[in] light_dir direction of the light from the current point
+  * @param[in] n_normal normalized normal to the surface
+  */
+float calcLambertDiffuse(vec3 light_dir, vec3 n_normal) {
+  return clamp(dot(light_dir, n_normal), 0., 1.);
+}
+
+/**
   * Calculates the contribution of a directional light
   * @param[in] l the directional light
-  * @param[in] n_normal the normal to the current point
   */
-vec3 calcDirectionalLight(directionalLight l, vec3 n_normal) {
-  return l.color * dot(-l.direction, n_normal);
+vec3 calcDirectionalLight(directionalLight l) {
+  return l.color;
 }
 
 /**
