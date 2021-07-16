@@ -416,7 +416,6 @@ class TexturedProgram extends Program {
         gl.uniformMatrix3fv(this.normalMatrixLocation, true, normalMatrix);
     }
 }
-
 class LambertProgram extends TexturedProgram {
 
     N_DIRECTIONAL_LIGHTS = 2;

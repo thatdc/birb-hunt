@@ -1,6 +1,6 @@
 #version 300 es
 
-#define AMBIENT_LIGHT_STRENGTH .1
+#define AMBIENT_LIGHT_STRENGTH .25
 #define N_DIRECTIONAL_LIGHTS 2
 #define N_POINT_LIGHTS 2
 #define N_SPOT_LIGHTS 2
@@ -100,7 +100,7 @@ void main() {
   vec3 color = vec3(0, 0, 0);
 
   // Ambient light
-  color += u_ambient * textureLod(u_mapEnv, n_normal, 7.).rgb * AMBIENT_LIGHT_STRENGTH;
+  color += diffuseColor * textureLod(u_mapEnv, n_normal, 7.).rgb * AMBIENT_LIGHT_STRENGTH;
 
   // Directional lights
   for(int i = 0; i < N_DIRECTIONAL_LIGHTS; i++) {
