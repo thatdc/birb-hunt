@@ -265,7 +265,15 @@ class Scene {
      * @param {boolean} collisionMeshes draw a wireframe version of the collision meshes
      */
     draw(collisionMeshes=false) {
+        // Compute shadow map if shadows are enabled
+        this._computeShadowMap()
+
+        // Clear and resize the viewport
+        gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
+        gl.clearColor(1, 1, 1, 1.0);
+        gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
         let viewProjectionMatrix = this.camera.getViewProjectionMatrix();
+
         // Draw the objects
         this._drawTree(viewProjectionMatrix, this.rootNode, collisionMeshes);
 
@@ -299,6 +307,60 @@ class Scene {
 
         for (let child of root.children) {
             this._drawTree(viewProjectionMatrix, child, showCollisionMeshes);
+        }
+    }
+
+    _computeShadowMap(){
+        let program = this.programs.get("depth_map")
+
+        let SHADOW_WIDTH = 1024
+        let SHADOW_HEIGHT = 1024
+
+        var depthMapFBO = gl.createFramebuffer();
+        var depthMap = gl.createTexture();
+        gl.bindTexture(gl.TEXTURE_2D, depthMap);
+        gl.texImage2D(gl.TEXTURE_2D, 0, gl.DEPTH_COMPONENT, 
+             SHADOW_WIDTH, SHADOW_HEIGHT, 0, gl.DEPTH_COMPONENT, gl.FLOAT, null);
+             
+        // Set some parameters
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.REPEAT); 
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.REPEAT);
+
+        // Bind frame buffer
+        gl.bindFramebuffer(gl.FRAMEBUFFER, depthMapFBO);
+        gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.DEPTH_ATTACHMENT, gl.TEXTURE_2D, depthMap, 0);
+        gl.drawBuffers([gl.NONE]);
+        gl.readBuffer(gl.NONE);
+        gl.bindFramebuffer(gl.FRAMEBUFFER, depthMapFBO);
+        
+        // Prepare to render on the frame buffer
+        gl.viewport(0, 0, SHADOW_WIDTH, SHADOW_HEIGHT);
+        gl.bindFramebuffer(gl.FRAMEBUFFER, depthMapFBO);
+        gl.clear(gl.DEPTH_BUFFER_BIT);
+        
+        // Light space view matrix
+        let lightSpaceMatrix = this.directionalLights[0].getLightSpaceMatrix();
+        
+        // Render on the frame buffer
+        this._drawShadowMap(program, lightSpaceMatrix, this.rootNode);
+        
+        gl.bindFramebuffer(gl.FRAMEBUFFER, null);
+
+    }
+
+    _drawShadowMap(program, lightSpaceMatrix, root){
+        if (!root.isVisible) { // this node and its children will be hidden
+            return;
+        }
+        if (root instanceof SceneObject) {
+            // Set the uniforms and perform one draw call per material
+            program.drawObject(this, lightSpaceMatrix, root);
+        }
+
+        for (let child of root.children) {
+            this._drawShadowMap(program, lightSpaceMatrix, child);
         }
     }
 }

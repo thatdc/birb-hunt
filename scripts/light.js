@@ -84,6 +84,15 @@ class DirectionalLight extends Light {
 
         return [-x, -y, -z];
     }
+
+    getLightSpaceMatrix(halfWidth, nearPlane=0.1, farPlane=100, distance = 150){
+        let parallel = utils.MakeParallel(halfWidth, 1, nearPlane, farPlane);
+        let c = this.getDirection().map(x => x*distance);
+        let a = [0, 0, 0];
+        let view = utils.MakeLookAt(c, a, [0, 1, 0])
+
+        return parallel
+    }
 }
 
 class PointLight extends Light {

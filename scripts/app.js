@@ -197,6 +197,7 @@ async function configureScene(scene) {
     // Initialize the programs
     scene.programs.set("solid", new SolidColorProgram().init());
     scene.programs.set("lambert", new LambertProgram().init());
+    scene.programs.set("depth_map", new DepthMapProgram().init());
 
     // Download scene configuration (JSON)
     let sceneConfig = await (await fetch("config.json")).json();
@@ -383,11 +384,6 @@ function frame(time) {
 
     // Perform raycasting
     rayCasting(scene);
-
-    // Clear and resize the viewport
-    gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
-    gl.clearColor(1, 1, 1, 1.0);
-    gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
     // Draw
     scene.draw(app.options.showCollisionMeshes);

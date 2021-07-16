@@ -100,7 +100,7 @@ void main() {
   vec3 color = vec3(0, 0, 0);
 
   // Ambient light
-  color += diffuseColor * textureLod(u_mapEnv, n_normal, 7.).rgb * AMBIENT_LIGHT_STRENGTH;
+  color += mtl_diffuse * textureLod(u_mapEnv, n_normal, 7.).rgb * AMBIENT_LIGHT_STRENGTH;
 
   // Directional lights
   for(int i = 0; i < N_DIRECTIONAL_LIGHTS; i++) {
