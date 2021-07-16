@@ -33,6 +33,7 @@ async function main() {
         let key = e.key.length == 1 ? e.key.toLowerCase() : e.key;
         delete keyPressed[key];
     });
+    document.addEventListener("keydown", onOverlayKeys);
 
     // Configure Pointer Lock
     initPointerLock(canvas);
@@ -74,13 +75,16 @@ function initPointerLock(canvas) {
     canvas.onclick = () => {
         canvas.requestPointerLock();
     };
-    document.addEventListener("pointerlockchange", () => {
+    document.addEventListener("pointerlockchange", (e) => {
+        e.bubbles = false;
+        e.preventDefault();
         if (document.pointerLockElement === canvas) {
+            document.removeEventListener("keydown", onOverlayKeys);
             app.ui.toggleOverlay(false);
             document.addEventListener("mousemove", mouseMovement);
         } else {
             document.removeEventListener("mousemove", mouseMovement);
-            app.ui.toggleOverlay(true);
+            document.addEventListener("keydown", onOverlayKeys);
         }
     });
 }
@@ -91,6 +95,10 @@ function initPointerLock(canvas) {
  * @param {DOMHighResTimeStamp} timeDelta
  */
 function keyboardMovement(camera, timeDelta) {
+    // Move only if the player is interacting with the canvas
+    if (document.pointerLockElement !== gl.canvas) {
+        return;
+    }
     timeDelta *= .001; // convert to seconds
     // Run if shift is pressed
     let posStep = (keyPressed["Shift"] ? 20 : 5) * timeDelta;
@@ -125,9 +133,12 @@ function keyboardMovement(camera, timeDelta) {
 /**
  * Handles camera rotation on mouse movement
  * @param {MouseEvent} e 
- * @param {Camera} camera 
  */
 function mouseMovement(e) {
+    // Move only if the player is interacting with the canvas
+    if (document.pointerLockElement !== gl.canvas) {
+        return;
+    }
     let camera = scene.camera;
     let step = 0.2;
     let deltaX = step * e.movementX;
@@ -138,6 +149,25 @@ function mouseMovement(e) {
         deltaX,
         0
     ]);
+}
+
+/**
+ * Handles controls of the game overlay panels on keyboard events
+ * @param {KeyboardEvent} e 
+ */
+function onOverlayKeys(e) {
+    // Options menu
+    if (e.ctrlKey && e.key === "o") {
+        let optPanel = document.getElementById("options-panel");
+        optPanel.hidden = !optPanel.hidden;
+        e.preventDefault();
+    }
+    // Side panel
+    if (e.ctrlKey && e.key === "s") {
+        let sidePanel = document.getElementById("side-panel");
+        sidePanel.hidden = !sidePanel.hidden;
+        e.preventDefault();
+    }
 }
 
 /**
@@ -385,7 +415,7 @@ function rayCasting(scene, maxDistance = 20) {
     let selectedObject = null;
     let minDistance = maxDistance;
     for (let [_, object] of scene.objects) {
-        if (!object.isSelectable || !object.isVisible) {
+        if (!object.isSelectable || !object.isVisible || !object.model.collisionMesh) {
             continue;
         }
         // Reset selection state
