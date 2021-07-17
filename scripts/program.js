@@ -467,7 +467,9 @@ class LambertProgram extends TexturedProgram {
             this.directionalLightLocations[i] = {
                 "isActive": gl.getUniformLocation(p, `u_directionalLights[${i}].isActive`),
                 "color": gl.getUniformLocation(p, `u_directionalLights[${i}].color`),
-                "direction": gl.getUniformLocation(p, `u_directionalLights[${i}].direction`)
+                "direction": gl.getUniformLocation(p, `u_directionalLights[${i}].direction`),
+                "viewProjectionMatrix": gl.getUniformLocation(p, `u_directionalLights[${i}].viewProjectionMatrix`),
+                "shadowMap": i == 0 ? gl.getUniformLocation(p, `u_directionalLightShadowMap`) : undefined
             };
         }
 
@@ -494,7 +496,9 @@ class LambertProgram extends TexturedProgram {
                 "innerCone": gl.getUniformLocation(p, `u_spotLights[${i}].innerCone`),
                 "outerCone": gl.getUniformLocation(p, `u_spotLights[${i}].outerCone`),
                 "target": gl.getUniformLocation(p, `u_spotLights[${i}].target`),
-                "decay": gl.getUniformLocation(p, `u_spotLights[${i}].decay`)
+                "decay": gl.getUniformLocation(p, `u_spotLights[${i}].decay`),
+                "viewProjectionMatrix": gl.getUniformLocation(p, `u_spotLights[${i}].viewProjectionMatrix`),
+                "shadowMap": i == 0 ? gl.getUniformLocation(p, `u_spotLightShadowMap`) : undefined
             };
         }
 
@@ -513,24 +517,38 @@ class LambertProgram extends TexturedProgram {
         gl.uniform1i(this.mapEnvLocation, 3);
 
         // Directional lights
-        for (let i in scene.directionalLights) {
-            let l = scene.directionalLights[i];
+        for (let i = 0; i < this.N_DIRECTIONAL_LIGHTS; i++) {
             let lLoc = this.directionalLightLocations[i];
-            l.setUniforms(lLoc);
+            if (i < scene.directionalLights.length) { // the light is defined
+                let l = scene.directionalLights[i];
+                let shadowMapUnit = i == 0 ? 4 : undefined;
+                l.setUniforms(lLoc, shadowMapUnit);
+            } else { // the light is not defined
+                gl.uniform1i(lLoc.isActive, 0);
+            }
         }
 
         // Point lights
-        for (let i in scene.pointLights) {
-            let l = scene.pointLights[i];
+        for (let i = 0; i < this.N_POINT_LIGHTS; i++) {
             let lLoc = this.pointLightLocations[i];
-            l.setUniforms(lLoc);
+            if (i < scene.pointLights.length) { // the light is defined
+                let l = scene.pointLights[i];
+                l.setUniforms(lLoc);
+            } else { // the light is not defined
+                gl.uniform1i(lLoc.isActive, 0);
+            }
         }
 
         // Spot lights
-        for (let i in scene.spotLights) {
-            let l = scene.spotLights[i];
+        for (let i = 0; i < this.N_SPOT_LIGHTS; i++) {
             let lLoc = this.spotLightLocations[i];
-            l.setUniforms(lLoc);
+            if (i < scene.spotLights.length) { // the light is defined
+                let l = scene.spotLights[i];
+                let shadowMapUnit = i == 0 ? 5 : undefined;
+                l.setUniforms(lLoc, shadowMapUnit);
+            } else { // the light is not defined
+                gl.uniform1i(lLoc.isActive, 0);
+            }
         }
     }
 

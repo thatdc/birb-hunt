@@ -195,7 +195,7 @@ class SceneObject extends SceneNode {
     select() {
         this.isSelected = true;
     }
-    
+
     /**
      * Deselects this object
      */
@@ -264,14 +264,18 @@ class Scene {
      * Draws the scene
      * @param {boolean} collisionMeshes draw a wireframe version of the collision meshes
      */
-    draw(collisionMeshes=false) {
-        // Compute shadow map if shadows are enabled
-        this._computeShadowMap()
+    draw(collisionMeshes = false) {
+        // Compute shadow maps
+        this._computeShadowMaps();
 
         // Clear and resize the viewport
+        gl.bindFramebuffer(gl.FRAMEBUFFER, null);
         gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
         gl.clearColor(1, 1, 1, 1.0);
         gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+        gl.cullFace(gl.BACK);
+
+        // Calculate the view-projection matrix
         let viewProjectionMatrix = this.camera.getViewProjectionMatrix();
 
         // Draw the objects
@@ -288,16 +292,17 @@ class Scene {
      * @param {number[]} viewProjectionMatrix
      * @param {SceneNode} root root of the subtree
      * @param {boolean} showCollisionMeshes draw a wireframe version of the collision meshes
+     * @param {Program} program force the use of this program for rendering. If undefined or null, the object's own program will be used
      */
-    _drawTree(viewProjectionMatrix, root, showCollisionMeshes=false) {
+    _drawTree(viewProjectionMatrix, root, showCollisionMeshes = false, program = undefined) {
         if (!root.isVisible) { // this node and its children will be hidden
             return;
         }
         if (root instanceof SceneObject) {
             /** @type {Program} */
-            let program = root.model.program;
+            let p = program ?? root.model.program;
             // Set the uniforms and perform one draw call per material
-            program.drawObject(this, viewProjectionMatrix, root);
+            p.drawObject(this, viewProjectionMatrix, root);
 
             if (showCollisionMeshes && root.model.collisionMesh) {
                 let cm = root.model.collisionMesh;
@@ -306,61 +311,48 @@ class Scene {
         }
 
         for (let child of root.children) {
-            this._drawTree(viewProjectionMatrix, child, showCollisionMeshes);
+            this._drawTree(viewProjectionMatrix, child, showCollisionMeshes, program);
         }
     }
 
-    _computeShadowMap(){
-        let program = this.programs.get("depth_map")
+    /**
+     * Computes the shadow maps for the supported lights
+     * 
+     * At the moment the supported lights are:
+     * - directionalLights[0]
+     * - pointLights[0]
+     */
+    _computeShadowMaps() {
+        /** @type {DepthMapProgram} */
+        let program = this.programs.get("depth_map");
 
-        let SHADOW_WIDTH = 1024
-        let SHADOW_HEIGHT = 1024
+        // NOTE: Currenly we support shadow maps only for the first directional light and the first spot light
+        /** @type {Light} */
+        let light;
+        for (light of [this.directionalLights[0], this.spotLights[0]]) {
+            // If the light is not acrive, the shadow map won't even be used in the shader
+            if (!light.isActive) {
+                continue;
+            }
+            // Get the shadow map size
+            let [width, height] = light.shadowMapSize;
 
-        var depthMapFBO = gl.createFramebuffer();
-        var depthMap = gl.createTexture();
-        gl.bindTexture(gl.TEXTURE_2D, depthMap);
-        gl.texImage2D(gl.TEXTURE_2D, 0, gl.DEPTH_COMPONENT, 
-             SHADOW_WIDTH, SHADOW_HEIGHT, 0, gl.DEPTH_COMPONENT, gl.FLOAT, null);
-             
-        // Set some parameters
-        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
-        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
-        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.REPEAT); 
-        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.REPEAT);
-
-        // Bind frame buffer
-        gl.bindFramebuffer(gl.FRAMEBUFFER, depthMapFBO);
-        gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.DEPTH_ATTACHMENT, gl.TEXTURE_2D, depthMap, 0);
-        gl.drawBuffers([gl.NONE]);
-        gl.readBuffer(gl.NONE);
-        gl.bindFramebuffer(gl.FRAMEBUFFER, depthMapFBO);
-        
-        // Prepare to render on the frame buffer
-        gl.viewport(0, 0, SHADOW_WIDTH, SHADOW_HEIGHT);
-        gl.bindFramebuffer(gl.FRAMEBUFFER, depthMapFBO);
-        gl.clear(gl.DEPTH_BUFFER_BIT);
-        
-        // Light space view matrix
-        let lightSpaceMatrix = this.directionalLights[0].getLightSpaceMatrix();
-        
-        // Render on the frame buffer
-        this._drawShadowMap(program, lightSpaceMatrix, this.rootNode);
-        
-        gl.bindFramebuffer(gl.FRAMEBUFFER, null);
-
-    }
-
-    _drawShadowMap(program, lightSpaceMatrix, root){
-        if (!root.isVisible) { // this node and its children will be hidden
-            return;
-        }
-        if (root instanceof SceneObject) {
-            // Set the uniforms and perform one draw call per material
-            program.drawObject(this, lightSpaceMatrix, root);
-        }
-
-        for (let child of root.children) {
-            this._drawShadowMap(program, lightSpaceMatrix, child);
+            // Bind the light's shadow map and color map to the depth frame buffer
+            // The color map is only needed to comply to the WebGL specs, it is not actually used
+            gl.bindFramebuffer(gl.FRAMEBUFFER, program.depthFrameBuffer);
+            gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.DEPTH_ATTACHMENT, gl.TEXTURE_2D, light.shadowMap, 0);
+            gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, light.colorMap, 0);
+            
+            // Prepare the framebuffer for rendering
+            gl.viewport(0, 0, width, height);
+            gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+            gl.cullFace(gl.BACK);
+            
+            // Compute the Light space view-projection matrix
+            let viewProjectionMatrix = light.getViewProjectionMatrix();
+            
+            // Render the whole scene on the frame buffer
+            this._drawTree(viewProjectionMatrix, this.rootNode, false, program);
         }
     }
 }

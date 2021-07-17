@@ -288,7 +288,8 @@ async function configureScene(scene) {
     // Set up directional lights
     scene.directionalLights = new Array();
     for (let lConfig of sceneConfig.directionalLights) {
-        let l = new DirectionalLight(lConfig.name, lConfig.color, lConfig.rotation, lConfig.isActive);
+        let l = new DirectionalLight(lConfig.name, lConfig.color, lConfig.rotation, lConfig.isActive,
+            lConfig.projectionOptions, lConfig.shadowMapSize);
         scene.directionalLights.push(l);
     }
 
@@ -303,7 +304,7 @@ async function configureScene(scene) {
     scene.spotLights = new Array();
     for (let lConfig of sceneConfig.spotLights) {
         let l = new SpotLight(lConfig.name, lConfig.color, lConfig.position, lConfig.rotation,
-            lConfig.innerCone, lConfig.outerCone, lConfig.target, lConfig.decay, lConfig.isActive);
+            lConfig.innerCone, lConfig.outerCone, lConfig.target, lConfig.decay, lConfig.isActive, lConfig.projectionOptions, lConfig.shadowMapSize);
         scene.spotLights.push(l);
     }
 

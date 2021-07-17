@@ -44,7 +44,7 @@ class Camera {
      * @param {number} near_plane distance of the near plane
      * @param {number} far_plane distance of the far plane
      */
-    constructor(position = [0, 0, 0], rotation = [0, 0, 0], fov_y = 90, aspect_ratio = 16 / 9, near_plane = 0.1, far_plane = 100) {
+    constructor(position = [0, 0, 0], rotation = [0, 0, 0], fov_y = 90, aspect_ratio = 16 / 9, near_plane = 0.1, far_plane = 300) {
         this.position = position;
         this.rotation = rotation;
         this.fov_y = fov_y;
@@ -103,7 +103,7 @@ class Camera {
      */
     getDirection() {
         let T = utils.MakeRotateXYZMatrix(...this.rotation);
-        return utils.multiplyMatrixVector(T, [0, 0, -1, 1]);
+        return utils.multiplyMatrixVector(T, [0, 0, -1, 1]).slice(0, 3);
     }
 
     /**
@@ -111,11 +111,11 @@ class Camera {
      * @param {number[]} delta XYZ movement amount, in camera space
      * @param {boolean} lockY
      */
-    move(delta, lockY=false) {
+    move(delta, lockY = false) {
         // Transform the movement direction
         let T = utils.MakeRotateXYZMatrix(...this.rotation);
         delta = utils.multiplyMatrixVector(T, [...delta, 1]);
-        
+
         if (lockY) {
             delta[1] = 0;
         }

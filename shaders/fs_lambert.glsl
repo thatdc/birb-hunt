@@ -1,11 +1,12 @@
 #version 300 es
 
-#define AMBIENT_LIGHT_STRENGTH .25
+#define AMBIENT_LIGHT_STRENGTH .6
 #define N_DIRECTIONAL_LIGHTS 2
 #define N_POINT_LIGHTS 2
 #define N_SPOT_LIGHTS 2
 
 precision mediump float;
+precision mediump sampler2DShadow;
 
 in vec2 fs_uv;
 in vec3 fs_normal;
@@ -47,8 +48,10 @@ struct directionalLight {
   bool isActive;
   vec3 direction;
   vec3 color;
+  mat4 viewProjectionMatrix;
 };
 uniform directionalLight u_directionalLights[N_DIRECTIONAL_LIGHTS];
+uniform sampler2DShadow u_directionalLightShadowMap; // for OpenGL 3.0 limitations, we only support a shadow map for light #0
 vec3 calcDirectionalLight(directionalLight l);
 
 // Point lights
@@ -72,9 +75,14 @@ struct spotLight {
   float outerCone;
   float target;
   float decay;
+  mat4 viewProjectionMatrix;
 };
 uniform spotLight u_spotLights[N_SPOT_LIGHTS];
+uniform sampler2DShadow u_spotLightShadowMap; // for OpenGL 3.0 limitations, we only support a shadow map for light #0
 vec3 calcSpotLight(spotLight l, vec3 pos);
+
+// Shadow maps
+float calcShadow(mat4 lightViewProjectionMatrix, sampler2DShadow shadowMap, vec3 pos, vec3 n_normal, vec3 light_dir);
 
 // Lambert diffuse component
 float calcLambertDiffuse(vec3 light_dir, vec3 n_normal);
@@ -85,7 +93,7 @@ void main() {
 
   // Compute the normalized normal (from map or varying)
   vec3 n_normal;
-  if (b_useMapNormal) {
+  if(b_useMapNormal) {
     // From map: transform from [0,1] -> [-1,1]
     n_normal = texture(u_mapNormal, fs_uv).rgb * 2. - 1.;
   } else {
@@ -96,47 +104,64 @@ void main() {
   // Get the diffuse color (from map or material)
   vec3 mtl_diffuse = b_useMapDiffuse ? texture(u_mapDiffuse, fs_uv).rgb : u_diffuse;
 
-  // Calculate the final color
-  vec3 color = vec3(0, 0, 0);
-
   // Ambient light
-  color += mtl_diffuse * textureLod(u_mapEnv, n_normal, 7.).rgb * AMBIENT_LIGHT_STRENGTH;
+  vec3 ambient = mtl_diffuse * textureLod(u_mapEnv, n_normal, 7.).rgb * AMBIENT_LIGHT_STRENGTH;
+
+  // Diffuse and specular accumulator
+  vec3 diffuseSpecular = vec3(0);
 
   // Directional lights
   for(int i = 0; i < N_DIRECTIONAL_LIGHTS; i++) {
     directionalLight l = u_directionalLights[i];
-    if (l.isActive) {
+    if(l.isActive) {
+      // Dimming due to shadow
+      float shadow;
+      if(i == 0) {
+        shadow = calcShadow(l.viewProjectionMatrix, u_directionalLightShadowMap, pos, n_normal, -l.direction);
+      } else {
+        shadow = 1.;
+      }
       // Diffuse component from the BRDF
       vec3 diffuse = mtl_diffuse * calcLambertDiffuse(-l.direction, n_normal);
       // Light contribution according to light model
-      color += diffuse * calcDirectionalLight(l);
+      diffuseSpecular += diffuse * calcDirectionalLight(l) * shadow;
     }
   }
 
   // Point lights
   for(int i = 0; i < N_POINT_LIGHTS; i++) {
     pointLight l = u_pointLights[i];
-    if (l.isActive) {
+    if(l.isActive) {
       // Direction from point to light
       vec3 light_dir = normalize(l.position - pos);
       // Diffuse component from the BRDF
       vec3 diffuse = mtl_diffuse * calcLambertDiffuse(light_dir, n_normal);
       // Light contribution according to light model
-      color += diffuse * calcPointLight(l, pos);
+      diffuseSpecular += diffuse * calcPointLight(l, pos);
     }
   }
 
   // Spot lights
   for(int i = 0; i < N_SPOT_LIGHTS; i++) {
     spotLight l = u_spotLights[i];
-    if (l.isActive) {// Direction from point to light
+    if(l.isActive) {// Direction from point to light
       vec3 light_dir = normalize(l.position - pos);
+      // Dimming due to shadow
+      float shadow;
+      if(i == 0) {
+        shadow = calcShadow(l.viewProjectionMatrix, u_spotLightShadowMap, pos, n_normal, light_dir);
+      } else {
+        shadow = 1.;
+      }
       // Diffuse component from the BRDF
       vec3 diffuse = mtl_diffuse * calcLambertDiffuse(light_dir, n_normal);
       // Light contribution according to light model
-      color += diffuse * calcSpotLight(l, pos);
+      diffuseSpecular += diffuse * calcSpotLight(l, pos) * shadow;
     }
   }
+
+  // Sum the lighting components together, taking into account the shadows
+  vec3 color = ambient + diffuseSpecular;
 
   // Highlight color (highlights selected objects)
   color += u_highlightColor.a * u_highlightColor.rgb;
@@ -172,7 +197,6 @@ vec3 calcPointLight(pointLight l, vec3 pos) {
   return l.color * pow(l.target / distance(l.position, pos), l.decay);
 }
 
-
 /**
   * Calculates the contribution of a spot light
   * @param[in] l the spot light
@@ -191,4 +215,40 @@ vec3 calcSpotLight(spotLight l, vec3 pos) {
 
   // Apply the target distance and decay
   return l.color * dimming * pow(l.target / distance(l.position, pos), l.decay);
+}
+
+/**
+  * Calculate the dimming factor produced by the shadow
+  * @param[in] lightViewProjectionMatrix
+  * @param[in] shadowMap
+  * @param[in] pos position of the current fragment in world space
+  * @param[in] n_normal
+  * @param[in] light_dir direction of the light from the current fragment
+  * @returns 1.0 if the object is lit, 0.0 if it is in shadow
+  */
+float calcShadow(mat4 lightViewProjectionMatrix, sampler2DShadow shadowMap, vec3 pos, vec3 n_normal, vec3 light_dir) {
+  // Compute coordinates in camera space
+  vec4 projCoords4 = lightViewProjectionMatrix * vec4(pos, 1.);
+  // Perform perspective divide
+  vec3 projCoords = projCoords4.xyz / projCoords4.w;
+  // Convert from [-1, 1] of normalized coordinates to [0, 1] of texture space
+  projCoords = projCoords * .5 + .5;
+
+  // Check if the coordinate is inside the texture
+  bool isInsideMap = projCoords.x >= 0. && projCoords.x <= 1. && projCoords.y >= 0. && projCoords.y <= 1. && projCoords.z <= 1.;
+
+  // If not inside the shadow map, draw the fragment as fully illuminated
+  if(!isInsideMap) {
+    return 1.;
+  }
+
+  // Calculate shadow bias
+  float bias = max(5e-3 * (1. - dot(n_normal, light_dir)), 5e-4);
+  projCoords.z -= bias;
+
+  // Sample the filtered shadow map, and do the depth comparison
+  float shadow = texture(shadowMap, projCoords);
+
+  // If the current depth is further than the closest one, the object is not lit
+  return shadow;
 }

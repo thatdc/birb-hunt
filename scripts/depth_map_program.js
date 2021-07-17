@@ -1,22 +1,30 @@
-class DepthMapProgram extends Program{
+class DepthMapProgram extends Program {
+    /**
+     * Depth frame buffer
+     * @type {WebGLFramebuffer}
+     */
+    depthFrameBuffer;
+
     /**
      * Initialize the program before use:
      * - Downloads and compiles the shaders
      * - Saves the locations of attributes and uniforms
      * @returns {DepthMapProgram} a reference to the object
      */
-     init() {
-        super.init("shaders/vs_simple_depth.glsl", "shaders/fs_simple_depth.glsl");
+    init() {
+        super.init("shaders/simple_depth_vs.glsl", "shaders/simple_depth_fs.glsl");
+        this.depthFrameBuffer = gl.createFramebuffer();
         return this;
     }
 
     /**
      * Draws the given object
-     * @param {number[]} lightSpaceMatrix
+     * @param {Scene} scene
+     * @param {number[]} viewProjectionMatrix the view-projection matrix of the light
      * @param {SceneObject} object
      * @param {GLenum} mode 
      */
-     drawObject(lightSpaceMatrix, object, mode = gl.TRIANGLES) {
+    drawObject(scene, viewProjectionMatrix, object, mode = gl.TRIANGLES) {
         let model = object.model;
 
         // Check if this program is not already active
@@ -26,7 +34,7 @@ class DepthMapProgram extends Program{
         }
 
         // Set Matrix uniforms
-        let matrix = utils.multiplyMatrices(lightSpaceMatrix, object.worldMatrix);
+        let matrix = utils.multiplyMatrices(viewProjectionMatrix, object.worldMatrix);
         gl.uniformMatrix4fv(this.matrixLocation, true, matrix);
 
         // Bind VAO

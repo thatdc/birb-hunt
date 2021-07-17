@@ -135,8 +135,8 @@ class LightControls {
             let input = document.createElement("input");
             input.id = `light-controls-direction-${i}`;
             input.type = "range";
-            input.min = i == 0 ? 0 : -180;
-            input.max = i == 0 ? 180 : 180;
+            input.min = -180;
+            input.max = +180;
             input.step = 1;
             input.axis = i;
             input.addEventListener("input", (e) => LightControls.onDirectionInput(e, this));
