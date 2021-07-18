@@ -79,11 +79,10 @@
         "position": [0,1.75,0],
         "rotation": [0,0,0]
     },
-    "skybox": "sun",
+    "skybox": "valley",
     "directionalLights": [
         {
             "name": "sun",
-            "isActive": false,
             "color": [0.68, 0.75, 0.75],
             "rotation": [-35, -65],
             "shadowMapSize": [2048, 2048],
@@ -122,6 +121,7 @@
     "spotLights": [
         {
             "name": "torch",
+            "isActive": false,
             "color": [1, 1, 1],
             "position": [0, 0, 0],
             "rotation": [0, 0, 0],
