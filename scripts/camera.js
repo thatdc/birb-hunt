@@ -1,16 +1,4 @@
-class Camera {
-    /**
-     * Position in XYZ coordinates
-     * @type {number[]}
-     */
-    position;
-
-    /**
-     * Rotation in XYZ Euler coordinates (in degrees)
-     * @type {number[]}
-     */
-    rotation;
-
+class Camera extends SceneNode{
     /**
      * Field of view in the vertical direction
      * @type {number}
@@ -45,6 +33,7 @@ class Camera {
      * @param {number} far_plane distance of the far plane
      */
     constructor(position = [0, 0, 0], rotation = [0, 0, 0], fov_y = 90, aspect_ratio = 16 / 9, near_plane = 0.1, far_plane = 300) {
+        super();
         this.position = position;
         this.rotation = rotation;
         this.fov_y = fov_y;

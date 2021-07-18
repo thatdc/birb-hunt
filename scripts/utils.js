@@ -537,6 +537,17 @@ createProgram:function(gl, vertexShader, fragmentShader) {
 		out[11] = dz;
 		return out; 
 	},
+
+	// Returns the position/translation vector from a Matrix 4
+	TranslationFromMatrix4(m) {
+		out = [];
+
+		out.push(m[3]); 	// dx
+		out.push(m[7]); 	// dy
+		out.push(m[11]); 	// dz
+
+		return out;
+	},
 	
 	MakeRotateXMatrix: function(a) {
 	// Create a transform matrix for a rotation of {a} along the X axis.

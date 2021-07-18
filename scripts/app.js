@@ -163,7 +163,7 @@ function onOverlayKeys(e) {
         e.preventDefault();
     }
     // Side panel
-    if (e.ctrlKey && e.key === "s") {
+    if (e.ctrlKey && e.key === "i") {
         let sidePanel = document.getElementById("side-panel");
         sidePanel.hidden = !sidePanel.hidden;
         e.preventDefault();
@@ -285,6 +285,9 @@ async function configureScene(scene) {
         sceneConfig.camera.far_plane
     );
 
+    // Add the camera to the scene graph
+    scene.camera.setParent(scene.rootNode)
+
     // Set up directional lights
     scene.directionalLights = new Array();
     for (let lConfig of sceneConfig.directionalLights) {
@@ -307,6 +310,9 @@ async function configureScene(scene) {
             lConfig.innerCone, lConfig.outerCone, lConfig.target, lConfig.decay, lConfig.isActive, lConfig.projectionOptions, lConfig.shadowMapSize);
         scene.spotLights.push(l);
     }
+
+    // Add the torch as child of the camera
+    scene.spotLights[0].setParent(scene.camera)
 
     // Create the skybox
     scene.skybox = await new Skybox().init(sceneConfig.skybox);
@@ -382,6 +388,8 @@ function frame(time) {
     // Update the camera
     keyboardMovement(scene.camera, timeDelta);
     scene.camera.aspect_ratio = gl.canvas.clientWidth / gl.canvas.clientHeight;
+
+    scene.rootNode.updateWorldMatrix();
 
     // Perform raycasting
     rayCasting(scene);

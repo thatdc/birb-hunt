@@ -124,6 +124,7 @@ class SceneNode {
      * @param {number[][]} matrix 
      */
     updateWorldMatrix(matrix) {
+        this.localMatrix = this._makeLocal();
         if (matrix) {
             // a matrix was passed in so do the math
             this.worldMatrix = utils.multiplyMatrices(matrix, this.localMatrix);
@@ -277,6 +278,8 @@ class Scene {
 
         // Calculate the view-projection matrix
         let viewProjectionMatrix = this.camera.getViewProjectionMatrix();
+        
+        // viewProjectionMatrix = this.spotLights[0].getViewProjectionMatrix();
 
         // Draw the objects
         this._drawTree(viewProjectionMatrix, this.rootNode, collisionMeshes);

@@ -72,10 +72,11 @@
         "position": [0,1.75,0],
         "rotation": [0,0,0]
     },
-    "skybox": "valley",
+    "skybox": "sun",
     "directionalLights": [
         {
             "name": "sun",
+            "isActive": false,
             "color": [0.68, 0.75, 0.75],
             "rotation": [-35, -65],
             "shadowMapSize": [2048, 2048],
@@ -115,27 +116,28 @@
         {
             "name": "torch",
             "color": [1, 1, 1],
-            "position": [0.25, 1.6, -0.25],
-            "rotation": [-60, 0],
+            "position": [0, 0, 0],
+            "rotation": [0, 0, 0],
             "innerCone": 0.9,
             "outerCone": 0.8,
             "shadowMapSize": [2048, 2048],
             "projectionOptions": {
                 "near": 0.5,
                 "far": 300
-            }
+            },
+            "target": 5
         },
         {
             "name": "spot2",
             "isActive": false,
             "color": [1, 1, 1],
             "position": [0, 0, 0],
-            "rotation": [-90, 0],
+            "rotation": [-90, 0, 0],
             "innerCone": 0.75,
             "outerCone": 0.55
         }
     ],
     "appOptions": {
-        "freeCamera": true
+        "freeCamera": false
     }
 }

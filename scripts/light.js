@@ -1,4 +1,4 @@
-class Light {
+class Light extends SceneNode{
     /**
      * Friendly name
      * @type {string}
@@ -43,6 +43,7 @@ class Light {
      * @param {boolean} isActive whether the light is active
      */
     constructor(name, color, isActive = true) {
+        super();
         this.name = name;
         this.color = color;
         this.isActive = isActive;
@@ -254,12 +255,6 @@ class PointLight extends Light {
 
 class SpotLight extends PointLight {
     /**
-     * Rotation XY of the light.
-     * @type {number[]}
-     */
-    rotation;
-
-    /**
      * Cosine of the inner cone of the light.
      * @type {number}
      */
@@ -322,7 +317,7 @@ class SpotLight extends PointLight {
         if (this.isActive) {
             gl.uniform1i(isActiveLocation, this.isActive);
             gl.uniform3fv(colorLocation, this.color);
-            gl.uniform3fv(positionLocation, this.position);
+            gl.uniform3fv(positionLocation, this.getPosition());
             gl.uniform3fv(directionLocation, this.getDirection());
             gl.uniform1f(innerConeLocation, this.innerCone);
             gl.uniform1f(outerConeLocation, this.outerCone);
@@ -339,14 +334,25 @@ class SpotLight extends PointLight {
     }
 
     /**
+     * Returns the XYZ position according to it's world matrix
+     * @returns {number[]}
+     */
+    getPosition(){
+        return utils.TranslationFromMatrix4(this.worldMatrix)
+    }
+
+    /**
     * Returns the XYZ normalized direction of this light.
     * @returns {number[]}
     */
     getDirection() {
-        let T = utils.multiplyMatrices(
+        /**let T = utils.multiplyMatrices(
             utils.MakeRotateYMatrix(this.rotation[1]),
             utils.MakeRotateXMatrix(this.rotation[0]));
-        return utils.multiplyMatrixVector(T, [0, 0, -1, 1]).slice(0, 3);
+        return utils.multiplyMatrixVector(T, [0, 0, -1, 1]).slice(0, 3);*/
+        let W = this.worldMatrix;
+        let subRot = utils.sub3x3from4x4(W);
+        return utils.multiplyMatrix3Vector3(subRot, [0, 0, -1]).slice(0, 3);
     }
 
     /**
@@ -369,7 +375,8 @@ class SpotLight extends PointLight {
         let { near, far } = this.projectionOptions;
         let aspectRatio = this.shadowMapSize[0] / this.shadowMapSize[1];
         let projection = SpotLight._makePerspective(ct, aspectRatio, near, far);
-        let view = utils.MakeView(...this.position, ...this.rotation);
+        // View matrix is the inverse of the world matrix
+        let view = utils.invertMatrix(this.worldMatrix);
 
         return utils.multiplyMatrices(projection, view);
     }
