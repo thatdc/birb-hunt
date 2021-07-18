@@ -160,6 +160,12 @@ class SceneObject extends SceneNode {
     isSelected;
 
     /**
+     * Indicates if the object casts shadows
+     * @type {boolean}
+     */
+    castsShadows;
+
+    /**
      * Creates an object with no parent and no children.
      * 
      * It is assumed that the given model has been already initialized with
@@ -188,6 +194,7 @@ class SceneObject extends SceneNode {
         this.isVisible = isVisible;
         this.isSelectable = isSelectable;
         this.isSelected = false;
+        this.castsShadows = true;
     }
 
     /**
@@ -353,9 +360,23 @@ class Scene {
             
             // Compute the Light space view-projection matrix
             let viewProjectionMatrix = light.getViewProjectionMatrix();
-            
+
+            // Hide objects that don't cast shadows
+            let toHide = [];
+            for (let obj of scene.objects.values()) {
+                if (!obj.castsShadows && obj.isVisible) {
+                    toHide.push(obj);
+                    obj.isVisible = false;
+                }
+            }
+
             // Render the whole scene on the frame buffer
             this._drawTree(viewProjectionMatrix, this.rootNode, false, program);
+
+            // Show objects that were previously hidden
+            for (let obj of toHide) {
+                obj.isVisible = true;
+            }
         }
     }
 }

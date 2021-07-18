@@ -66,6 +66,12 @@
             "obj": "assets/angry_birds/red_ID240.016.obj",
             "mtl": "assets/angry_birds/red_ID240.016.mtl",
             "type": "bird"
+        },
+        {
+            "name": "help_arrow",
+            "obj": "assets/base/Arrow.obj",
+            "mtl": "assets/base/Arrow.mtl",
+            "program": "solid"
         }
     ],
     "camera": {
