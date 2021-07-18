@@ -23,7 +23,7 @@ uniform mat3 u_normalMatrix;
 // Flags
 uniform bool b_useMapDiffuse;
 uniform bool b_useMapNormal;
-uniform bool b_useMapSpecular;
+uniform bool b_useMapSpecularExponent;
 
 // Material colors
 uniform vec3 u_ambient;
@@ -40,7 +40,7 @@ uniform float u_specularExponent;
 // Maps
 uniform sampler2D u_mapDiffuse;
 uniform sampler2D u_mapNormal;
-uniform sampler2D u_mapSpecular;
+uniform sampler2D u_mapSpecularExponent;
 uniform samplerCube u_mapEnv;
 
 // Ambient light
@@ -109,6 +109,9 @@ void main() {
 
   // Get the diffuse color (from map or material)
   vec3 mtl_diffuse = b_useMapDiffuse ? texture(u_mapDiffuse, fs_uv).rgb : u_diffuse;
+
+  // Get the specular exponent (from map or material)
+  float specular_exponent = b_useMapSpecularExponent ? texture(u_mapSpecularExponent, fs_uv).r : u_specularExponent;
 
   // Ambient light
   vec3 ambient = mtl_diffuse * textureLod(u_mapEnv, n_normal, 7.).rgb * AMBIENT_LIGHT_STRENGTH;

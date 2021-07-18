@@ -149,7 +149,7 @@ class Program {
     setLightUniforms(scene) {
         ;
     }
-
+    
     /**
      * Sets up the camera uniforms
      * @param {number[]} cameraPosition camera position in world coordinates 
@@ -381,7 +381,7 @@ class TexturedProgram extends Program {
     createTextures(mesh) {
         for (let mtl of Object.values(mesh.materialsByIndex)) {
             // Iterare over the relevant maps
-            for (let mapName of ["mapDiffuse", "mapBump", "mapSpecular"]) {
+            for (let mapName of ["mapDiffuse", "mapBump", "mapSpecularExponent"]) {
                 let map = mtl[mapName];
                 if (map && map.texture) {
                     // Create the texture
@@ -470,7 +470,7 @@ class LambertProgram extends TexturedProgram {
         // Flags
         this.useMapDiffuseLocation = gl.getUniformLocation(p, "b_useMapDiffuse");
         this.useMapNormalLocation = gl.getUniformLocation(p, "b_useMapNormal");
-        this.useMapSpecularLocation = gl.getUniformLocation(p, "b_useMapSpecular");
+        this.useMapSpecularExponentLocation = gl.getUniformLocation(p, "b_useMapSpecularExponent");
 
         // Material colors
         this.ambientLocation = gl.getUniformLocation(p, "u_ambient");
@@ -483,7 +483,7 @@ class LambertProgram extends TexturedProgram {
         // Maps
         this.mapDiffuseLocation = gl.getUniformLocation(p, "u_mapDiffuse");
         this.mapNormalLocation = gl.getUniformLocation(p, "u_mapNormal");
-        this.mapSpecularLocation = gl.getUniformLocation(p, "u_mapSpecular");
+        this.mapSpecularExponentLocation = gl.getUniformLocation(p, "u_mapSpecularExponent");
         this.mapEnvLocation = gl.getUniformLocation(p, "u_mapEnv");
 
         // Camera position
@@ -618,13 +618,13 @@ class LambertProgram extends TexturedProgram {
             // The normal is derived from the vertex shader
         }
         // Specular color (map/scalar)
-        if (mtl.mapSpecular) {
-            gl.uniform1i(this.useMapSpecularLocation, 1);
+        if (mtl.mapSpecularExponent) {
+            gl.uniform1i(this.useMapSpecularExponentLocation, 1);
             gl.activeTexture(gl.TEXTURE2);
-            gl.bindTexture(gl.TEXTURE_2D, mtl.mapSpecular.glTexture);
-            gl.uniform1i(this.mapSpecularLocation, 2);
+            gl.bindTexture(gl.TEXTURE_2D, mtl.mapSpecularExponent.glTexture);
+            gl.uniform1i(this.mapSpecularExponentLocation, 2);
         } else {
-            gl.uniform1i(this.useMapSpecularLocation, 0);
+            gl.uniform1i(this.useMapSpecularExponentLocation, 0);
             gl.uniform3fv(this.specularLocation, mtl.specular);
         }
 
