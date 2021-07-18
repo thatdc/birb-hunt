@@ -131,6 +131,18 @@ class Program {
     }
 
     /**
+     * Create all the WebGL textures for the given mesh.
+     * 
+     * For each map of each material of the mesh that has {@code map.texture}
+     * set, it creates a WebGLTexture, which is saved at {@code map.glTexture}
+     * 
+     * @param {Mesh} mesh 
+     */
+     createTextures(mesh) {
+         ;
+     }
+
+    /**
      * Sets up the light uniforms, given the scene's lights
      * @param {Scene} scene 
      */

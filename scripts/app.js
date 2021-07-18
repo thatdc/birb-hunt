@@ -275,19 +275,6 @@ async function configureScene(scene) {
     // Build the scene graph from the root downwards
     scene.rootNode = buildSceneGraph(scene, sceneGraphConfig);
 
-    // Put the camera in its initial position
-    scene.camera = new Camera(
-        sceneConfig.camera.position,
-        sceneConfig.camera.rotation,
-        sceneConfig.camera.fov_y,
-        gl.canvas.clientWidth / gl.canvas.clientHeight,
-        sceneConfig.camera.near_plane,
-        sceneConfig.camera.far_plane
-    );
-
-    // Add the camera to the scene graph
-    scene.camera.setParent(scene.rootNode)
-
     // Set up directional lights
     scene.directionalLights = new Array();
     for (let lConfig of sceneConfig.directionalLights) {
@@ -311,11 +298,50 @@ async function configureScene(scene) {
         scene.spotLights.push(l);
     }
 
-    // Add the torch as child of the camera
-    scene.spotLights[0].setParent(scene.camera)
+    // Initialize the player camera and the objects attached to it
+    initPlayer(scene, sceneConfig);
 
     // Create the skybox
     scene.skybox = await new Skybox().init(sceneConfig.skybox);
+}
+
+
+/**
+ * Initializes the player (i.e. the camera)
+ * and attaches objects to it.
+ * @param {Scene} scene
+ * @param {Object} sceneConfig
+ */
+function initPlayer(scene, sceneConfig) {
+    // Put the camera in its initial position
+    let camera = new Camera(
+        sceneConfig.camera.position,
+        sceneConfig.camera.rotation,
+        sceneConfig.camera.fov_y,
+        gl.canvas.clientWidth / gl.canvas.clientHeight,
+        sceneConfig.camera.near_plane,
+        sceneConfig.camera.far_plane
+    );
+    scene.camera = camera;
+
+    // Add the camera to the scene graph
+    scene.camera.setParent(scene.rootNode);
+
+    // Add the torch as child of the camera
+    scene.spotLights[0].setParent(scene.camera);
+
+    // Create the help arrow and add it as a child to the player
+    let arrow = new SceneObject(
+        "help_arrow",
+        scene.models.get("help_arrow"),
+        [0, -1, -2.25],
+        [0, 0, 0],
+        [.75, .75, .75]
+    );
+    scene.objects.set("help_arrow", arrow);
+    // arrow.isVisible = false;
+    arrow.castsShadows = false;
+    arrow.setParent(camera);
 }
 
 /**
