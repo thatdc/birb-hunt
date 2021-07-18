@@ -48,6 +48,12 @@ class SceneNode {
     parent = null;
 
     /**
+     * If not null, this node will always look at the the given target
+     * @type {SceneNode}
+     */
+    lookAtTarget;
+
+    /**
      * Indicates whether this node, and its children, are visible.
      * @type {boolean}
      */
@@ -86,7 +92,7 @@ class SceneNode {
      * @returns {number[]}
      */
     getWorldPosition() {
-        return utils.TranslationFromMatrix4(this.worldMatrix)
+        return utils.TranslationFromMatrix4(this.worldMatrix);
     }
 
     /**
@@ -139,6 +145,13 @@ class SceneNode {
         } else {
             // no matrix was passed in so just copy.
             utils.copy(this.localMatrix, this.worldMatrix);
+        }
+
+        // If we are tied to look at another node, substitute the world matrix
+        // with a lookAt matrix from the current position
+        if (this.lookAtTarget) {
+            let up = utils.normalize([this.worldMatrix[1], this.worldMatrix[5], this.worldMatrix[9]]);
+            utils.LookAt(this.getWorldPosition(), this.lookAtTarget.getWorldPosition(), up, this.worldMatrix);
         }
 
         // now process all the children

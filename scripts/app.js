@@ -253,6 +253,7 @@ async function configureScene(scene) {
         switch (modelConfig.collisionMesh) {
             case false: {
                 cmClass = null;
+                break;
             }
             default: {
                 cmClass = CollisionMesh;
@@ -298,11 +299,11 @@ async function configureScene(scene) {
         scene.spotLights.push(l);
     }
 
-    // Initialize the player camera and the objects attached to it
-    initPlayer(scene, sceneConfig);
-
     // Init the target bird
     initBird(scene);
+
+    // Initialize the player camera and the objects attached to it
+    initPlayer(scene, sceneConfig);
 
     // Create the skybox
     scene.skybox = await new Skybox().init(sceneConfig.skybox);
@@ -345,6 +346,9 @@ function initPlayer(scene, sceneConfig) {
     // arrow.isVisible = false;
     arrow.castsShadows = false;
     arrow.setParent(camera);
+
+    // Force the arrow to always look at the bird
+    arrow.lookAtTarget = app.targetObject;
 }
 
 function initBird(scene) {
@@ -443,7 +447,13 @@ function frame(time) {
     keyboardMovement(scene.camera, timeDelta);
     scene.camera.aspect_ratio = gl.canvas.clientWidth / gl.canvas.clientHeight;
 
+    // Update the world matrices of all the objects in the graph, recursively
     scene.rootNode.updateWorldMatrix();
+
+    // // Set the world matrix of the help arrow, that always looks at the bird
+    // let arrow = scene.objects.get("help_arrow");
+    // let bird = scene.objects.get("bird");
+    // arrow.worldMatrix = utils.LookAt(arrow.getWorldPosition(), bird.getWorldPosition(), [0, 1, 0]);
 
     // Perform raycasting
     rayCasting(scene);
