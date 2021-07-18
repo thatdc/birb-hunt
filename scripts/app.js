@@ -301,6 +301,9 @@ async function configureScene(scene) {
     // Initialize the player camera and the objects attached to it
     initPlayer(scene, sceneConfig);
 
+    // Init the target bird
+    initBird(scene);
+
     // Create the skybox
     scene.skybox = await new Skybox().init(sceneConfig.skybox);
 }
@@ -342,6 +345,31 @@ function initPlayer(scene, sceneConfig) {
     // arrow.isVisible = false;
     arrow.castsShadows = false;
     arrow.setParent(camera);
+}
+
+function initBird(scene) {
+    // Create Bird node
+    let bird = new SceneObject(
+        "bird",
+        scene.models.get("bird_red"),
+        [0, 1, 0],
+        [0, 0, 0],
+        [5, 5, 5]
+    );
+    scene.objects.set("bird", bird);
+    
+    // Create list of trees
+    let tree_list = []
+    for (let ob of scene.objects.values()){
+        if (ob.model.type == "tree"){
+            tree_list.push(ob);
+        }
+    }
+
+    let randomTree = tree_list[Math.floor(Math.random() * tree_list.length)];
+    bird.setParent(randomTree);
+
+    app.targetObject = bird;
 }
 
 /**

@@ -82,6 +82,14 @@ class SceneNode {
     }
 
     /**
+     * Returns the XYZ position according to it's world matrix
+     * @returns {number[]}
+     */
+    getWorldPosition() {
+        return utils.TranslationFromMatrix4(this.worldMatrix)
+    }
+
+    /**
      * Creates a local transformation matrix from this node's
      * position, rotation and scale.
      * @returns {number[]}
@@ -285,7 +293,7 @@ class Scene {
 
         // Calculate the view-projection matrix
         let viewProjectionMatrix = this.camera.getViewProjectionMatrix();
-        
+
         // viewProjectionMatrix = this.spotLights[0].getViewProjectionMatrix();
 
         // Draw the objects
@@ -352,12 +360,12 @@ class Scene {
             gl.bindFramebuffer(gl.FRAMEBUFFER, program.depthFrameBuffer);
             gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.DEPTH_ATTACHMENT, gl.TEXTURE_2D, light.shadowMap, 0);
             gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, light.colorMap, 0);
-            
+
             // Prepare the framebuffer for rendering
             gl.viewport(0, 0, width, height);
             gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
             gl.cullFace(gl.BACK);
-            
+
             // Compute the Light space view-projection matrix
             let viewProjectionMatrix = light.getViewProjectionMatrix();
 

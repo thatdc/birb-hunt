@@ -317,7 +317,7 @@ class SpotLight extends PointLight {
         if (this.isActive) {
             gl.uniform1i(isActiveLocation, this.isActive);
             gl.uniform3fv(colorLocation, this.color);
-            gl.uniform3fv(positionLocation, this.getPosition());
+            gl.uniform3fv(positionLocation, this.getWorldPosition());
             gl.uniform3fv(directionLocation, this.getDirection());
             gl.uniform1f(innerConeLocation, this.innerCone);
             gl.uniform1f(outerConeLocation, this.outerCone);
@@ -331,14 +331,6 @@ class SpotLight extends PointLight {
             gl.bindTexture(gl.TEXTURE_2D, this.shadowMap);
             gl.uniform1i(shadowMapLocation, shadowMapUnit);
         }
-    }
-
-    /**
-     * Returns the XYZ position according to it's world matrix
-     * @returns {number[]}
-     */
-    getPosition(){
-        return utils.TranslationFromMatrix4(this.worldMatrix)
     }
 
     /**
