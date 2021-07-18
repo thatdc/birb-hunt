@@ -19,12 +19,13 @@ class DepthMapProgram extends Program {
 
     /**
      * Draws the given object
-     * @param {Scene} scene
-     * @param {number[]} viewProjectionMatrix the view-projection matrix of the light
-     * @param {SceneObject} object
-     * @param {GLenum} mode 
+     * @param {Scene} scene the scene object
+     * @param {number[]} cameraPosition camera position in world space
+     * @param {number[]} viewProjectionMatrix view-projection matrix from the camera
+     * @param {SceneObject} object object to be drawn, isVisible is ignored
+     * @param {GLenum} mode draw mode
      */
-    drawObject(scene, viewProjectionMatrix, object, mode = gl.TRIANGLES) {
+    drawObject(scene, cameraPosition, viewProjectionMatrix, object, mode = gl.TRIANGLES) {
         let model = object.model;
 
         // Check if this program is not already active

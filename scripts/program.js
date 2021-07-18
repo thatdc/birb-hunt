@@ -151,6 +151,14 @@ class Program {
     }
 
     /**
+     * Sets up the camera uniforms
+     * @param {number[]} cameraPosition camera position in world coordinates 
+     */
+    setCameraUniforms(cameraPosition) {
+        ;
+    }
+
+    /**
      * Set the material-related uniforms for the given object
      * @param {Material} mtl 
      */
@@ -168,12 +176,13 @@ class Program {
 
     /**
      * Draws the given object
-     * @param {Scene} scene
-     * @param {number[]} viewProjectionMatrix
-     * @param {SceneObject} object
-     * @param {GLenum} mode 
+     * @param {Scene} scene the scene object
+     * @param {number[]} cameraPosition camera position in world space
+     * @param {number[]} viewProjectionMatrix view-projection matrix from the camera
+     * @param {SceneObject} object object to be drawn, isVisible is ignored
+     * @param {GLenum} mode draw mode
      */
-    drawObject(scene, viewProjectionMatrix, object, mode = gl.TRIANGLES) {
+    drawObject(scene, cameraPosition, viewProjectionMatrix, object, mode = gl.TRIANGLES) {
         let model = object.model;
 
         // Check if this program is not already active
@@ -184,6 +193,9 @@ class Program {
             // Set object-independent uniforms:
             // Lights
             this.setLightUniforms(scene);
+
+            // Camera
+            this.setCameraUniforms(cameraPosition);
         }
 
         // Transformation matrices
@@ -258,12 +270,13 @@ class SolidColorProgram extends Program {
 
     /**
      * Draws the collision mesh of the given object, if any
-     * @param {Scene} scene
-     * @param {number[]} viewProjectionMatrix
-     * @param {SceneObject} object
-     * @param {GLenum} mode 
+     * @param {Scene} scene the scene object
+     * @param {number[]} cameraPosition camera position in world space
+     * @param {number[]} viewProjectionMatrix view-projection matrix from the camera
+     * @param {SceneObject} object object to be drawn, isVisible is ignored
+     * @param {GLenum} mode draw mode
      */
-    drawCollisionMesh(scene, viewProjectionMatrix, object, mode = gl.LINE_STRIP) {
+    drawCollisionMesh(scene, cameraPosition, viewProjectionMatrix, object, mode = gl.LINE_STRIP) {
         // If no collision mesh is defined, draw nothing
         /** @type {CollisionMesh} */
         let cm = object.model.collisionMesh;
@@ -473,6 +486,9 @@ class LambertProgram extends TexturedProgram {
         this.mapSpecularLocation = gl.getUniformLocation(p, "u_mapSpecular");
         this.mapEnvLocation = gl.getUniformLocation(p, "u_mapEnv");
 
+        // Camera position
+        this.cameraPositionLocation = gl.getUniformLocation(p, "u_cameraPosition");
+
         // Directional lights
         this.directionalLightLocations = new Array();
         for (let i = 0; i < this.N_DIRECTIONAL_LIGHTS; i++) {
@@ -562,6 +578,15 @@ class LambertProgram extends TexturedProgram {
                 gl.uniform1i(lLoc.isActive, 0);
             }
         }
+    }
+
+        
+    /**
+     * Sets up the camera uniforms
+     * @param {number[]} cameraPosition camera position in world coordinates 
+     */
+     setCameraUniforms(cameraPosition) {
+        gl.uniform3fv(this.cameraPositionLocation, cameraPosition);
     }
 
     /**

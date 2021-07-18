@@ -13,6 +13,9 @@ in vec3 fs_normal;
 in vec3 fs_position;
 out vec4 out_color;
 
+// Camera position
+uniform vec3 u_cameraPosition;
+
 // Transformation matrices
 uniform mat4 u_worldMatrix;
 uniform mat3 u_normalMatrix;
@@ -90,6 +93,9 @@ float calcLambertDiffuse(vec3 light_dir, vec3 n_normal);
 void main() {
   // Compute the fragment position in world space
   vec3 pos = (u_worldMatrix * vec4(fs_position, 1)).xyz;
+
+  // Compute the viewer direction
+  vec3 view_dir = normalize(u_cameraPosition - pos);
 
   // Compute the normalized normal (from map or varying)
   vec3 n_normal;

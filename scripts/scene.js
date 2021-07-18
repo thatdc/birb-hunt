@@ -304,13 +304,14 @@ class Scene {
         gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
         gl.cullFace(gl.BACK);
 
-        // Calculate the view-projection matrix
+        // Calculate the view-projection matrix and camera position
         let viewProjectionMatrix = this.camera.getViewProjectionMatrix();
+        let cameraPosition = this.camera.getWorldPosition();
 
         // viewProjectionMatrix = this.spotLights[0].getViewProjectionMatrix();
 
         // Draw the objects
-        this._drawTree(viewProjectionMatrix, this.rootNode, collisionMeshes);
+        this._drawTree(cameraPosition, viewProjectionMatrix, this.rootNode, collisionMeshes);
 
         // Draw the skybox
         let cameraMatrix = utils.MakeRotateXYZMatrix(
@@ -320,12 +321,13 @@ class Scene {
 
     /**
      * Draws the given subtree
-     * @param {number[]} viewProjectionMatrix
+     * @param {number[]} cameraPosition camera position in world space
+     * @param {number[]} viewProjectionMatrix view-projection matrix for the camera
      * @param {SceneNode} root root of the subtree
      * @param {boolean} showCollisionMeshes draw a wireframe version of the collision meshes
      * @param {Program} program force the use of this program for rendering. If undefined or null, the object's own program will be used
      */
-    _drawTree(viewProjectionMatrix, root, showCollisionMeshes = false, program = undefined) {
+    _drawTree(cameraPosition, viewProjectionMatrix, root, showCollisionMeshes = false, program = undefined) {
         if (!root.isVisible) { // this node and its children will be hidden
             return;
         }
@@ -333,16 +335,16 @@ class Scene {
             /** @type {Program} */
             let p = program ?? root.model.program;
             // Set the uniforms and perform one draw call per material
-            p.drawObject(this, viewProjectionMatrix, root);
+            p.drawObject(this, cameraPosition, viewProjectionMatrix, root);
 
             if (showCollisionMeshes && root.model.collisionMesh) {
                 let cm = root.model.collisionMesh;
-                cm.program.drawCollisionMesh(this, viewProjectionMatrix, root);
+                cm.program.drawCollisionMesh(this, cameraPosition, viewProjectionMatrix, root);
             }
         }
 
         for (let child of root.children) {
-            this._drawTree(viewProjectionMatrix, child, showCollisionMeshes, program);
+            this._drawTree(cameraPosition, viewProjectionMatrix, child, showCollisionMeshes, program);
         }
     }
 
@@ -392,7 +394,7 @@ class Scene {
             }
 
             // Render the whole scene on the frame buffer
-            this._drawTree(viewProjectionMatrix, this.rootNode, false, program);
+            this._drawTree(null, viewProjectionMatrix, this.rootNode, false, program);
 
             // Show objects that were previously hidden
             for (let obj of toHide) {
