@@ -78,11 +78,13 @@ function initPointerLock(canvas) {
     document.addEventListener("pointerlockchange", (e) => {
         e.bubbles = false;
         e.preventDefault();
-        if (document.pointerLockElement === canvas) {
+        if (document.pointerLockElement === canvas) { // enter game
             document.removeEventListener("keydown", onOverlayKeys);
             app.ui.toggleOverlay(false);
             document.addEventListener("mousemove", mouseMovement);
-        } else {
+            document.addEventListener("keydown", onKeydownInGame);
+        } else { // exit game
+            document.removeEventListener("keydown", onKeydownInGame);
             document.removeEventListener("mousemove", mouseMovement);
             document.addEventListener("keydown", onOverlayKeys);
         }
@@ -161,12 +163,35 @@ function onOverlayKeys(e) {
         let optPanel = document.getElementById("options-panel");
         optPanel.hidden = !optPanel.hidden;
         e.preventDefault();
+        return;
     }
     // Side panel
     if (e.ctrlKey && e.key === "i") {
         let sidePanel = document.getElementById("side-panel");
         sidePanel.hidden = !sidePanel.hidden;
         e.preventDefault();
+        return;
+    }
+}
+
+/**
+ * Called when a game is pressed while the mouse is locked on the canvas
+ * @param {KeyboardEvent} e 
+ */
+function onKeydownInGame(e) {
+    // Toggle flashlight
+    if (e.key === "l") {
+        let torch = scene.spotLights["0"];
+        torch.isActive = !torch.isActive;
+        e.preventDefault();
+        return;
+    }
+    // Toggle help arrow
+    if (e.key === "h") {
+        let arrow = scene.objects.get("help_arrow");
+        arrow.isVisible = !arrow.isVisible;
+        e.preventDefault();
+        return;
     }
 }
 
