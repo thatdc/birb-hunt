@@ -90,6 +90,9 @@ float calcShadow(mat4 lightViewProjectionMatrix, sampler2DShadow shadowMap, vec3
 // Lambert diffuse component
 float calcLambertDiffuse(vec3 light_dir, vec3 n_normal);
 
+// Blinn specular component
+float calcBlinnSpecular(vec3 light_dir, vec3 view_dir, vec3 n_normal, float specular_exponent);
+
 void main() {
   // Compute the fragment position in world space
   vec3 pos = (u_worldMatrix * vec4(fs_position, 1)).xyz;
@@ -132,8 +135,10 @@ void main() {
       }
       // Diffuse component from the BRDF
       vec3 diffuse = mtl_diffuse * calcLambertDiffuse(-l.direction, n_normal);
+      // Specular component from the BRDF
+      vec3 specular = u_specular * calcBlinnSpecular(-l.direction, view_dir, n_normal, specular_exponent);
       // Light contribution according to light model
-      diffuseSpecular += diffuse * calcDirectionalLight(l) * shadow;
+      diffuseSpecular += (diffuse + specular) * calcDirectionalLight(l) * shadow;
     }
   }
 
@@ -145,8 +150,10 @@ void main() {
       vec3 light_dir = normalize(l.position - pos);
       // Diffuse component from the BRDF
       vec3 diffuse = mtl_diffuse * calcLambertDiffuse(light_dir, n_normal);
+      // Specular component from the BRDF
+      vec3 specular = u_specular * calcBlinnSpecular(light_dir, view_dir, n_normal, specular_exponent);
       // Light contribution according to light model
-      diffuseSpecular += diffuse * calcPointLight(l, pos);
+      diffuseSpecular += (diffuse + specular) * calcPointLight(l, pos);
     }
   }
 
@@ -164,8 +171,10 @@ void main() {
       }
       // Diffuse component from the BRDF
       vec3 diffuse = mtl_diffuse * calcLambertDiffuse(light_dir, n_normal);
+      // Specular component from the BRDF
+      vec3 specular = u_specular * calcBlinnSpecular(light_dir, view_dir, n_normal, specular_exponent);
       // Light contribution according to light model
-      diffuseSpecular += diffuse * calcSpotLight(l, pos) * shadow;
+      diffuseSpecular += (diffuse + specular) * calcSpotLight(l, pos) * shadow;
     }
   }
 
@@ -187,6 +196,19 @@ void main() {
   */
 float calcLambertDiffuse(vec3 light_dir, vec3 n_normal) {
   return clamp(dot(light_dir, n_normal), 0., 1.);
+}
+
+/**
+  * Calculates the specular BRDF according to Blinn rule.
+  * @param[in] light_dir direction of the light from the current point
+  * @param[in] light_dir direction of the viewer (camera) from the current point
+  * @param[in] n_normal normalized normal to the surface
+  * @param[in] specular_exponent specular exponent between 0 and 1000
+  */
+float calcBlinnSpecular(vec3 light_dir, vec3 view_dir, vec3 n_normal, float specular_exponent) {
+  // Compute half-vector: average view and light dir
+  vec3 h = normalize(light_dir + view_dir);
+  return pow(clamp(dot(h, n_normal), 0., 1.), specular_exponent);
 }
 
 /**
