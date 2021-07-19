@@ -489,6 +489,9 @@ class BlinnProgram extends TexturedProgram {
         // Camera position
         this.cameraPositionLocation = gl.getUniformLocation(p, "u_cameraPosition");
 
+        // Ambient light
+        this.ambientLightLocation = gl.getUniformLocation(p, "u_ambientLight");
+
         // Directional lights
         this.directionalLightLocations = new Array();
         for (let i = 0; i < this.N_DIRECTIONAL_LIGHTS; i++) {
@@ -543,6 +546,9 @@ class BlinnProgram extends TexturedProgram {
         gl.activeTexture(gl.TEXTURE3);
         gl.bindTexture(gl.TEXTURE_CUBE_MAP, scene.skybox.getCurrentMap());
         gl.uniform1i(this.mapEnvLocation, 3);
+
+        // Ambient light
+        gl.uniform3fv(this.ambientLightLocation, scene.ambientLight);
 
         // Directional lights
         for (let i = 0; i < this.N_DIRECTIONAL_LIGHTS; i++) {

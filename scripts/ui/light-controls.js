@@ -3,6 +3,12 @@ class LightControls {
     static _colorNames = ["r", "g", "b"];
 
     /**
+     * Input for ambient color in RGB space
+     * @type {Element}
+     */
+    ambientColorInput;
+
+    /**
      * Light selector
      * @type {Element}
      */
@@ -109,6 +115,20 @@ class LightControls {
      */
     createControls(lightControlsElement, scene) {
         let parent;
+        // Ambient color controls
+        parent = lightControlsElement.querySelector("#light-controls-ambient");
+        {
+            // Create the input and insert it into the DOM
+            let input = document.createElement("input");
+            input.type = "color";
+            input.id = `light-controls-ambient-color`;
+            input.value = LightControls._rgbToHex(scene.ambientLight);
+            input.addEventListener("input", (e) => LightControls.onAmbientColorInput(e, this));
+            let wrapper = document.createElement("div");
+            wrapper.appendChild(input);
+            parent.appendChild(wrapper);
+            this.ambientColorInput = input;
+        }
         // Position controls
         parent = lightControlsElement.querySelector("#light-controls-position");
         for (let i of [0, 1, 2]) {
@@ -421,6 +441,17 @@ class LightControls {
     }
 
     /**
+     * Called when the ambient color is changed from the input
+     * @param {InputEvent} e
+     * @param {LightControls} lc 
+     */
+    static onAmbientColorInput(e, lc) {
+        let color = LightControls._hexToRgb(e.target.value);
+        // Update light
+        scene.ambientLight = color;
+    }
+
+    /**
      * Called when the light color is changed from the input
      * @param {InputEvent} e
      * @param {LightControls} lc 
@@ -436,7 +467,7 @@ class LightControls {
      * @param {InputEvent} e
      * @param {LightControls} lc 
      */
-     static onTargetInput(e, lc) {
+    static onTargetInput(e, lc) {
         // Update light
         let a = Number(e.target.value);
         lc._selectedLight.target = a;
@@ -449,7 +480,7 @@ class LightControls {
      * @param {InputEvent} e
      * @param {LightControls} lc 
      */
-     static onDecayInput(e, lc) {
+    static onDecayInput(e, lc) {
         // Update light
         let a = Number(e.target.value);
         lc._selectedLight.decay = a;
@@ -462,7 +493,7 @@ class LightControls {
      * @param {InputEvent} e
      * @param {LightControls} lc 
      */
-     static onInnerConeInput(e, lc) {
+    static onInnerConeInput(e, lc) {
         // Update light
         let a = Number(e.target.value);
         lc._selectedLight.innerCone = -a;
@@ -475,7 +506,7 @@ class LightControls {
      * @param {InputEvent} e
      * @param {LightControls} lc 
      */
-     static onOuterConeInput(e, lc) {
+    static onOuterConeInput(e, lc) {
         // Update light
         let a = Number(e.target.value);
         lc._selectedLight.outerCone = -a;

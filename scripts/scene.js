@@ -272,6 +272,12 @@ class Scene {
     skybox;
 
     /**
+     * Ambient light color
+     * @type {number[]}
+     */
+    ambientLight;
+
+    /**
      * Directional lights
      * @type {DirectionalLight[]}
      */

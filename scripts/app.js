@@ -304,6 +304,9 @@ async function configureScene(scene) {
     // Build the scene graph from the root downwards
     scene.rootNode = buildSceneGraph(scene, sceneGraphConfig);
 
+    // Set up ambient light color
+    scene.ambientLight = sceneConfig.ambientLight;
+
     // Set up directional lights
     scene.directionalLights = new Array();
     for (let lConfig of sceneConfig.directionalLights) {

@@ -1,6 +1,5 @@
 #version 300 es
 
-#define AMBIENT_LIGHT_STRENGTH .6
 #define N_DIRECTIONAL_LIGHTS 2
 #define N_POINT_LIGHTS 2
 #define N_SPOT_LIGHTS 2
@@ -56,6 +55,9 @@ struct directionalLight {
 uniform directionalLight u_directionalLights[N_DIRECTIONAL_LIGHTS];
 uniform sampler2DShadow u_directionalLightShadowMap; // for OpenGL 3.0 limitations, we only support a shadow map for light #0
 vec3 calcDirectionalLight(directionalLight l);
+
+// Ambient light
+uniform vec3 u_ambientLight;
 
 // Point lights
 struct pointLight {
@@ -117,7 +119,7 @@ void main() {
   float specular_exponent = b_useMapSpecularExponent ? texture(u_mapSpecularExponent, fs_uv).r : u_specularExponent;
 
   // Ambient light
-  vec3 ambient = mtl_diffuse * textureLod(u_mapEnv, n_normal, 7.).rgb * AMBIENT_LIGHT_STRENGTH;
+  vec3 ambient = mtl_diffuse * u_ambientLight * u_ambient * textureLod(u_mapEnv, n_normal, 7.).rgb;
 
   // Diffuse and specular accumulator
   vec3 diffuseSpecular = vec3(0);
