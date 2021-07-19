@@ -392,7 +392,6 @@ class Scene {
                     obj.isVisible = false;
                 }
             }
-
             // Render the whole scene on the frame buffer
             this._drawTree(null, viewProjectionMatrix, this.rootNode, false, program);
 

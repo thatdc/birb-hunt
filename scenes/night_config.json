@@ -1,0 +1,171 @@
+{
+    "defaultProgram": "lambert",
+    "models": [
+        {
+            "name": "Ground",
+            "obj": "assets/ground/Ground.obj",
+            "mtl": "assets/ground/Ground.mtl",
+            "type": "ground"
+        },
+        {
+            "name": "BigRock_01",
+            "obj": "assets/nature/BigRock_01.obj",
+            "mtl": "assets/nature/Nature_Mat_01.mtl",
+            "type": "rock"
+        },
+        {
+            "name": "BigRock_02",
+            "obj": "assets/nature/BigRock_02.obj",
+            "mtl": "assets/nature/Nature_Mat_01.mtl",
+            "type": "rock"
+        },
+        {
+            "name": "BigRock_03",
+            "obj": "assets/nature/BigRock_03.obj",
+            "mtl": "assets/nature/Nature_Mat_01.mtl",
+            "type": "rock"
+        },
+        {
+            "name": "SmallRock_01",
+            "obj": "assets/nature/SmallRock_01.obj",
+            "mtl": "assets/nature/Nature_Mat_01.mtl",
+            "type": "rock"
+        },
+        {
+            "name": "Flower_04",
+            "obj": "assets/nature/Flower_04.obj",
+            "mtl": "assets/nature/Nature_Mat_01.mtl",
+            "type": "flower"
+        },
+        {
+            "name": "Tree_01",
+            "obj": "assets/nature/Tree_01.obj",
+            "mtl": "assets/nature/Nature_Mat_01.mtl",
+            "type": "tree",
+            "attach_points":[{
+                "position": [0, 2.85, 0.70],
+                "rotation": [0, 0, 0]
+            },
+            {
+                "position": [0.70, 2, 0],
+                "rotation": [0, -90, 0]
+            },
+            {
+                "position": [-0.70, 1.45, 0],
+                "rotation": [0, 90, 0]
+            },
+            {
+                "position": [0, 4, 0],
+                "rotation": [0, 30, 0]
+            }]
+        },
+        {
+            "name": "Tree_03",
+            "obj": "assets/nature/Tree_03.obj",
+            "mtl": "assets/nature/Nature_Mat_01.mtl",
+            "type": "tree",
+            "attach_points":[{
+                "position": [0.3, 2.1, 0.15],
+                "rotation": [0, 0, 0]
+            },
+            {
+                "position": [-0.2, 1.6, 0.2],
+                "rotation": [0, 0, 0]
+            },
+            {
+                "position": [-0.2, 2.75, -0.1],
+                "rotation": [0, 30, 0]
+            }]
+        },
+        {
+            "name": "Tree_05",
+            "obj": "assets/nature/Tree_05.obj",
+            "mtl": "assets/nature/Nature_Mat_01.mtl",
+            "type": "tree",
+            "attach_points":[{
+                "position": [0.2, 2.2, 0.15],
+                "rotation": [0, 0, 0]
+            },
+            {
+                "position": [1, 2.3, 0.25],
+                "rotation": [0, 20, 0]
+            },
+            {
+                "position": [0.05, 2.85, 0.9],
+                "rotation": [0, -20, 0]
+            },
+            {
+                "position": [-0.6, 2.8, -0.45],
+                "rotation": [0, 180, 0]
+            }]
+        },
+        {
+            "name": "Tree_06",
+            "obj": "assets/nature/Tree_06.obj",
+            "mtl": "assets/nature/Nature_Mat_01.mtl",
+            "type": "tree",
+            "attach_points":[{
+                "position": [0.2, 2.2, 0.25],
+                "rotation": [0, 0, 0]
+            },
+            {
+                "position": [-0.3, 3.45, 0],
+                "rotation": [0, 100, 0]
+            }]
+        },
+        {
+            "name": "bird_red",
+            "obj": "assets/angry_birds/red_ID240.016.obj",
+            "mtl": "assets/angry_birds/red_ID240.016.mtl",
+            "type": "bird"
+        },
+        {
+            "name": "help_arrow",
+            "obj": "assets/base/Arrow.obj",
+            "mtl": "assets/base/Arrow.mtl",
+            "program": "solid",
+            "collisionMesh": false
+        }
+    ],
+    "camera": {
+        "position": [0,1.75,0],
+        "rotation": [0,0,0]
+    },
+    "skybox": "sleepyhollow",
+    "directionalLights": [
+        {
+            "name": "sun",
+            "color": [0.102, 0.157, 0.357],
+            "rotation": [-38, 16],
+            "shadowMapSize": [2048, 2048],
+            "projectionOptions": {
+                "halfWidth": 130,
+                "near": 0,
+                "far": 300,
+                "distance": 150
+            }
+        }
+    ],
+    "pointLights": [
+    ],
+    "spotLights": [
+        {
+            "name": "torch",
+            "isActive": true,
+            "color": [1, 1, 1],
+            "position": [1, -0.5, 0],
+            "rotation": [0, 0, 0],
+            "innerCone": 0.9,
+            "outerCone": 0.8,
+            "shadowMapSize": [2048, 2048],
+            "projectionOptions": {
+                "near": 0.5,
+                "far": 300
+            },
+            "target": 5
+        }
+    ],
+    "appOptions": {
+        "freeCamera": false
+    }
+}

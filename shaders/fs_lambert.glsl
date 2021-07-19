@@ -1,6 +1,6 @@
 #version 300 es
 
-#define AMBIENT_LIGHT_STRENGTH .5
+#define AMBIENT_LIGHT_STRENGTH .6
 #define N_DIRECTIONAL_LIGHTS 2
 #define N_POINT_LIGHTS 2
 #define N_SPOT_LIGHTS 2

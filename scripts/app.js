@@ -225,7 +225,7 @@ async function configureScene(scene) {
     scene.programs.set("depth_map", new DepthMapProgram().init());
 
     // Download scene configuration (JSON)
-    let sceneConfig = await (await fetch("config.json")).json();
+    let sceneConfig = await (await fetch("scenes/night_config.json")).json();
 
     // Configure the application options
     configureApp(app, sceneConfig.appOptions ?? {});
@@ -400,7 +400,6 @@ function initBird(scene) {
 
     let randomTree = tree_list[Math.floor(Math.random() * tree_list.length)];
     attachPoint = randomTree.model.attachPoints[Math.floor(Math.random() * randomTree.model.attachPoints.length)];
-    // attachPoint = randomTree.model.attachPoints[1]
 
     bird.position = attachPoint.position;
     bird.rotation = attachPoint.rotation;
