@@ -485,7 +485,7 @@ function frame(time) {
 
     // Update UI
     app.ui.updateFrameRate(1 / (timeDelta * .001));
-    app.ui.updatePosition(scene.camera.position);
+    app.ui.updatePosition(scene.camera.getWorldPosition());
 
     // Update the camera
     keyboardMovement(scene.camera, timeDelta);
@@ -522,7 +522,7 @@ function rayCasting(scene, maxDistance = 20) {
         return;
     }
     let camera = scene.camera;
-    let ray_origin = camera.position;
+    let ray_origin = camera.getWorldPosition();
     let ray_dir = camera.getDirection();
 
     let selectedObject = null;
@@ -535,7 +535,7 @@ function rayCasting(scene, maxDistance = 20) {
         object.deselect();
 
         // Early reject if the object center is very far away
-        if (utils.distance(camera.position, object.getWorldPosition()) > maxDistance) {
+        if (utils.distance(camera.getWorldPosition(), object.getWorldPosition()) > maxDistance) {
             continue;
         }
 
