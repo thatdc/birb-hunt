@@ -41,25 +41,77 @@
             "name": "Tree_01",
             "obj": "assets/nature/Tree_01.obj",
             "mtl": "assets/nature/Nature_Mat_01.mtl",
-            "type": "tree"
+            "type": "tree",
+            "attach_points":[{
+                "position": [0, 2.85, 0.70],
+                "rotation": [0, 0, 0]
+            },
+            {
+                "position": [0.70, 2, 0],
+                "rotation": [0, -90, 0]
+            },
+            {
+                "position": [-0.70, 1.45, 0],
+                "rotation": [0, 90, 0]
+            },
+            {
+                "position": [0, 4, 0],
+                "rotation": [0, 30, 0]
+            }]
         },
         {
             "name": "Tree_03",
             "obj": "assets/nature/Tree_03.obj",
             "mtl": "assets/nature/Nature_Mat_01.mtl",
-            "type": "tree"
+            "type": "tree",
+            "attach_points":[{
+                "position": [0.3, 2.1, 0.15],
+                "rotation": [0, 0, 0]
+            },
+            {
+                "position": [-0.2, 1.6, 0.2],
+                "rotation": [0, 0, 0]
+            },
+            {
+                "position": [-0.2, 2.75, -0.1],
+                "rotation": [0, 30, 0]
+            }]
         },
         {
             "name": "Tree_05",
             "obj": "assets/nature/Tree_05.obj",
             "mtl": "assets/nature/Nature_Mat_01.mtl",
-            "type": "tree"
+            "type": "tree",
+            "attach_points":[{
+                "position": [0.2, 2.2, 0.15],
+                "rotation": [0, 0, 0]
+            },
+            {
+                "position": [1, 2.3, 0.25],
+                "rotation": [0, 20, 0]
+            },
+            {
+                "position": [0.05, 2.85, 0.9],
+                "rotation": [0, -20, 0]
+            },
+            {
+                "position": [-0.6, 2.8, -0.45],
+                "rotation": [0, 180, 0]
+            }]
         },
         {
             "name": "Tree_06",
             "obj": "assets/nature/Tree_06.obj",
             "mtl": "assets/nature/Nature_Mat_01.mtl",
-            "type": "tree"
+            "type": "tree",
+            "attach_points":[{
+                "position": [0.2, 2.2, 0.25],
+                "rotation": [0, 0, 0]
+            },
+            {
+                "position": [-0.3, 3.45, 0],
+                "rotation": [0, 100, 0]
+            }]
         },
         {
             "name": "bird_red",

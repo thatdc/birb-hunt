@@ -246,6 +246,9 @@ async function configureScene(scene) {
             console.error(`Model \"${name}}\" already exists`);
         }
 
+        // Attach points
+        model.attachPoints = modelConfig.attach_points
+
         // Add type of this model (tree, bird, ...)
         model.type = modelConfig.type;
         // TODO: Add data according to type (e.g. attach points for trees ...)
@@ -368,7 +371,7 @@ function initPlayer(scene, sceneConfig) {
         [.75, .75, .75]
     );
     scene.objects.set("help_arrow", arrow);
-    // arrow.isVisible = false;
+    arrow.isVisible = false;
     arrow.castsShadows = false;
     arrow.setParent(camera);
 
@@ -381,9 +384,9 @@ function initBird(scene) {
     let bird = new SceneObject(
         "bird",
         scene.models.get("bird_red"),
-        [0, 1, 0],
         [0, 0, 0],
-        [5, 5, 5]
+        [0, 0, 0],
+        [0.5, 0.5, 0.5]
     );
     scene.objects.set("bird", bird);
     
@@ -396,6 +399,12 @@ function initBird(scene) {
     }
 
     let randomTree = tree_list[Math.floor(Math.random() * tree_list.length)];
+    attachPoint = randomTree.model.attachPoints[Math.floor(Math.random() * randomTree.model.attachPoints.length)];
+    // attachPoint = randomTree.model.attachPoints[1]
+
+    bird.position = attachPoint.position;
+    bird.rotation = attachPoint.rotation;
+
     bird.setParent(randomTree);
 
     app.targetObject = bird;
