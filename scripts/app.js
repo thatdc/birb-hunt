@@ -335,7 +335,7 @@ async function configureScene(scene) {
     // Setup all the lamps in the scene
 
     // Init the target bird
-    initBird(scene);
+    initBird();
 
     // Initialize the player camera and the objects attached to it
     initPlayer(scene, sceneConfig);
@@ -390,18 +390,24 @@ function initPlayer(scene, sceneConfig) {
     arrow.lookAtTarget = app.targetObject;
 }
 
-function initBird(scene) {
-    // Create Bird node
-    let bird = new SceneObject(
-        "bird",
-        scene.models.get("bird_red"),
-        [0, 0, 0],
-        [0, 0, 0],
-        [0.5, 0.5, 0.5],
-        true,
-        true
-    );
-    scene.objects.set("bird", bird);
+function initBird() {
+    let bird = null;
+    if (!app.targetObject){
+        // Create Bird node
+        bird = new SceneObject(
+            "bird",
+            scene.models.get("bird_red"),
+            [0, 0, 0],
+            [0, 0, 0],
+            [0.5, 0.5, 0.5],
+            true,
+            true
+        );
+        scene.objects.set("bird", bird);
+    }
+    else{
+        bird = app.targetObject;
+    }
     
     // Create list of trees
     let tree_list = []
@@ -559,7 +565,12 @@ function rayCasting(scene, maxDistance = 20) {
     }
 }
 
-function checkWin(){
+function checkWin(scene){
+    if(document.getElementById("win-panel").hidden == false){
+        initBird();
+        document.getElementById("win-panel").hidden = true;
+        return;
+    }
     if (app.targetObject.isSelected == true){
         document.getElementById("win-panel").hidden = false;
     }
