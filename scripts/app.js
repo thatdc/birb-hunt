@@ -35,6 +35,8 @@ async function main() {
     });
     document.addEventListener("keydown", onOverlayKeys);
 
+    document.addEventListener("click", checkWin);
+
     // Configure Pointer Lock
     initPointerLock(canvas);
 
@@ -554,6 +556,12 @@ function rayCasting(scene, maxDistance = 20) {
     // Update selection state of selecte object
     if (selectedObject) {
         selectedObject.select();
+    }
+}
+
+function checkWin(){
+    if (app.targetObject.isSelected == true){
+        document.getElementById("win-panel").hidden = false;
     }
 }
 
