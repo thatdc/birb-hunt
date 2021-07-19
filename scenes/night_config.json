@@ -152,7 +152,7 @@
     "spotLights": [
         {
             "name": "torch",
-            "isActive": true,
+            "isActive": false,
             "color": [1, 1, 1],
             "position": [1, -0.5, 0],
             "rotation": [0, 0, 0],

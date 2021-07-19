@@ -252,7 +252,7 @@ async function configureScene(scene) {
         // Add type of this model (tree, bird, ...)
         model.type = modelConfig.type;
         // TODO: Add data according to type (e.g. attach points for trees ...)
-        model.isSelectable = model.type == "bird"; // TODO: For debug only
+        model.isSelectable = (model.type == "bird") //|| (model.type == "tree"); // TODO: For debug only
 
         // Remove non-assigned maps from the materials
         for (let mtl of Object.values(model.materialsByIndex)) {
@@ -330,6 +330,8 @@ async function configureScene(scene) {
         scene.spotLights.push(l);
     }
 
+    // Setup all the lamps in the scene
+
     // Init the target bird
     initBird(scene);
 
@@ -338,6 +340,10 @@ async function configureScene(scene) {
 
     // Create the skybox
     scene.skybox = await new Skybox().init(sceneConfig.skybox);
+}
+
+function initLamps(scene) {
+    ;
 }
 
 
@@ -389,7 +395,9 @@ function initBird(scene) {
         scene.models.get("bird_red"),
         [0, 0, 0],
         [0, 0, 0],
-        [0.5, 0.5, 0.5]
+        [0.5, 0.5, 0.5],
+        true,
+        true
     );
     scene.objects.set("bird", bird);
     
