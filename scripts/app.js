@@ -535,7 +535,7 @@ function rayCasting(scene, maxDistance = 20) {
         object.deselect();
 
         // Early reject if the object center is very far away
-        if (utils.distance(camera.position, object.position) > maxDistance) {
+        if (utils.distance(camera.position, object.getWorldPosition()) > maxDistance) {
             continue;
         }
 
