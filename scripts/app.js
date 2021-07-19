@@ -221,7 +221,7 @@ function configureApp(app, customOptions) {
 async function configureScene(scene) {
     // Initialize the programs
     scene.programs.set("solid", new SolidColorProgram().init());
-    scene.programs.set("lambert", new LambertProgram().init());
+    scene.programs.set("blinn", new BlinnProgram().init());
     scene.programs.set("depth_map", new DepthMapProgram().init());
 
     // Download scene configuration (JSON)

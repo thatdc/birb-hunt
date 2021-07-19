@@ -239,7 +239,7 @@ class SolidColorProgram extends Program {
      * Initialize the program before use:
      * - Downloads and compiles the shaders
      * - Saves the locations of attributes and uniforms
-     * @returns {LambertProgram} a reference to the object
+     * @returns {BlinnProgram} a reference to the object
      */
     init() {
         super.init("shaders/solid_vs.glsl", "shaders/solid_fs.glsl");
@@ -441,7 +441,7 @@ class TexturedProgram extends Program {
         gl.uniformMatrix3fv(this.normalMatrixLocation, true, normalMatrix);
     }
 }
-class LambertProgram extends TexturedProgram {
+class BlinnProgram extends TexturedProgram {
 
     N_DIRECTIONAL_LIGHTS = 2;
     N_POINT_LIGHTS = 2;
@@ -451,10 +451,10 @@ class LambertProgram extends TexturedProgram {
      * Initialize the program before use:
      * - Downloads and compiles the shaders
      * - Saves the locations of attributes and uniforms
-     * @returns {LambertProgram} a reference to the object
+     * @returns {BlinnProgram} a reference to the object
      */
     init() {
-        super.init("shaders/vs.glsl", "shaders/fs_lambert.glsl");
+        super.init("shaders/vs.glsl", "shaders/blinn_fs.glsl");
         return this;
     }
 

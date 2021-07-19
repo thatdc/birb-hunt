@@ -1,5 +1,5 @@
 {
-    "defaultProgram": "lambert",
+    "defaultProgram": "blinn",
     "models": [
         {
             "name": "Ground",
