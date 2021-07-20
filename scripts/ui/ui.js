@@ -1,5 +1,11 @@
 class UserInterface {
     /**
+     * Main panel
+     * @type {Element}
+     */
+    mainPanel;
+
+    /**
      * Options panel
      * @type {Element}
      */
@@ -26,8 +32,11 @@ class UserInterface {
     /**
      * Initializes the UI
      * @param {Object} options application options
+     * @param {Object[]} scenes an array of objects with {name, displayName} for every available scene
      */
-    init(options) {
+    init(options, scenes) {
+        // Initialize scene selection screen
+
         // Initialize options panel
         this.optionsPanel = this._initializeOptionsPanel(options);
 
@@ -40,11 +49,48 @@ class UserInterface {
         this.positionDisplay.hidden = !options["showPosition"] ?? true;
 
         // Side panel
+        this.mainPanel = document.getElementById("main-panel");
+
+        // Side panel
         this.sidePanel = document.getElementById("side-panel");
 
+        // Scene list
+        this._initializeSceneList(scenes);
+    }
+
+    /**
+     * Initializes the controls tied to the scene: light controls
+     * @param {Scene} Scene 
+     */
+    initSceneControls(scene) {
         // Initialize light controls
         let lc = new LightControls();
         lc.createControls(document.getElementById("light-controls"), scene);
+    }
+
+    /**
+     * Initializes the scenes selection list
+     * @param {Object[]} scenes an array of objects with {name, displayName} for every available scene
+     */
+    _initializeSceneList(scenes) {
+        let parent = document.getElementById("scene-list");
+
+        // Create a button for each scene
+        for (let { name, displayName } of scenes) {
+            let button = document.createElement("button");
+            button.value = name;
+            button.textContent = displayName;
+            button.addEventListener("click", this._onSceneSelectionButton);
+            parent.appendChild(button);
+        }
+    }
+
+    /**
+     * Fired when the button to select a scene is clicked
+     * @param {MouseEvent} e 
+     */
+    _onSceneSelectionButton(e) {
+        startGame(e.target.value);
     }
 
     /**

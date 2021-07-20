@@ -161,7 +161,7 @@
         "position": [0,1.75,0],
         "rotation": [0,0,0]
     },
-    "skybox": "sun",
+    "skybox": "valley",
     "ambientLight": [0.6, 0.6, 0.6],
     "directionalLights": [
         {

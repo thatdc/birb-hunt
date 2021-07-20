@@ -1,15 +1,19 @@
-html, body {
+html, body, #canvas-container {
     font-family: Arial, Helvetica, sans-serif;
     height: 100%;
     margin: 0;
-    background-color: gray;
 }
+
 canvas {
     z-index: -1;
     width: 100%;
     height: 100%;
     display: block;
     background-color: white;
+}
+
+[hidden] {
+    display: none !important;
 }
 
 .overlay {
@@ -25,7 +29,7 @@ canvas {
     top:0;
     left:0;
     padding: .25em;
-    color: white;
+    color: rgb(175, 26, 26);
 }
 
 #position {
@@ -43,6 +47,79 @@ canvas {
     color:gold;
 }
 
+#main-panel {
+    width: 100%;
+    height: 100%;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    color: white;
+}
+
+#main-panel > h1 {
+    color: #9c2121;
+}
+
+#main-panel > h2, #main-panel > h3 {
+    color: #b15252;
+}
+
+#main-logo {
+    height: 3em;
+}
+
+#scene-list {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+#scene-list button {
+    display: block;
+    width: 100%;
+    margin-left: auto;
+    margin-right: auto;
+    padding: .5em;
+    border: none;
+    background-position: center;
+    background-size: cover;
+    flex-grow: 1;
+    /* Text */
+    color: white;
+    text-shadow: 0 0 .25em black;
+    font-size: xxx-large;
+    font-weight: bold;
+    /* Transition */
+    transition: max-height 4s ease;
+}
+
+#scene-list button[value="valley"] {
+    background-color: #71ab21;
+    background-image: url(../images/background_valley.jpg);
+}
+
+#scene-list button[value="valley"]:hover {
+    height: inherit;
+}
+
+#scene-list button[value="sunset"] {
+    background-color: #c5903b;
+    background-image: url(../images/background_sunset.jpg);
+}
+
+#scene-list button[value="sunset"]:hover {
+    height: inherit;
+}
+
+#scene-list button[value="sleepyhollow"] {
+    background-color: #0a6488;
+    background-image: url(../images/background_night.jpg);
+}
+
+#scene-list button[value="sleepyhollow"]:hover {
+    height: inherit;
+}
+
 #options-panel {
     position: absolute;
     top: 50%;
@@ -51,7 +128,7 @@ canvas {
     color: white;
 }
 
-#options-panel > h1, h2, h3 {
+#options-panel h1, #options-panel h2, #options-panel h3 {
     text-align: center;
 }
 
