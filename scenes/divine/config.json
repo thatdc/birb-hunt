@@ -1,0 +1,215 @@
+{
+    "defaultProgram": "blinn",
+    "models": [
+        {
+            "name": "Ground",
+            "obj": "assets/ground/Ground.obj",
+            "mtl": "assets/ground/Ground.mtl",
+            "type": "ground"
+        },
+        {
+            "name": "BigRock_01",
+            "obj": "assets/nature/BigRock_01.obj",
+            "mtl": "assets/nature/Nature_Mat_01.mtl",
+            "type": "rock"
+        },
+        {
+            "name": "BigRock_02",
+            "obj": "assets/nature/BigRock_02.obj",
+            "mtl": "assets/nature/Nature_Mat_01.mtl",
+            "type": "rock"
+        },
+        {
+            "name": "BigRock_03",
+            "obj": "assets/nature/BigRock_03.obj",
+            "mtl": "assets/nature/Nature_Mat_01.mtl",
+            "type": "rock"
+        },
+        {
+            "name": "SmallRock_01",
+            "obj": "assets/nature/SmallRock_01.obj",
+            "mtl": "assets/nature/Nature_Mat_01.mtl",
+            "type": "rock"
+        },
+        {
+            "name": "Flower_04",
+            "obj": "assets/nature/Flower_04.obj",
+            "mtl": "assets/nature/Nature_Mat_01.mtl",
+            "type": "flower"
+        },
+        {
+            "name": "Tree_01",
+            "obj": "assets/nature/Tree_01.obj",
+            "mtl": "assets/nature/Nature_Mat_01.mtl",
+            "type": "tree",
+            "attach_points":[{
+                "position": [0, 2.70, 0.65],
+                "rotation": [0, 0, 0]
+            },
+            {
+                "position": [0.70, 1.85, 0],
+                "rotation": [0, -90, 0]
+            },
+            {
+                "position": [-0.70, 1.30, 0],
+                "rotation": [0, 90, 0]
+            },
+            {
+                "position": [0, 3.85, 0],
+                "rotation": [0, 30, 0]
+            }]
+        },
+        {
+            "name": "Tree_03",
+            "obj": "assets/nature/Tree_03.obj",
+            "mtl": "assets/nature/Nature_Mat_01.mtl",
+            "type": "tree",
+            "attach_points":[{
+                "position": [0.3, 1.95, 0.15],
+                "rotation": [0, 0, 0]
+            },
+            {
+                "position": [-0.2, 1.45, 0.2],
+                "rotation": [0, 0, 0]
+            },
+            {
+                "position": [-0.2, 2.55, -0.1],
+                "rotation": [0, 30, 0]
+            }]
+        },
+        {
+            "name": "Tree_05",
+            "obj": "assets/nature/Tree_05.obj",
+            "mtl": "assets/nature/Nature_Mat_01.mtl",
+            "type": "tree",
+            "attach_points":[{
+                "position": [0.2, 2.05, 0.15],
+                "rotation": [0, 0, 0]
+            },
+            {
+                "position": [1, 2.15, 0.25],
+                "rotation": [0, 20, 0]
+            },
+            {
+                "position": [0.05, 2.65, 0.9],
+                "rotation": [0, -20, 0]
+            },
+            {
+                "position": [-0.6, 2.65, -0.45],
+                "rotation": [0, 180, 0]
+            }]
+        },
+        {
+            "name": "Tree_06",
+            "obj": "assets/nature/Tree_06.obj",
+            "mtl": "assets/nature/Nature_Mat_01.mtl",
+            "type": "tree",
+            "attach_points":[{
+                "position": [0.2, 2.05, 0.25],
+                "rotation": [0, 0, 0]
+            },
+            {
+                "position": [-0.3, 3.30, 0],
+                "rotation": [0, 100, 0]
+            }]
+        },
+        {
+            "name": "Suzanne_gold",
+            "obj": "assets/base/Suzanne.obj",
+            "mtl": "assets/base/Suzanne.mtl"
+        },
+        {
+            "name": "bird_red",
+            "obj": "assets/angry_birds/red_ID240.016.obj",
+            "mtl": "assets/angry_birds/red_ID240.016.mtl",
+            "type": "bird"
+        },
+        {
+            "name": "bird_white",
+            "obj": "assets/angry_birds/matilda.obj",
+            "mtl": "assets/angry_birds/matilda.mtl",
+            "type": "bird"
+        },
+        {
+            "name": "bird_orange",
+            "obj": "assets/angry_birds/bubbles.obj",
+            "mtl": "assets/angry_birds/bubbles.mtl",
+            "type": "bird"
+        },
+        {
+            "name": "bird_yellow",
+            "obj": "assets/angry_birds/chuck.obj",
+            "mtl": "assets/angry_birds/chuck.mtl",
+            "type": "bird"
+        },
+        {
+            "name": "bird_black",
+            "obj": "assets/angry_birds/bomb.obj",
+            "mtl": "assets/angry_birds/bomb.mtl",
+            "type": "bird"
+        },
+        {
+            "name": "bird_pink",
+            "obj": "assets/angry_birds/stella.obj",
+            "mtl": "assets/angry_birds/stella.mtl",
+            "type": "bird"
+        },
+        {
+            "name": "help_arrow",
+            "obj": "assets/base/Arrow.obj",
+            "mtl": "assets/base/Arrow.mtl",
+            "program": "solid",
+            "collisionMesh": false
+        }
+    ],
+    "camera": {
+        "position": [0,1.75,0],
+        "rotation": [0,0,0]
+    },
+    "skybox": "divine",
+    "ambientLight": [0.4, 0.4, 0.4],
+    "directionalLights": [
+        {
+            "name": "sun",
+            "color": [0.1, 0.1, 0.2],
+            "rotation": [-31, -48],
+            "shadowMapSize": [2048, 2048],
+            "projectionOptions": {
+                "halfWidth": 130,
+                "near": 0,
+                "far": 300,
+                "distance": 150
+            }
+        }
+    ],
+    "pointLights": [
+        {
+            "name": "suzannes",
+            "isActive": true,
+            "color": [0.165, 0.427, 0.494],
+            "position": [0, 9, 0],
+            "target": 5,
+            "decay": 2
+        }
+    ],
+    "spotLights": [
+        {
+            "name": "torch",
+            "isActive": true,
+            "color": [1, 1, 1],
+            "position": [1, -0.5, 0],
+            "rotation": [0, 0, 0],
+            "innerCone": 0.9,
+            "outerCone": 0.8,
+            "shadowMapSize": [2048, 2048],
+            "projectionOptions": {
+                "near": 0.5,
+                "far": 300
+            },
+            "target": 5
+        }
+    ],
+    "appOptions": {
+        "freeCamera": false
+    }
+}

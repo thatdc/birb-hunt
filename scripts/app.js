@@ -25,6 +25,10 @@ async function main() {
             "name": "sleepyhollow",
             "displayName": "Night"
         },
+        {
+            "name": "divine",
+            "displayName": "Divine"
+        },
     ];
 
     // Create the app

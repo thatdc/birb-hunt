@@ -93,13 +93,13 @@ canvas {
     transition: max-height 4s ease;
 }
 
+#scene-list button:hover {
+    height: inherit;
+}
+
 #scene-list button[value="valley"] {
     background-color: #71ab21;
     background-image: url(../images/background_valley.jpg);
-}
-
-#scene-list button[value="valley"]:hover {
-    height: inherit;
 }
 
 #scene-list button[value="sunset"] {
@@ -107,17 +107,15 @@ canvas {
     background-image: url(../images/background_sunset.jpg);
 }
 
-#scene-list button[value="sunset"]:hover {
-    height: inherit;
-}
-
 #scene-list button[value="sleepyhollow"] {
     background-color: #0a6488;
     background-image: url(../images/background_night.jpg);
 }
 
-#scene-list button[value="sleepyhollow"]:hover {
-    height: inherit;
+#scene-list button[value="divine"] {
+    background-color: #0a6488;
+    background-image: url(../images/background_divine.jpg);
+    background-position-y: bottom;
 }
 
 #options-panel {
