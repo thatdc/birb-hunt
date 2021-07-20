@@ -116,7 +116,17 @@
         {
             "name": "Suzanne_gold",
             "obj": "assets/base/Suzanne.obj",
-            "mtl": "assets/base/Suzanne.mtl"
+            "mtl": "assets/base/Suzanne_gold.mtl"
+        },
+        {
+            "name": "Suzanne_silver",
+            "obj": "assets/base/Suzanne.obj",
+            "mtl": "assets/base/Suzanne_silver.mtl"
+        },
+        {
+            "name": "Suzanne_bronze",
+            "obj": "assets/base/Suzanne.obj",
+            "mtl": "assets/base/Suzanne_bronze.mtl"
         },
         {
             "name": "bird_red",
@@ -186,7 +196,7 @@
         {
             "name": "suzannes",
             "isActive": true,
-            "color": [0.165, 0.427, 0.494],
+            "color": [0.409, 0.870, 1],
             "position": [0, 9, 0],
             "target": 5,
             "decay": 2

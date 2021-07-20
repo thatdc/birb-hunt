@@ -118,8 +118,14 @@ void main() {
   // Get the specular exponent (from map or material)
   float specular_exponent = b_useMapSpecularExponent ? texture(u_mapSpecularExponent, fs_uv).r : u_specularExponent;
 
-  // Ambient light
-  vec3 ambient = mtl_diffuse * u_ambientLight * u_ambient * textureLod(u_mapEnv, n_normal, 7.).rgb;
+  // Approximate the roughness in [0, 1] range
+  // by inverting the empirical formula used by the blender OBJ exporter
+  // https://github.com/blender/blender-addons/blob/692a15f3c50c57cc3b66115aa5f316aa290ddc0a/io_scene_obj/export_obj.py#L77
+  float roughness = clamp(1. - (specular_exponent / 30.), 0. , 1.);
+
+  // Ambient light (select mipmap level according to roughness)
+  float lod = roughness * 7.;
+  vec3 ambient = mtl_diffuse * u_ambientLight * u_ambient * textureLod(u_mapEnv, n_normal, lod).rgb;
 
   // Diffuse and specular accumulator
   vec3 diffuseSpecular = vec3(0);
