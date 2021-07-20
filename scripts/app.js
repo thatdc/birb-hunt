@@ -344,11 +344,6 @@ async function configureScene(scene) {
     scene.skybox = await new Skybox().init(sceneConfig.skybox);
 }
 
-function initLamps(scene) {
-    ;
-}
-
-
 /**
  * Initializes the player (i.e. the camera)
  * and attaches objects to it.
@@ -391,12 +386,23 @@ function initPlayer(scene, sceneConfig) {
 }
 
 function initBird() {
+    // Find all models of the birds
+    bird_models = []
+    for (birb of scene.models.values()){
+        if (birb.type == "bird"){
+            bird_models.push(birb);
+        }
+    }
+
+    // Select one at random
+    bird_model = bird_models[Math.floor(Math.random() * bird_models.length)];
+
     let bird = null;
     if (!app.targetObject){
         // Create Bird node
         bird = new SceneObject(
             "bird",
-            scene.models.get("bird_red"),
+            bird_model,
             [0, 0, 0],
             [0, 0, 0],
             [0.5, 0.5, 0.5],
@@ -407,6 +413,7 @@ function initBird() {
     }
     else{
         bird = app.targetObject;
+        bird.model = bird_model;
     }
     
     // Create list of trees
@@ -565,7 +572,7 @@ function rayCasting(scene, maxDistance = 20) {
     }
 }
 
-function checkWin(scene){
+function checkWin(){
     if(document.getElementById("win-panel").hidden == false){
         initBird();
         document.getElementById("win-panel").hidden = true;

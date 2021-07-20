@@ -43,19 +43,19 @@
             "mtl": "assets/nature/Nature_Mat_01.mtl",
             "type": "tree",
             "attach_points":[{
-                "position": [0, 2.85, 0.70],
+                "position": [0, 2.70, 0.65],
                 "rotation": [0, 0, 0]
             },
             {
-                "position": [0.70, 2, 0],
+                "position": [0.70, 1.85, 0],
                 "rotation": [0, -90, 0]
             },
             {
-                "position": [-0.70, 1.45, 0],
+                "position": [-0.70, 1.30, 0],
                 "rotation": [0, 90, 0]
             },
             {
-                "position": [0, 4, 0],
+                "position": [0, 3.85, 0],
                 "rotation": [0, 30, 0]
             }]
         },
@@ -65,15 +65,15 @@
             "mtl": "assets/nature/Nature_Mat_01.mtl",
             "type": "tree",
             "attach_points":[{
-                "position": [0.3, 2.1, 0.15],
+                "position": [0.3, 1.95, 0.15],
                 "rotation": [0, 0, 0]
             },
             {
-                "position": [-0.2, 1.6, 0.2],
+                "position": [-0.2, 1.45, 0.2],
                 "rotation": [0, 0, 0]
             },
             {
-                "position": [-0.2, 2.75, -0.1],
+                "position": [-0.2, 2.55, -0.1],
                 "rotation": [0, 30, 0]
             }]
         },
@@ -83,19 +83,19 @@
             "mtl": "assets/nature/Nature_Mat_01.mtl",
             "type": "tree",
             "attach_points":[{
-                "position": [0.2, 2.2, 0.15],
+                "position": [0.2, 2.05, 0.15],
                 "rotation": [0, 0, 0]
             },
             {
-                "position": [1, 2.3, 0.25],
+                "position": [1, 2.15, 0.25],
                 "rotation": [0, 20, 0]
             },
             {
-                "position": [0.05, 2.85, 0.9],
+                "position": [0.05, 2.65, 0.9],
                 "rotation": [0, -20, 0]
             },
             {
-                "position": [-0.6, 2.8, -0.45],
+                "position": [-0.6, 2.65, -0.45],
                 "rotation": [0, 180, 0]
             }]
         },
@@ -105,11 +105,11 @@
             "mtl": "assets/nature/Nature_Mat_01.mtl",
             "type": "tree",
             "attach_points":[{
-                "position": [0.2, 2.2, 0.25],
+                "position": [0.2, 2.05, 0.25],
                 "rotation": [0, 0, 0]
             },
             {
-                "position": [-0.3, 3.45, 0],
+                "position": [-0.3, 3.30, 0],
                 "rotation": [0, 100, 0]
             }]
         },
@@ -117,6 +117,30 @@
             "name": "bird_red",
             "obj": "assets/angry_birds/red_ID240.016.obj",
             "mtl": "assets/angry_birds/red_ID240.016.mtl",
+            "type": "bird"
+        },
+        {
+            "name": "bird_white",
+            "obj": "assets/angry_birds/matilda.obj",
+            "mtl": "assets/angry_birds/matilda.mtl",
+            "type": "bird"
+        },
+        {
+            "name": "bird_orange",
+            "obj": "assets/angry_birds/bubbles.obj",
+            "mtl": "assets/angry_birds/bubbles.mtl",
+            "type": "bird"
+        },
+        {
+            "name": "bird_yellow",
+            "obj": "assets/angry_birds/chuck.obj",
+            "mtl": "assets/angry_birds/chuck.mtl",
+            "type": "bird"
+        },
+        {
+            "name": "bird_black",
+            "obj": "assets/angry_birds/bomb.obj",
+            "mtl": "assets/angry_birds/bomb.mtl",
             "type": "bird"
         },
         {
