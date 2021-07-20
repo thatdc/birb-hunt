@@ -7,20 +7,54 @@ var keyPressed = {};
 var startTime;
 var lastFrame;
 
+/**
+ * Main function.
+ * Justs sets up the basic UI to select the scene
+ */
 async function main() {
-    let canvas = document.getElementById("c");
-    gl = initializeWebGL(canvas);
+    let scenes = [
+        {
+            "name": "valley",
+            "displayName": "Valley"
+        },
+        {
+            "name": "sunset",
+            "displayName": "Sunset"
+        },
+        {
+            "name": "sleepyhollow",
+            "displayName": "Night"
+        },
+    ];
 
     // Create the app
     app = {};
-
-    // Create the scene
-    scene = new Scene();
-    await configureScene(scene);
+    configureApp(app, {});
 
     // Create the user interface
     app.ui = new UserInterface();
-    app.ui.init(app.options);
+    app.ui.init(app.options, scenes);
+}
+
+/**
+ * Starts the game with the given scene name
+ * @param {string} sceneName 
+ */
+async function startGame(sceneName) {
+    // Initialize WebGL
+    let canvas = document.createElement("canvas");
+    let canvasContainer = document.getElementById("canvas-container");
+    app.ui.mainPanel.hidden = true;
+    canvasContainer.hidden = false;
+    canvasContainer.appendChild(canvas);
+    gl = initializeWebGL(canvas);
+
+    // Create the scene
+    scene = new Scene();
+    await configureScene(scene, sceneName);
+
+    // Initialize the part of the UI that needs a scene
+    app.ui.initSceneControls(scene);
 
     // Configure event listeners
     document.addEventListener("keydown", (e) => {
@@ -219,18 +253,16 @@ function configureApp(app, customOptions) {
  * Will download the models, materials and textures and insert them into the
  * scene.
  * @param {Scene} scene 
+ * @param {string} sceneName
  */
-async function configureScene(scene) {
+async function configureScene(scene, sceneName) {
     // Initialize the programs
     scene.programs.set("solid", new SolidColorProgram().init());
     scene.programs.set("blinn", new BlinnProgram().init());
     scene.programs.set("depth_map", new DepthMapProgram().init());
 
     // Download scene configuration (JSON)
-    let sceneConfig = await (await fetch("scenes/night_config.json")).json();
-
-    // Configure the application options
-    configureApp(app, sceneConfig.appOptions ?? {});
+    let sceneConfig = await (await fetch(`scenes/${sceneName}/config.json`)).json();
 
     // Download the models
     let models = await downloadModels(sceneConfig.models);
@@ -301,7 +333,7 @@ async function configureScene(scene) {
         }
     }
 
-    let sceneGraphConfig = await (await fetch("scene-graph.json")).json();
+    let sceneGraphConfig = await (await fetch(`scenes/${sceneName}/scene-graph.json`)).json();
 
     // Build the scene graph from the root downwards
     scene.rootNode = buildSceneGraph(scene, sceneGraphConfig);

@@ -21,7 +21,9 @@
 </head>
 
 <body>
-    <canvas id="c"></canvas>
+    <div id="canvas-container" hidden>
+        <!-- Will be filled programmatically -->
+    </div>
 
     <!-- Framerate -->
     <div id="framerate" class="overlay" hidden></div>
@@ -35,8 +37,19 @@
         <h2>You got the bird!</h2>
     </div>
 
+    <!-- Main screen -->
+    <div id="main-panel">
+        <h1>
+            <img id="main-logo" src="images/logo_col.svg">
+        </h1>
+        <h3>Select a scene</h3>
+        <div id="scene-list">
+            <!-- Will be filled programmatically -->
+        </div>
+    </div>
+
     <!-- Options panel -->
-    <div id="options-panel" class="overlay panel">
+    <div id="options-panel" class="overlay panel" hidden>
         <h1>Pause</h1>
         <span class="tooltip">Click on canvas to resume</span>
         <div>
@@ -61,7 +74,7 @@
     </div>
 
     <!-- Side panel -->
-    <div id="side-panel" class="overlay panel">
+    <div id="side-panel" class="overlay panel" hidden>
         <div>
             <h3>Lights</h3>
             <div id="light-controls">
