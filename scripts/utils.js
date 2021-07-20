@@ -811,4 +811,37 @@ createProgram:function(gl, vertexShader, fragmentShader) {
 
 		return out;
 	},
+
+	InterpolationMatrix: function(
+		tx1, ty1, tz1, rx1, ry1, rz1,
+		tx2, ty2, tz2, rx2, ry2, rz2,
+		a) {
+		// tx1, ty1, tz1	-> Initial position
+		// rx1, ry1, rz1	-> Initial rotation (in Euler angles)
+		// tx2, ty2, tz2	-> Final position
+		// rx2, ry2, rz2	-> Final rotation (in Euler angles)
+		// a (in 0..1 range)	-> Interpolation coefficient
+		//
+		// return the interpolated transform matrix with the given position and rotation
+
+		// Linear interpolation for position
+		final_x = (1-a)*tx1 + a*tx2;
+		final_y = (1-a)*ty1 + a*ty2;
+		final_z = (1-a)*tz1 + a*tz2;
+
+		T = utils.MakeTranslateMatrix(final_x, final_y, final_z);
+
+		// To interpolate rotation I use quaternions
+		quat_1 = Quaternion.fromEuler(utils.degToRad(rz1), utils.degToRad(rx1), utils.degToRad(ry1));
+		quat_2 = Quaternion.fromEuler(utils.degToRad(rz2), utils.degToRad(rx2), utils.degToRad(ry2));
+
+		final_quat = quat_1.slerp(quat_2)(a);
+
+		R = final_quat.toMatrix4();
+
+
+		var out = utils.multiplyMatrices(T, R);
+
+		return out;			   
+		}
 }

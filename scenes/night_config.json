@@ -144,6 +144,12 @@
             "type": "bird"
         },
         {
+            "name": "bird_pink",
+            "obj": "assets/angry_birds/stella.obj",
+            "mtl": "assets/angry_birds/stella.mtl",
+            "type": "bird"
+        },
+        {
             "name": "help_arrow",
             "obj": "assets/base/Arrow.obj",
             "mtl": "assets/base/Arrow.mtl",

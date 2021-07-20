@@ -227,7 +227,7 @@ async function configureScene(scene) {
     scene.programs.set("depth_map", new DepthMapProgram().init());
 
     // Download scene configuration (JSON)
-    let sceneConfig = await (await fetch("scenes/night_config.json")).json();
+    let sceneConfig = await (await fetch("scenes/dawn_config.json")).json();
 
     // Configure the application options
     configureApp(app, sceneConfig.appOptions ?? {});
@@ -396,24 +396,24 @@ function initBird() {
 
     // Select one at random
     bird_model = bird_models[Math.floor(Math.random() * bird_models.length)];
-
-    let bird = null;
+    let birdNode = null;
     if (!app.targetObject){
         // Create Bird node
-        bird = new SceneObject(
+        birdNode = new AnimatedNode(
             "bird",
-            bird_model,
             [0, 0, 0],
             [0, 0, 0],
             [0.5, 0.5, 0.5],
             true,
-            true
+            bird_model
         );
-        scene.objects.set("bird", bird);
+        scene.objects.set("bird_animated", birdNode.animatedChild);
+        app.targetObject = birdNode.animatedChild;
     }
     else{
-        bird = app.targetObject;
-        bird.model = bird_model;
+        animatedBird = app.targetObject;
+        animatedBird.model = bird_model;
+        birdNode = animatedBird.parent;
     }
     
     // Create list of trees
@@ -427,12 +427,10 @@ function initBird() {
     let randomTree = tree_list[Math.floor(Math.random() * tree_list.length)];
     attachPoint = randomTree.model.attachPoints[Math.floor(Math.random() * randomTree.model.attachPoints.length)];
 
-    bird.position = attachPoint.position;
-    bird.rotation = attachPoint.rotation;
+    birdNode.position = attachPoint.position;
+    birdNode.rotation = attachPoint.rotation;
 
-    bird.setParent(randomTree);
-
-    app.targetObject = bird;
+    birdNode.setParent(randomTree);
 }
 
 /**
@@ -508,11 +506,6 @@ function frame(time) {
 
     // Update the world matrices of all the objects in the graph, recursively
     scene.rootNode.updateWorldMatrix();
-
-    // // Set the world matrix of the help arrow, that always looks at the bird
-    // let arrow = scene.objects.get("help_arrow");
-    // let bird = scene.objects.get("bird");
-    // arrow.worldMatrix = utils.LookAt(arrow.getWorldPosition(), bird.getWorldPosition(), [0, 1, 0]);
 
     // Perform raycasting
     rayCasting(scene);
