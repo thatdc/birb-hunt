@@ -4,7 +4,7 @@
         {
             "name": "Ground",
             "obj": "assets/ground/Ground.obj",
-            "mtl": "assets/ground/Ground.mtl",
+            "mtl": "assets/ground/Ground_s7.mtl",
             "type": "ground"
         },
         {
