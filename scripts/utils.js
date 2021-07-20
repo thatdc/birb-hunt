@@ -812,7 +812,11 @@ createProgram:function(gl, vertexShader, fragmentShader) {
 		return out;
 	},
 
-	InterpolationMatrix: function(
+	InterpolationMatrix: function(i_pos, f_pos, i_rot, f_rot, a){
+		return utils._InterpolationMatrix(i_pos[0], i_pos[1], i_pos[2], i_rot[0], i_rot[1], i_rot[2], f_pos[0], f_pos[1], f_pos[2], f_rot[0], f_rot[1], f_rot[2], a);
+	},
+
+	_InterpolationMatrix: function(
 		tx1, ty1, tz1, rx1, ry1, rz1,
 		tx2, ty2, tz2, rx2, ry2, rz2,
 		a) {

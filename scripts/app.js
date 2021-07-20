@@ -422,6 +422,8 @@ function initPlayer(scene, sceneConfig) {
 }
 
 function initBird() {
+    app.win = false;
+
     // Find all models of the birds
     bird_models = []
     for (birb of scene.models.values()){
@@ -541,7 +543,7 @@ function frame(time) {
     scene.camera.aspect_ratio = gl.canvas.clientWidth / gl.canvas.clientHeight;
 
     // Update the world matrices of all the objects in the graph, recursively
-    scene.rootNode.updateWorldMatrix();
+    scene.rootNode.updateWorldMatrix(null, time);
 
     // Perform raycasting
     rayCasting(scene);
@@ -609,6 +611,7 @@ function checkWin(){
     }
     if (app.targetObject.isSelected == true){
         document.getElementById("win-panel").hidden = false;
+        app.win = true;
     }
 }
 

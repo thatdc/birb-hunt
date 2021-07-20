@@ -29,4 +29,48 @@ class AnimatedNode extends SceneNode{
         this.animatedChild = new SceneObject(this.name + "_animated", childModel, [0, 0, 0], [0, 0, 0], [1, 1, 1], true, true);
         this.animatedChild.setParent(this);
     }
+
+    /**
+     * Update world matrix of itself and recursively to the children
+     * @param {number[][]} matrix 
+     * @param {number} time the time instant
+     */
+     updateWorldMatrix(matrix, time){
+         super.updateWorldMatrix(matrix);
+         if (app.win){
+            this.animate(time);
+         }
+     }
+
+     /**
+      * Animate the main child object
+      */
+     animate(time){
+         let period = 750;
+         time = parseInt(time);
+         let remainder = time % period;
+         let a;
+         let f_pos = null;
+         let i_pos = null;
+         let f_rot = [0, 0, 0];
+         let i_rot = [0, 0, 0];
+         let mat;
+         
+         if (remainder <= 300){
+            a = remainder / 300;
+            mat = utils.InterpolationMatrix([0, 0, 0], [0, 0.75, 0], [0, 0, 0], [0, 90, 0], a);
+         }
+         else if(remainder <= 500){
+             a = (remainder - 300) / 200;
+             mat = utils.InterpolationMatrix([0, 0.75, 0], [0, 1, 0], [0, 90, 0], [0, 180, 0], a);
+         }
+         else {
+             a = (remainder - 500) / 250;
+             mat = utils.InterpolationMatrix([0, 1, 0], [0, 0, 0], [0, 180, 0], [0, 360, 0], a);
+         }
+        
+         let S = utils.MakeScaleMatrix(1);
+         mat = utils.multiplyMatrices(S, mat);
+         this.animatedChild.worldMatrix = utils.multiplyMatrices(this.worldMatrix, mat);
+     }
 }

@@ -137,7 +137,7 @@ class SceneNode {
      * Update world matrix of itself and recursively to the children
      * @param {number[][]} matrix 
      */
-    updateWorldMatrix(matrix) {
+    updateWorldMatrix(matrix, time) {
         this.localMatrix = this._makeLocal();
         if (matrix) {
             // a matrix was passed in so do the math
@@ -157,7 +157,7 @@ class SceneNode {
         // now process all the children
         var worldMatrix = this.worldMatrix;
         this.children.forEach(function (child) {
-            child.updateWorldMatrix(worldMatrix);
+            child.updateWorldMatrix(worldMatrix, time);
         });
     };
 }
