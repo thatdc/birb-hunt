@@ -155,6 +155,21 @@
             "mtl": "assets/base/Arrow.mtl",
             "program": "solid",
             "collisionMesh": false
+        },
+        {
+            "name": "Suzanne_gold",
+            "obj": "assets/base/Suzanne.obj",
+            "mtl": "assets/base/Suzanne_gold.mtl"
+        },
+        {
+            "name": "Suzanne_silver",
+            "obj": "assets/base/Suzanne.obj",
+            "mtl": "assets/base/Suzanne_silver.mtl"
+        },
+        {
+            "name": "Suzanne_bronze",
+            "obj": "assets/base/Suzanne.obj",
+            "mtl": "assets/base/Suzanne_bronze.mtl"
         }
     ],
     "camera": {

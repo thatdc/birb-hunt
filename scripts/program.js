@@ -479,6 +479,7 @@ class BlinnProgram extends TexturedProgram {
 
         // Specular info
         this.specularExponentLocation = gl.getUniformLocation(p, "u_specularExponent");
+        this.sharpnessLocation = gl.getUniformLocation(p, "u_sharpness");
 
         // Maps
         this.mapDiffuseLocation = gl.getUniformLocation(p, "u_mapDiffuse");
@@ -636,6 +637,9 @@ class BlinnProgram extends TexturedProgram {
 
         // Specular exponent
         gl.uniform1f(this.specularExponentLocation, mtl.specularExponent);
+
+        // Sharpness
+        gl.uniform1f(this.sharpnessLocation, mtl.sharpness);
     }
 
     /**
