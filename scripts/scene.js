@@ -243,11 +243,11 @@ class Scene {
     models = new Map();
 
     /**
-     * Dictionary containing all the objects, must be manually synced with
+     * Dictionary containing all the nodes, must be manually synced with
      * the scene graph
-     * @type {Map<String, SceneObject>}
+     * @type {Map<String, SceneNode>}
      */
-    objects = new Map();
+    nodes = new Map();
 
     /**
      * Dictionary containing the program objects.
@@ -394,8 +394,8 @@ class Scene {
 
             // Hide objects that don't cast shadows
             let toHide = [];
-            for (let obj of scene.objects.values()) {
-                if (!obj.castsShadows && obj.isVisible) {
+            for (let obj of scene.nodes.values()) {
+                if (obj instanceof SceneObject && !obj.castsShadows && obj.isVisible) {
                     toHide.push(obj);
                     obj.isVisible = false;
                 }

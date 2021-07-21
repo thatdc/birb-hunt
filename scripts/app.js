@@ -228,7 +228,7 @@ function onKeydownInGame(e) {
     }
     // Toggle help arrow
     if (e.key === "h") {
-        let arrow = scene.objects.get("help_arrow");
+        let arrow = scene.nodes.get("help_arrow");
         arrow.isVisible = !arrow.isVisible;
         e.preventDefault();
         return;
@@ -289,12 +289,12 @@ async function configureScene(scene, sceneName) {
         }
 
         // Attach points
-        model.attachPoints = modelConfig.attach_points
+        model.attachPoints = modelConfig.attach_points;
 
         // Add type of this model (tree, bird, ...)
         model.type = modelConfig.type;
         // TODO: Add data according to type (e.g. attach points for trees ...)
-        model.isSelectable = (model.type == "bird") //|| (model.type == "tree"); // TODO: For debug only
+        model.isSelectable = (model.type == "bird"); //|| (model.type == "tree"); // TODO: For debug only
 
         // Remove non-assigned maps from the materials
         for (let mtl of Object.values(model.materialsByIndex)) {
@@ -418,7 +418,7 @@ function initPlayer(scene, sceneConfig) {
         [0, 0, 0],
         [.75, .75, .75]
     );
-    scene.objects.set("help_arrow", arrow);
+    scene.nodes.set("help_arrow", arrow);
     arrow.isVisible = false;
     arrow.castsShadows = false;
     arrow.setParent(camera);
@@ -427,21 +427,19 @@ function initPlayer(scene, sceneConfig) {
     arrow.lookAtTarget = app.targetObject;
 }
 
+/**
+ * Place the bird randomy
+ */
 function initBird() {
     app.win = false;
 
     // Find all models of the birds
-    bird_models = []
-    for (birb of scene.models.values()){
-        if (birb.type == "bird"){
-            bird_models.push(birb);
-        }
-    }
+    let birdModels = [...scene.models.values()].filter(m => m.type == "bird");
 
     // Select one at random
-    bird_model = bird_models[Math.floor(Math.random() * bird_models.length)];
+    let birdModel = birdModels[Math.floor(Math.random() * birdModels.length)];
     let birdNode = null;
-    if (!app.targetObject){
+    if (!app.targetObject) {
         // Create Bird node
         birdNode = new AnimatedNode(
             "bird",
@@ -449,27 +447,21 @@ function initBird() {
             [0, 0, 0],
             [0.5, 0.5, 0.5],
             true,
-            bird_model
+            birdModel
         );
-        scene.objects.set("bird_animated", birdNode.animatedChild);
+        scene.nodes.set("bird_animated", birdNode.animatedChild);
         app.targetObject = birdNode.animatedChild;
-    }
-    else{
-        animatedBird = app.targetObject;
-        animatedBird.model = bird_model;
+    } else {
+        let animatedBird = app.targetObject;
+        animatedBird.model = birdModel;
         birdNode = animatedBird.parent;
     }
-    
-    // Create list of trees
-    let tree_list = []
-    for (let ob of scene.objects.values()){
-        if (ob.model && ob.model.type == "tree"){
-            tree_list.push(ob);
-        }
-    }
 
-    let randomTree = tree_list[Math.floor(Math.random() * tree_list.length)];
-    attachPoint = randomTree.model.attachPoints[Math.floor(Math.random() * randomTree.model.attachPoints.length)];
+    // Create list of trees
+    let trees = [...scene.nodes.values()].filter(n => n instanceof SceneObject && n.model.type == "tree");
+
+    let randomTree = trees[Math.floor(Math.random() * trees.length)];
+    let attachPoint = randomTree.model.attachPoints[Math.floor(Math.random() * randomTree.model.attachPoints.length)];
 
     birdNode.position = attachPoint.position;
     birdNode.rotation = attachPoint.rotation;
@@ -477,12 +469,17 @@ function initBird() {
     birdNode.setParent(randomTree);
 }
 
-function initAnimations(scene, sceneName){
-    if (sceneName == "divine"){
-        suzanne_circles = scene.objects.get("suzannes_circle");
-        suzanne_1 = scene.objects.get("suzanne_1");
-        suzanne_2 = scene.objects.get("suzanne_2");
-        suzanne_3 = scene.objects.get("suzanne_3");
+/**
+ * Initialize animations based on the current scene
+ * @param {Scene} scene 
+ * @param {string} sceneName 
+ */
+function initAnimations(scene, sceneName) {
+    if (sceneName == "divine") {
+        suzanne_circles = scene.nodes.get("suzannes_circle");
+        suzanne_1 = scene.nodes.get("suzanne_1");
+        suzanne_2 = scene.nodes.get("suzanne_2");
+        suzanne_3 = scene.nodes.get("suzanne_3");
 
         suzanne_circles.setParent();
         suzanne_1.setParent();
@@ -494,14 +491,14 @@ function initAnimations(scene, sceneName){
         suzanne_2 = new AnimatedNode("suzanne_2", suzanne_2.position, suzanne_2.rotation, suzanne_2.scale, true, suzanne_2.model, "hover");
         suzanne_3 = new AnimatedNode("suzanne_3", suzanne_3.position, suzanne_3.rotation, suzanne_3.scale, true, suzanne_3.model, "hover");
 
-        suzanne_1.setParent(suzanne_circles.animatedChild)
-        suzanne_2.setParent(suzanne_circles.animatedChild)
-        suzanne_3.setParent(suzanne_circles.animatedChild)
+        suzanne_1.setParent(suzanne_circles.animatedChild);
+        suzanne_2.setParent(suzanne_circles.animatedChild);
+        suzanne_3.setParent(suzanne_circles.animatedChild);
 
-        scene.objects.set("suzannes_circle", suzanne_circles);
-        scene.objects.set("suzanne_1", suzanne_1);
-        scene.objects.set("suzanne_2", suzanne_2);
-        scene.objects.set("suzanne_3", suzanne_3);
+        scene.nodes.set("suzannes_circle", suzanne_circles);
+        scene.nodes.set("suzanne_1", suzanne_1);
+        scene.nodes.set("suzanne_2", suzanne_2);
+        scene.nodes.set("suzanne_3", suzanne_3);
 
         suzanne_circles.setParent(scene.rootNode);
     }
@@ -509,7 +506,7 @@ function initAnimations(scene, sceneName){
 
 /**
  * Builds the scene graph given the scene and the JSON configuration.
- * The objects are also inserted into scene.objects dictionary.
+ * The nodes are also inserted into scene.nodes dictionary.
  * 
  * This function can be called recursively to generate a subtree of the graph.
  * 
@@ -536,7 +533,6 @@ function buildSceneGraph(scene, nodeConfig) {
             nodeConfig.isVisible ?? true,
             nodeConfig.isSelectable ?? model.isSelectable
         );
-        scene.objects.set(current.name, current);
     } else {
         current = new SceneNode(
             nodeConfig.name,
@@ -545,8 +541,8 @@ function buildSceneGraph(scene, nodeConfig) {
             nodeConfig.scale,
             nodeConfig.isVisible ?? true,
         );
-        scene.objects.set(current.name, current);
     }
+    scene.nodes.set(current.name, current);
 
     // Create the children
     for (let childCfg of (nodeConfig.children ?? [])) {
@@ -610,8 +606,8 @@ function rayCasting(scene, maxDistance = 20) {
 
     let selectedObject = null;
     let minDistance = maxDistance;
-    for (let [_, object] of scene.objects) {
-        if (!object.isSelectable || !object.isVisible || !object.model.collisionMesh) {
+    for (let [_, object] of scene.nodes) {
+        if (!object instanceof SceneObject || !object.isSelectable || !object.isVisible || !object.model.collisionMesh) {
             continue;
         }
         // Reset selection state
@@ -640,13 +636,13 @@ function rayCasting(scene, maxDistance = 20) {
     }
 }
 
-function checkWin(){
-    if(document.getElementById("win-panel").hidden == false){
+function checkWin() {
+    if (document.getElementById("win-panel").hidden == false) {
         initBird();
         document.getElementById("win-panel").hidden = true;
         return;
     }
-    if (app.targetObject.isSelected == true){
+    if (app.targetObject.isSelected == true) {
         document.getElementById("win-panel").hidden = false;
         app.win = true;
     }
