@@ -171,6 +171,12 @@
             "type": "bird"
         },
         {
+            "name": "Pidgeotto",
+            "obj": "assets/pokemon_xy/Pidgeotto/Pidgeotto.obj",
+            "mtl": "assets/pokemon_xy/Pidgeotto/Pidgeotto.mtl",
+            "type": "bird"
+        },
+        {
             "name": "help_arrow",
             "obj": "assets/base/Arrow.obj",
             "mtl": "assets/base/Arrow.mtl",
