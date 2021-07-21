@@ -247,8 +247,5 @@
             "innerCone": 0.75,
             "outerCone": 0.55
         }
-    ],
-    "appOptions": {
-        "freeCamera": false
-    }
+    ]
 }

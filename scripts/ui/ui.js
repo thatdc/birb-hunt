@@ -24,6 +24,12 @@ class UserInterface {
     frameRateDisplay;
 
     /**
+     * Viewfinder
+     * @type {Element}
+     */
+    viewFinder;
+
+    /**
      * Light controls
      * @type {LightControls}
      */
@@ -48,11 +54,14 @@ class UserInterface {
         this.positionDisplay = document.getElementById("position");
         this.positionDisplay.hidden = !options["showPosition"] ?? true;
 
-        // Side panel
+        // Main panel
         this.mainPanel = document.getElementById("main-panel");
 
         // Side panel
         this.sidePanel = document.getElementById("side-panel");
+
+        // Viewfinder
+        this.viewFinder = document.getElementById("viewfinder");
 
         // Scene list
         this._initializeSceneList(scenes);
@@ -134,6 +143,15 @@ class UserInterface {
     toggleOverlay(visible) {
         this.optionsPanel.hidden = !visible;
         this.sidePanel.hidden = !visible;
+    }
+
+    /**
+     * Toggles the viewfinder
+     */
+    toggleViewFinder() {
+        let displayStyle = this.viewFinder.style.display;
+        let currentlyVisible = !displayStyle || displayStyle == "block";
+        this.viewFinder.style.display = currentlyVisible ? "none" : "block";
     }
 
     /**

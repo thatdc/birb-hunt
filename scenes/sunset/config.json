@@ -173,7 +173,7 @@
         {
             "name": "sun",
             "color": [0.769, 0.349, 0.0706],
-            "rotation": [-22, 112],
+            "rotation": [-22, 131],
             "shadowMapSize": [2048, 2048],
             "projectionOptions": {
                 "halfWidth": 130,
@@ -181,6 +181,11 @@
                 "far": 300,
                 "distance": 150
             }
+        },
+        {
+            "name": "second_sun",
+            "color": [0.325, 0.078, 0.035],
+            "rotation": [-40, 114]
         }
     ],
     "pointLights": [

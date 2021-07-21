@@ -233,6 +233,10 @@ function onKeydownInGame(e) {
         e.preventDefault();
         return;
     }
+    // Toggle viefinder
+    if (e.key === "v") {
+        app.ui.toggleViewFinder();
+    }
 }
 
 /**

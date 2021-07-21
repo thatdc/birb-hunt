@@ -25,6 +25,9 @@
 <body>
     <div id="canvas-container" hidden>
         <!-- Will be filled programmatically -->
+        <svg id="viewfinder" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="50" cy="50" r="50" />
+        </svg>
     </div>
 
     <!-- Framerate -->
@@ -37,6 +40,7 @@
     <div id="win-panel" class="overlay panel" hidden>
         <h1>Congratulations!</h1>
         <h2>You got the bird!</h2>
+        <p class="tooltip">Click again to place another bird</p>
     </div>
 
     <!-- Main screen -->
@@ -53,7 +57,7 @@
     <!-- Options panel -->
     <div id="options-panel" class="overlay panel" hidden>
         <h1>Pause</h1>
-        <span class="tooltip">Click on canvas to resume</span>
+        <p class="tooltip">Click on canvas to resume</p>
         <div>
             <h3>Options</h3>
             <div>
