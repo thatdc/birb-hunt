@@ -8,7 +8,7 @@ class Skybox {
     positionAttribLocation;
 
     /** Uniforms */
-    cameraMatrixLocation;
+    matrixLocation;
 
     /** Name of the currently selected skybox */
     name;
@@ -87,7 +87,7 @@ class Skybox {
         this.positionAttribLocation = gl.getAttribLocation(p, "a_position");
 
         // Transformation matrices
-        this.cameraMatrixLocation = gl.getUniformLocation(p, "u_cameraMatrix");
+        this.matrixLocation = gl.getUniformLocation(p, "u_inverseViewProjectionMatrix");
 
         // Cube map
         this.skyboxLocation = gl.getUniformLocation(p, "u_skybox");
@@ -235,13 +235,13 @@ class Skybox {
 
     /**
      * Draws the skybox
-     * @param {number[]} cameraMatrix 
+     * @param {number[]} inverseViewProjectionMatrix 
      */
-    draw(cameraMatrix) {
+    draw(inverseViewProjectionMatrix) {
         gl.useProgram(this.glProgram);
 
-        // Camera matrix
-        gl.uniformMatrix4fv(this.cameraMatrixLocation, true, cameraMatrix);
+        // Matrix
+        gl.uniformMatrix4fv(this.matrixLocation, true, inverseViewProjectionMatrix);
 
         // Cube map
         gl.activeTexture(gl.TEXTURE0);

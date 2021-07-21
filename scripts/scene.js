@@ -321,10 +321,16 @@ class Scene {
         // Draw the objects
         this._drawTree(cameraPosition, viewProjectionMatrix, this.rootNode, collisionMeshes);
 
-        // Draw the skybox
-        let cameraMatrix = utils.MakeRotateXYZMatrix(
-            ...this.camera.rotation.map(x => -x));
-        this.skybox.draw(cameraMatrix);
+        // Skybox
+        // Get the view matrix and remove the translation part
+        let view = this.camera.getViewMatrix();
+        view[3] = 0;
+        view[7] = 0;
+        view[11] = 0;
+        // Get the projection matrix
+        let projection = this.camera.getPerspectiveMatrix();
+        // Draw the scene passing the inverse of the view-projection matrix
+        this.skybox.draw(utils.invertMatrix(utils.multiplyMatrices(projection, view)));
     }
 
     /**
@@ -361,7 +367,7 @@ class Scene {
      * 
      * At the moment the supported lights are:
      * - directionalLights[0]
-     * - pointLights[0]
+     * - spotLights[0]
      */
     _computeShadowMaps() {
         /** @type {DepthMapProgram} */
