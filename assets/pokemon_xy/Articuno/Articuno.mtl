@@ -1,0 +1,38 @@
+# Blender MTL File: 'pokemon_xy.blend'
+# Material Count: 3
+
+newmtl Articuno_Body_A
+Ns 20.000000
+Ka 1.000000 1.000000 1.000000
+Kd 0.800000 0.800000 0.800000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+d 1.000000
+illum 2
+map_bump images/pm0144_00_BodyANor.png
+map_Kd images/pm0144_00_BodyA1.png
+
+newmtl Articuno_Body_B
+Ns 20.000000
+Ka 1.000000 1.000000 1.000000
+Kd 0.800000 0.800000 0.800000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+d 1.000000
+illum 2
+map_bump images/pm0144_00_BodyBNor.png
+map_Kd images/pm0144_00_BodyB1.png
+
+newmtl Articuno_Eye
+Ns 225.000000
+Ka 1.000000 1.000000 1.000000
+Kd 0.800000 0.800000 0.800000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+d 1.000000
+illum 2
+map_bump images/pm0144_00_EyeNor.png
+map_Kd images/pm0144_00_Eye1.png

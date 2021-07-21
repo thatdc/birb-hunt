@@ -150,6 +150,12 @@
             "type": "bird"
         },
         {
+            "name": "Articuno",
+            "obj": "assets/pokemon_xy/Articuno/Articuno.obj",
+            "mtl": "assets/pokemon_xy/Articuno/Articuno.mtl",
+            "type": "bird"
+        },
+        {
             "name": "help_arrow",
             "obj": "assets/base/Arrow.obj",
             "mtl": "assets/base/Arrow.mtl",
