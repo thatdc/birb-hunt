@@ -7,6 +7,24 @@
             "children": []
         },
         {
+            "name": "suzanne_1",
+            "model": "Suzanne_gold",
+            "position": [-1, 0.7, -25.75],
+            "rotation": [-20, -55, -10]
+        },
+        {
+            "name": "suzanne_2",
+            "model": "Suzanne_silver",
+            "position": [19.96, 0.7, -38.35],
+            "rotation": [-20, 20, 10]
+        },
+        {
+            "name": "suzanne_3",
+            "model": "Suzanne_bronze",
+            "position": [10.04, 0.7, -38.60],
+            "rotation": [-20, -10, -10]
+        },
+        {
             "name": "perimeter_rock_1",
             "model": "BigRock_02",
             "position": [
