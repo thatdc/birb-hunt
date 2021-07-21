@@ -23,11 +23,19 @@ class AnimatedNode extends SceneNode{
         rotation = [0, 0, 0],
         scale = [1, 1, 1],
         isVisible = true,
-        childModel
+        childModel,
+        type = "jump"
     ) {
         super(name, position, rotation, scale, isVisible);
-        this.animatedChild = new SceneObject(this.name + "_animated", childModel, [0, 0, 0], [0, 0, 0], [1, 1, 1], true, true);
+        if (childModel){
+            this.animatedChild = new SceneObject(this.name + "_animated", childModel, [0, 0, 0], [0, 0, 0], [1, 1, 1], true, true);
+        }
+        else{
+            this.animatedChild = new SceneNode(this.name + "_animated", [0, 0, 0], [0, 0, 0], [1, 1, 1], true);
+        }
+        
         this.animatedChild.setParent(this);
+        this.type = type;
     }
 
     /**
@@ -36,24 +44,34 @@ class AnimatedNode extends SceneNode{
      * @param {number} time the time instant
      */
      updateWorldMatrix(matrix, time){
-         super.updateWorldMatrix(matrix);
-         if (app.win){
-            this.animate(time);
+        super.updateWorldMatrix(matrix, time);
+        this.performAnimations(time);
+     }
+
+     performAnimations(time){
+        if (this.type == "jump"){
+            if (app.win){
+                this.animateJump(time);
+             }
+         }
+         else if (this.type == "hover")
+         {
+             this.animateHover(time);
+         }
+         else if (this.type == "rotate")
+         {
+             this.animateRotate(time);
          }
      }
 
      /**
       * Animate the main child object
       */
-     animate(time){
+     animateJump(time){
          let period = 750;
          time = parseInt(time);
          let remainder = time % period;
          let a;
-         let f_pos = null;
-         let i_pos = null;
-         let f_rot = [0, 0, 0];
-         let i_rot = [0, 0, 0];
          let mat;
          
          if (remainder <= 300){
@@ -71,6 +89,57 @@ class AnimatedNode extends SceneNode{
         
          let S = utils.MakeScaleMatrix(1);
          mat = utils.multiplyMatrices(S, mat);
-         this.animatedChild.worldMatrix = utils.multiplyMatrices(this.worldMatrix, mat);
+         this.animatedChild.localMatrix = mat;
+         this.animatedChild.updateWorldMatrix(this.worldMatrix, time, false);
+     }
+
+     animateHover(time){
+         let period = 5000;
+         time = parseInt(time);
+         let remainder = time % period;
+         let a;
+         let mat;
+         if (remainder <= 1000){
+            a = remainder / 1000;
+            mat = utils.InterpolationMatrix([0, -1, 0], [0, 2, 0], [0, 0, 0], [0, 0, 0], a);
+         }
+         else if (remainder <= 2000){
+            a = (remainder - 1000) / 1000;
+            mat = utils.InterpolationMatrix([0, 2, 0], [0, 2, 0], [0, 0, 0], [0, 180, 0], a);
+         }
+         else if (remainder <= 3000){
+            a = (remainder - 2000) / 1000;
+            mat = utils.InterpolationMatrix([0, 2, 0], [0, 2, 0], [0, 180, 0], [0, 360, 0], a);
+         }
+         else {
+            a = (remainder - 3000) / 2000;
+            mat = utils.InterpolationMatrix([0, 2, 0], [0, -1, 0], [0, 0, 0], [0, 0, 0], a);
+         }
+
+         let S = utils.MakeScaleMatrix(1);
+         mat = utils.multiplyMatrices(S, mat);
+         this.animatedChild.localMatrix = mat;
+         this.animatedChild.updateWorldMatrix(this.worldMatrix, time, false);
+     }
+
+     animateRotate(time){
+         let period = 10000;
+         time = parseInt(time);
+         let remainder = time % period;
+         let a;
+         let mat;
+         if (remainder <= 5000){
+            a = remainder / 5000;
+            mat = utils.InterpolationMatrix([0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 180, 0], a);
+         }
+         else {
+            a = (remainder - 5000) / 5000;
+            mat = utils.InterpolationMatrix([0, 0, 0], [0, 0, 0], [0, 180, 0], [0, 360, 0], a);
+         }
+
+         let S = utils.MakeScaleMatrix(1);
+         mat = utils.multiplyMatrices(S, mat);
+         this.animatedChild.localMatrix = mat;
+         this.animatedChild.updateWorldMatrix(this.worldMatrix, time, false);
      }
 }

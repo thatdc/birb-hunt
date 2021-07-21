@@ -79,7 +79,7 @@ async function startGame(sceneName) {
     initPointerLock(canvas);
 
     // Start the rendering cycle
-    window.requestAnimationFrame(() => frame(scene));
+    window.requestAnimationFrame(frame);
 }
 
 
@@ -376,6 +376,8 @@ async function configureScene(scene, sceneName) {
     // Initialize the player camera and the objects attached to it
     initPlayer(scene, sceneConfig);
 
+    initAnimations(scene, sceneName);
+
     // Create the skybox
     scene.skybox = await new Skybox().init(sceneConfig.skybox);
 }
@@ -457,7 +459,7 @@ function initBird() {
     // Create list of trees
     let tree_list = []
     for (let ob of scene.objects.values()){
-        if (ob.model.type == "tree"){
+        if (ob.model && ob.model.type == "tree"){
             tree_list.push(ob);
         }
     }
@@ -469,6 +471,36 @@ function initBird() {
     birdNode.rotation = attachPoint.rotation;
 
     birdNode.setParent(randomTree);
+}
+
+function initAnimations(scene, sceneName){
+    if (sceneName == "divine"){
+        suzanne_circles = scene.objects.get("suzannes_circle");
+        suzanne_1 = scene.objects.get("suzanne_1");
+        suzanne_2 = scene.objects.get("suzanne_2");
+        suzanne_3 = scene.objects.get("suzanne_3");
+
+        suzanne_circles.setParent();
+        suzanne_1.setParent();
+        suzanne_2.setParent();
+        suzanne_3.setParent();
+
+        suzanne_circles = new AnimatedNode("suzannes_circle", suzanne_circles.position, suzanne_circles.rotation, suzanne_circles.scale, true, null, "rotate");
+        suzanne_1 = new AnimatedNode("suzanne_1", suzanne_1.position, suzanne_1.rotation, suzanne_1.scale, true, suzanne_1.model, "hover");
+        suzanne_2 = new AnimatedNode("suzanne_2", suzanne_2.position, suzanne_2.rotation, suzanne_2.scale, true, suzanne_2.model, "hover");
+        suzanne_3 = new AnimatedNode("suzanne_3", suzanne_3.position, suzanne_3.rotation, suzanne_3.scale, true, suzanne_3.model, "hover");
+
+        suzanne_1.setParent(suzanne_circles.animatedChild)
+        suzanne_2.setParent(suzanne_circles.animatedChild)
+        suzanne_3.setParent(suzanne_circles.animatedChild)
+
+        scene.objects.set("suzannes_circle", suzanne_circles);
+        scene.objects.set("suzanne_1", suzanne_1);
+        scene.objects.set("suzanne_2", suzanne_2);
+        scene.objects.set("suzanne_3", suzanne_3);
+
+        suzanne_circles.setParent(scene.rootNode);
+    }
 }
 
 /**
@@ -509,6 +541,7 @@ function buildSceneGraph(scene, nodeConfig) {
             nodeConfig.scale,
             nodeConfig.isVisible ?? true,
         );
+        scene.objects.set(current.name, current);
     }
 
     // Create the children

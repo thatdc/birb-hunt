@@ -137,8 +137,10 @@ class SceneNode {
      * Update world matrix of itself and recursively to the children
      * @param {number[][]} matrix 
      */
-    updateWorldMatrix(matrix, time) {
-        this.localMatrix = this._makeLocal();
+    updateWorldMatrix(matrix, time, recomputeLocal=true) {
+        if (recomputeLocal){
+            this.localMatrix = this._makeLocal();
+        }
         if (matrix) {
             // a matrix was passed in so do the math
             this.worldMatrix = utils.multiplyMatrices(matrix, this.localMatrix);
