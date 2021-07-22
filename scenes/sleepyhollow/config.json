@@ -194,7 +194,7 @@
         {
             "name": "sun",
             "color": [0.1, 0.1, 0.1],
-            "rotation": [-38, 16],
+            "rotation": [-38, 160],
             "shadowMapSize": [2048, 2048],
             "projectionOptions": {
                 "halfWidth": 130,

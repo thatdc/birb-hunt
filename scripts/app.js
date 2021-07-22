@@ -144,7 +144,7 @@ function keyboardMovement(camera, timeDelta) {
     timeDelta *= .001; // convert to seconds
     // Run if shift is pressed
     let posStep = (keyPressed["Shift"] ? 20 : 5) * timeDelta;
-    let rotStep = 1 * timeDelta;
+    let rotStep = 20 * timeDelta;
 
     if (keyPressed["w"]) {
         camera.move([0, 0, -posStep], !app.options.freeCamera);
