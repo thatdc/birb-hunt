@@ -12,6 +12,12 @@
             "position": [39, 0, -8]
         },
         {
+            "name": "shrek",
+            "model": "Shrek",
+            "position": [37.8, 0, 4.21],
+            "rotation": [0, 65, 0]
+        },
+        {
             "name": "sign_stayout_1",
             "model": "Sign_stay_out",
             "position": [33.69, 0, 1.5]

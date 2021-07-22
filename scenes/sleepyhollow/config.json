@@ -129,6 +129,11 @@
             "mtl": "assets/shrek/Shreks_house/Shreks_house.mtl"
         },
         {
+            "name": "Shrek",
+            "obj": "assets/shrek/Shrek/Shrek.obj",
+            "mtl": "assets/shrek/Shrek/Shrek.mtl"
+        },
+        {
             "name": "bird_red",
             "obj": "assets/angry_birds/red_ID240.016.obj",
             "mtl": "assets/angry_birds/red_ID240.016.mtl",
