@@ -134,6 +134,12 @@
             "mtl": "assets/shrek/Shrek/Shrek.mtl"
         },
         {
+            "name": "Gingerbread_Man",
+            "obj": "assets/shrek/Gingerbread_Man/Gingerbread_Man.obj",
+            "mtl": "assets/shrek/Gingerbread_Man/Gingerbread_Man.mtl",
+            "type": "bird"
+        },
+        {
             "name": "bird_red",
             "obj": "assets/angry_birds/red_ID240.016.obj",
             "mtl": "assets/angry_birds/red_ID240.016.mtl",
