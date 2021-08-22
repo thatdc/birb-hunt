@@ -60,6 +60,9 @@ async function startGame(sceneName) {
     // Initialize the part of the UI that needs a scene
     app.ui.initSceneControls(scene);
 
+    // Unhide the help text
+    app.ui.helpPanel.hidden = false;
+
     // Configure event listeners
     document.addEventListener("keydown", (e) => {
         // If a single letter is pressed, save it as lowercase
@@ -198,15 +201,23 @@ function mouseMovement(e) {
  * @param {KeyboardEvent} e 
  */
 function onOverlayKeys(e) {
+    // Help menu
+    if (e.altKey && e.key === "h") {
+        console.log("Hey");
+        let helpPanel = document.getElementById("help-panel");
+        helpPanel.hidden = !helpPanel.hidden;
+        e.preventDefault();
+        return;
+    }
     // Options menu
-    if (e.ctrlKey && e.key === "o") {
+    if (e.altKey && e.key === "o") {
         let optPanel = document.getElementById("options-panel");
         optPanel.hidden = !optPanel.hidden;
         e.preventDefault();
         return;
     }
     // Side panel
-    if (e.ctrlKey && e.key === "i") {
+    if (e.altKey && e.key === "s") {
         let sidePanel = document.getElementById("side-panel");
         sidePanel.hidden = !sidePanel.hidden;
         e.preventDefault();

@@ -6,6 +6,12 @@ class UserInterface {
     mainPanel;
 
     /**
+     * Help panel
+     * @type {Element}
+     */
+    helpPanel;
+
+    /**
      * Options panel
      * @type {Element}
      */
@@ -56,6 +62,9 @@ class UserInterface {
 
         // Main panel
         this.mainPanel = document.getElementById("main-panel");
+
+        // Help panel
+        this.helpPanel = document.getElementById("help-panel");
 
         // Side panel
         this.sidePanel = document.getElementById("side-panel");
@@ -141,6 +150,7 @@ class UserInterface {
      * @param {boolean} visible
      */
     toggleOverlay(visible) {
+        this.helpPanel.hidden = !visible;
         this.optionsPanel.hidden = !visible;
         this.sidePanel.hidden = !visible;
     }
